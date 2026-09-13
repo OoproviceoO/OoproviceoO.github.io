@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube 下載器 — 我的工具箱</title>
+<meta name="description" content="把 YouTube 影片存到電腦裡，也可以只留聲音當音樂聽。免費，不用註冊。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="sitename"><a href="../index.html">我的工具箱</a></span>
+    <nav><a href="https://github.com/OoproviceoO">GitHub</a></nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <a class="backlink" href="../index.html">‹ 回到工具清單</a>
+
+  <div class="tool-head">
+    <h1>YouTube 下載器</h1>
+    <p class="lead">把 YouTube 影片存到電腦裡，可以存成影片檔，也可以只留聲音當音樂聽。貼上網址、選格式、按下載，就這樣。</p>
+    <div class="meta">
+      <span class="tag ver">v1.2</span>
+      <span class="tag">Windows 10 / 11　64 位元</span>
+      <span class="tag">免安裝 Python</span>
+      <span class="tag net">安裝時需連網</span>
+    </div>
+  </div>
+
+  <!-- ═══ 下載區 ═══ -->
+  <div class="download">
+    <div class="download-info">
+      <strong>下載安裝檔</strong>
+      <span>約 12 MB　·　裝完會在桌面建立捷徑</span>
+    </div>
+    <div>
+      <a class="btn" href="https://github.com/OoproviceoO/YTDownloader/releases/latest/download/YTDownloader_Setup.exe">下載安裝檔</a>
+      <span class="side-note">請用電腦下載</span>
+    </div>
+  </div>
+
+  <!-- ═══ 能做什麼 ═══ -->
+  <div class="section">
+    <h2>能做什麼</h2>
+    <ul>
+      <li><strong>存成影片</strong>　畫質可以選最高、1080p、720p、480p。</li>
+      <li><strong>只存聲音</strong>　轉成 MP3，可以放進手機或隨身聽當音樂。</li>
+      <li><strong>一次抓好幾支</strong>　網址一行貼一個，按一次下載就會排隊處理完。</li>
+      <li><strong>字體可以放大</strong>　小、中、大、特大四段，整個畫面一起變大，不是只有文字。</li>
+      <li><strong>存到哪裡自己決定</strong>　選一次就會記住，下次打開還是同一個位置。</li>
+    </ul>
+  </div>
+
+  <!-- ═══ 怎麼用 ═══ -->
+  <div class="section">
+    <h2>怎麼用</h2>
+    <ol class="steps">
+      <li><strong>複製 YouTube 網址</strong>在瀏覽器上方網址列把整串複製起來。</li>
+      <li><strong>貼到第一格</strong>打開程式，貼進最上面的空白框。要下載好幾支就一行貼一個。</li>
+      <li><strong>選要影片還是聲音</strong>MP4 是影片，MP3 是只留聲音。</li>
+      <li><strong>按「開始下載」</strong>跑完會問你要不要打開資料夾，按「是」就能看到檔案。</li>
+    </ol>
+  </div>
+
+  <!-- ═══ 更新 ═══ -->
+  <div class="section">
+    <h2>更新</h2>
+    <p>不用自己來。打開程式時會自動檢查有沒有新版本，有的話會跳出來問，按「是」就會自己裝好、自己重開，大約十秒。</p>
+    <p>YouTube 偶爾會改規則導致下載失敗。遇到的話程式會先自己嘗試修復再重試一次；如果還是不行，會跳出視窗請你複製錯誤訊息回報。</p>
+  </div>
+
+  <!-- ═══ 安裝狀況 ═══ -->
+  <div class="notice">
+    <h2>安裝時可能遇到的狀況</h2>
+    <p>這個程式沒有買數位簽章憑證，所以 Windows 和瀏覽器會對它比較陌生，跳出提醒是正常的。照下面做就可以。</p>
+    <dl>
+      <dt>安裝到最後好像停住不動</dt>
+      <dd>這是正常的，不是當機。安裝的最後一步會自動下載影音處理元件，大約 70 MB，依網路速度可能要幾分鐘。請保持網路連線、不要關掉視窗，跑完就會自動完成。</dd>
+
+      <dt>瀏覽器說「無法安全地下載」</dt>
+      <dd>點那一列右邊的向上箭頭，選「保留」。</dd>
+
+      <dt>藍色畫面寫「Windows 已保護您的電腦」</dt>
+      <dd>點左下角的「其他資訊」，下面會出現「仍要執行」，按下去。</dd>
+
+      <dt>下載完卻找不到檔案</dt>
+      <dd>可能被防毒軟體直接刪掉了。打開防毒軟體的「保護紀錄」或「隔離區」，把檔案還原回來。</dd>
+
+      <dt>防毒軟體把檔案隔離</dt>
+      <dd>這是誤判，把檔案還原並加入排除清單即可。不放心的話可以先把檔案丟到 VirusTotal 掃描。</dd>
+    </dl>
+  </div>
+
+  <!-- ═══ 提醒 ═══ -->
+  <div class="section">
+    <h2>使用提醒</h2>
+    <p>請用在自己的影片、開放授權或公眾領域的內容上，或是單純自己留著看的備份。下載有版權的內容再散布出去會有法律問題，YouTube 的服務條款原則上也不允許未經授權的下載。</p>
+  </div>
+
+  <footer>
+    <div>有問題或發現 bug，歡迎到 <a href="https://github.com/OoproviceoO/YTDownloader">GitHub</a> 留言。</div>
+  </footer>
+
+</div>
+
+</body>
+</html>
