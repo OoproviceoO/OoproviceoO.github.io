@@ -3,10 +3,212 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>測試頁</title>
+<title>我的工具箱</title>
+<meta name="description" content="自己寫的小工具，免費下載使用。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EEF0F3;
+    --card:#FFFFFF;
+    --ink:#1B2430;
+    --ink-soft:#5A6675;
+    --line:#D3D8DF;
+    --blue:#2E5E8C;
+    --blue-dark:#1F4468;
+    --amber:#B5791C;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  html{font-size:17px}
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Noto Sans TC",-apple-system,"Segoe UI","Microsoft JhengHei",sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:760px;margin:0 auto;padding:0 24px}
+
+  /* ── 頁首 ───────────────────────────── */
+  .topbar{
+    border-bottom:1px solid var(--line);
+    background:var(--card);
+  }
+  .topbar .wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    height:64px;
+  }
+  .sitename{font-weight:700;font-size:1.05rem;letter-spacing:.02em}
+  .topbar a{color:var(--ink-soft);text-decoration:none;font-size:.95rem}
+  .topbar a:hover{color:var(--blue)}
+
+  /* ── 開場 ───────────────────────────── */
+  .hero{padding:72px 0 56px}
+  .hero h1{
+    font-size:2.3rem;font-weight:700;line-height:1.35;
+    letter-spacing:-.01em;max-width:16em;
+  }
+  .hero p{
+    margin-top:20px;color:var(--ink-soft);
+    font-size:1.05rem;max-width:30em;
+  }
+
+  /* ── 工具清單 ───────────────────────── */
+  .list-head{
+    display:flex;align-items:baseline;gap:14px;
+    padding-bottom:14px;border-bottom:2px solid var(--ink);
+  }
+  .list-head h2{font-size:1.15rem;font-weight:700}
+  .list-head span{color:var(--ink-soft);font-size:.9rem}
+
+  .tool{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:5px solid var(--blue);
+    border-radius:3px;
+    padding:26px 28px;
+    margin-top:18px;
+    display:flex;gap:28px;align-items:flex-start;
+  }
+  .tool.wip{border-left-color:var(--line)}
+  .tool-main{flex:1;min-width:0}
+  .tool h3{font-size:1.3rem;font-weight:700;line-height:1.4}
+  .tool .desc{margin-top:8px;color:var(--ink-soft)}
+  .meta{
+    margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;
+  }
+  .tag{
+    border:1px solid var(--line);border-radius:2px;
+    padding:2px 9px;font-size:.82rem;color:var(--ink-soft);
+  }
+  .tag.ver{border-color:var(--blue);color:var(--blue)}
+
+  .tool-side{flex-shrink:0;text-align:center;padding-top:4px}
+
+  .btn{
+    display:inline-block;background:var(--blue);color:#fff;
+    text-decoration:none;font-weight:500;font-size:1rem;
+    padding:12px 26px;border-radius:3px;white-space:nowrap;
+    transition:background .15s;
+  }
+  .btn:hover{background:var(--blue-dark)}
+  .btn:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+  .side-note{display:block;margin-top:8px;font-size:.82rem;color:var(--ink-soft)}
+  .soon{
+    display:inline-block;padding:12px 26px;border:1px dashed var(--line);
+    border-radius:3px;color:var(--ink-soft);font-size:1rem;white-space:nowrap;
+  }
+
+  /* ── 安裝說明 ───────────────────────── */
+  .notice{
+    margin:64px 0 0;background:var(--card);
+    border:1px solid var(--line);border-radius:3px;
+    padding:30px 32px;
+  }
+  .notice h2{font-size:1.15rem;font-weight:700;margin-bottom:6px}
+  .notice > p{color:var(--ink-soft);font-size:.98rem}
+  .notice dl{margin-top:22px}
+  .notice dt{
+    font-weight:700;margin-top:20px;
+    padding-left:14px;border-left:3px solid var(--amber);
+  }
+  .notice dd{margin-top:6px;padding-left:17px;color:var(--ink-soft)}
+
+  footer{
+    margin-top:72px;border-top:1px solid var(--line);
+    padding:28px 0 56px;color:var(--ink-soft);font-size:.9rem;
+  }
+  footer a{color:var(--blue)}
+
+  /* ── 手機 ───────────────────────────── */
+  @media(max-width:620px){
+    html{font-size:16px}
+    .hero{padding:48px 0 40px}
+    .hero h1{font-size:1.8rem}
+    .tool{flex-direction:column;gap:18px;padding:22px}
+    .tool-side{width:100%;text-align:left}
+    .btn,.soon{display:block;text-align:center}
+    .notice{padding:24px 22px}
+  }
+</style>
 </head>
 <body>
-<h1>成功了</h1>
-<p>這是我的第一個網頁。</p>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="sitename">我的工具箱</span>
+    <a href="https://github.com/OoproviceoO">GitHub</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>自己寫的小工具，放在這裡給你拿。</h1>
+    <p>都可以免費使用，不用註冊、不用付錢。點下載就會拿到安裝檔，裝完就能開始用。</p>
+  </div>
+
+  <div class="list-head">
+    <h2>目前有的工具</h2>
+    <span>Windows 10 / 11，64 位元</span>
+  </div>
+
+  <!-- ── 工具一：已可下載 ── -->
+  <div class="tool">
+    <div class="tool-main">
+      <h3>YouTube 下載器</h3>
+      <p class="desc">把 YouTube 的影片存成 MP4，或只留聲音存成 MP3。貼上網址、選格式、按下載，就這樣。字體大小可以自己調。</p>
+      <div class="meta">
+        <span class="tag ver">v1.0</span>
+        <span class="tag">安裝檔</span>
+        <span class="tag">免安裝 Python</span>
+      </div>
+    </div>
+    <div class="tool-side">
+      <a class="btn" href="#">下載安裝檔</a>
+      <span class="side-note">約 40 MB</span>
+    </div>
+  </div>
+
+  <!-- ── 工具二：開發中（複製這段來新增工具）── -->
+  <div class="tool wip">
+    <div class="tool-main">
+      <h3>下一個工具</h3>
+      <p class="desc">這裡寫這個程式能幫使用者做到什麼事，用一兩句話講完，不用寫技術細節。</p>
+      <div class="meta">
+        <span class="tag">開發中</span>
+      </div>
+    </div>
+    <div class="tool-side">
+      <span class="soon">還在做</span>
+    </div>
+  </div>
+
+  <div class="notice">
+    <h2>下載時如果跳出警告</h2>
+    <p>這些程式沒有買數位簽章憑證，所以 Windows 和瀏覽器會對它比較陌生，跳出提醒是正常的。照下面做就可以。</p>
+    <dl>
+      <dt>瀏覽器說「無法安全地下載」</dt>
+      <dd>點那一列右邊的向上箭頭，選「保留」。</dd>
+
+      <dt>藍色畫面寫「Windows 已保護您的電腦」</dt>
+      <dd>點左下角的「其他資訊」，下面會出現「仍要執行」，按下去。</dd>
+
+      <dt>防毒軟體把檔案隔離</dt>
+      <dd>這是誤判，把檔案還原並加入排除清單即可。不放心的話可以先把檔案丟到 VirusTotal 掃描。</dd>
+    </dl>
+  </div>
+
+  <footer>
+    <div>有問題或發現 bug，歡迎到 <a href="https://github.com/OoproviceoO">GitHub</a> 留言。</div>
+  </footer>
+
+</div>
+
 </body>
 </html>
