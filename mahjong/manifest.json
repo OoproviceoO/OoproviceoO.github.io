@@ -1,0 +1,20 @@
+{
+  "name": "麻將算錢",
+  "short_name": "麻將算錢",
+  "description": "打麻將即時算錢，支援莊家連莊、圈風、戰績統計，多支手機可以同步同一桌。",
+  "id": "/mahjong/",
+  "start_url": "/mahjong/",
+  "scope": "/mahjong/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F2E8",
+  "theme_color": "#1E5A48",
+  "lang": "zh-Hant",
+  "dir": "ltr",
+  "categories": ["utilities", "games"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
