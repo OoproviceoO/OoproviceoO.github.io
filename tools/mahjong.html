@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>麻將算錢</title>
+<meta name="description" content="打麻將即時算錢，多支手機同步同一桌。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF0F3; --card:#FFFFFF; --ink:#1B2430; --ink-soft:#5A6675;
+  --line:#D3D8DF; --blue:#2E5E8C; --blue-dark:#1F4468; --amber:#B5791C;
+  --win:#1F7A4D; --lose:#B33A3A;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:17px}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:"Noto Sans TC",-apple-system,"Segoe UI","Microsoft JhengHei",sans-serif;
+  line-height:1.7;-webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+
+/* ── 共用元件 ────────────────────────── */
+.btn{
+  display:inline-block;background:var(--blue);color:#fff;border:none;
+  font:inherit;font-weight:500;padding:13px 24px;border-radius:4px;
+  cursor:pointer;text-align:center;transition:background .15s;
+}
+.btn:hover{background:var(--blue-dark)}
+.btn:disabled{background:var(--line);color:var(--ink-soft);cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--blue);border:1px solid var(--line)}
+.btn.ghost:hover{background:#F4F6F8}
+.btn.danger{background:var(--lose)}
+.btn.block{display:block;width:100%}
+.btn.sm{padding:8px 16px;font-size:.9rem}
+
+input,select{
+  font:inherit;width:100%;padding:12px 14px;
+  border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--ink);
+}
+input:focus,select:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:var(--blue)}
+label{display:block;font-size:.88rem;color:var(--ink-soft);margin-bottom:6px;margin-top:16px}
+label:first-child{margin-top:0}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:22px}
+.muted{color:var(--ink-soft);font-size:.9rem}
+.err{color:var(--lose);font-size:.9rem;margin-top:12px;min-height:1.2em}
+.center{text-align:center}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+.hide{display:none !important}
+
+/* ── 頁首 ────────────────────────────── */
+.topbar{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:58px}
+.brand{font-weight:700}
+.brand small{display:block;font-weight:400;font-size:.74rem;color:var(--ink-soft);line-height:1}
+.who{font-size:.82rem;color:var(--ink-soft);text-align:right}
+.who button{
+  background:none;border:none;color:var(--blue);font:inherit;
+  font-size:.82rem;cursor:pointer;padding:0;text-decoration:underline;
+}
+
+/* ── 載入 ────────────────────────────── */
+#boot{padding:120px 0;text-align:center;color:var(--ink-soft)}
+
+/* ── 登入 ────────────────────────────── */
+#viewAuth{padding:48px 0}
+#viewAuth h1{font-size:1.9rem;line-height:1.3;margin-bottom:10px}
+.tabs{display:flex;border-bottom:1px solid var(--line);margin:24px 0 20px}
+.tabs button{
+  flex:1;background:none;border:none;font:inherit;padding:11px 0;cursor:pointer;
+  color:var(--ink-soft);border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.tabs button.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:500}
+.sep{display:flex;align-items:center;gap:12px;color:var(--ink-soft);font-size:.85rem;margin:20px 0}
+.sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ── 大廳 ────────────────────────────── */
+#viewLobby{padding:32px 0}
+.lobby-card{margin-bottom:16px}
+.lobby-card h2{font-size:1.1rem;margin-bottom:6px}
+
+/* ── 底部頁籤 ────────────────────────── */
+.navbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  background:var(--card);border-top:1px solid var(--line);
+  display:flex;padding-bottom:env(safe-area-inset-bottom);
+}
+.navbar button{
+  flex:1;background:none;border:none;font:inherit;font-size:.8rem;
+  padding:9px 0 11px;cursor:pointer;color:var(--ink-soft);
+  border-top:3px solid transparent;margin-top:-1px;
+}
+.navbar button.on{color:var(--blue);border-top-color:var(--blue);font-weight:500}
+.navbar .ico{display:block;font-size:1.25rem;line-height:1.35}
+#viewTable{padding:20px 0 96px}
+
+/* ── 桌資訊 ──────────────────────────── */
+.tableinfo{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:var(--card);border:1px solid var(--line);border-left:5px solid var(--blue);
+  border-radius:4px;padding:14px 16px;margin-bottom:16px;
+}
+.code{font-size:1.25rem;font-weight:700;letter-spacing:.12em;font-family:ui-monospace,Menlo,Consolas,monospace}
+
+/* ── 玩家 ────────────────────────────── */
+.seats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seat{
+  background:var(--card);border:1px solid var(--line);border-radius:4px;
+  padding:14px;text-align:center;
+}
+.seat .av{
+  width:52px;height:52px;border-radius:50%;margin:0 auto 8px;
+  background:var(--paper);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;overflow:hidden;
+}
+.seat .av img{width:100%;height:100%;object-fit:cover}
+.seat .nm{font-weight:500;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seat .sc{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.sc.plus{color:var(--win)} .sc.minus{color:var(--lose)}
+
+/* ── 記錄 ────────────────────────────── */
+.log{margin-top:20px}
+.log h3{font-size:1rem;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.logitem{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--line);border-radius:4px;
+  padding:11px 14px;margin-top:8px;font-size:.92rem;
+}
+.logitem .n{color:var(--ink-soft);font-size:.8rem;min-width:2.2em}
+.logitem .t{flex:1;min-width:0}
+.logitem .a{font-weight:700;font-variant-numeric:tabular-nums;color:var(--win)}
+.logitem.draw .a{color:var(--ink-soft)}
+
+/* ── 統計表 ──────────────────────────── */
+.statwrap{overflow-x:auto;margin-top:16px}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:.9rem}
+th,td{padding:10px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--card)}
+th{background:var(--paper);font-weight:700;font-size:.82rem}
+td{font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.chip{
+  border:1px solid var(--line);background:var(--card);border-radius:3px;
+  padding:6px 13px;font:inherit;font-size:.85rem;cursor:pointer;color:var(--ink-soft);
+}
+.chip.on{border-color:var(--blue);color:var(--blue);font-weight:500}
+
+/* ── 玩家管理 ────────────────────────── */
+.plist{margin-top:14px}
+.pitem{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--line);border-radius:4px;
+  padding:10px 14px;margin-top:8px;
+}
+.pitem .av{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:var(--paper);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;overflow:hidden;
+}
+.pitem .av img{width:100%;height:100%;object-fit:cover}
+.pitem .nm{flex:1;min-width:0;font-weight:500}
+.iconbtn{
+  background:none;border:none;font:inherit;font-size:1.05rem;
+  cursor:pointer;color:var(--ink-soft);padding:6px;
+}
+.iconbtn:hover{color:var(--blue)}
+
+/* ── 對話框 ──────────────────────────── */
+.mask{
+  position:fixed;inset:0;background:rgba(20,28,38,.55);z-index:50;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.sheet{
+  background:var(--card);width:100%;max-width:560px;
+  border-radius:12px 12px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));
+  max-height:92vh;overflow-y:auto;
+}
+.sheet h2{font-size:1.15rem;margin-bottom:4px}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.pick button{
+  background:var(--card);border:1px solid var(--line);border-radius:4px;
+  font:inherit;padding:11px 8px;cursor:pointer;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.pick button.on{border-color:var(--blue);background:#EBF2F8;color:var(--blue);font-weight:500}
+.pick button:disabled{opacity:.35;cursor:not-allowed}
+.stepper{display:flex;align-items:center;gap:14px;margin-top:8px}
+.stepper button{
+  width:48px;height:48px;border-radius:4px;border:1px solid var(--line);
+  background:var(--card);font-size:1.4rem;cursor:pointer;color:var(--blue);flex-shrink:0;
+}
+.stepper .val{flex:1;text-align:center;font-size:1.7rem;font-weight:700;font-variant-numeric:tabular-nums}
+.preview{
+  background:var(--paper);border-radius:4px;padding:14px;margin-top:18px;
+  font-size:.92rem;color:var(--ink-soft);
+}
+.preview b{color:var(--ink);font-size:1.1rem}
+.avgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:8px}
+.avgrid button{
+  aspect-ratio:1;border:1px solid var(--line);border-radius:50%;
+  background:var(--card);font-size:1.3rem;cursor:pointer;
+}
+.avgrid button.on{border-color:var(--blue);background:#EBF2F8}
+.sheet .row{margin-top:20px}
+
+footer{margin-top:40px;padding:20px 0 30px;color:var(--ink-soft);font-size:.82rem;text-align:center}
+footer a{color:var(--blue)}
+</style>
+</head>
+<body>
+
+<div id="boot">載入中…</div>
+
+<!-- ══════════ 頁首 ══════════ -->
+<div class="topbar hide" id="topbar">
+  <div class="wrap">
+    <div class="brand">麻將算錢<small id="brandSub">　</small></div>
+    <div class="who">
+      <div id="whoName"></div>
+      <button id="btnSignOut">登出</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 登入 ══════════ -->
+<div class="wrap hide" id="viewAuth">
+  <h1>打麻將算錢</h1>
+  <p class="muted">登入後資料存在雲端，換手機也找得回來。多支手機可以看同一桌，任何人記一局，大家畫面一起更新。</p>
+
+  <div class="card" style="margin-top:28px">
+    <button class="btn block ghost" id="btnGoogle">用 Google 帳號登入</button>
+    <div class="sep">或用電子郵件</div>
+
+    <div class="tabs">
+      <button id="tabLogin" class="on">登入</button>
+      <button id="tabReg">註冊</button>
+    </div>
+
+    <label>電子郵件</label>
+    <input id="inEmail" type="email" autocomplete="email" placeholder="you@example.com">
+    <label>密碼</label>
+    <input id="inPass" type="password" autocomplete="current-password" placeholder="至少 6 個字">
+    <div class="err" id="authErr"></div>
+    <button class="btn block" id="btnAuth" style="margin-top:8px">登入</button>
+  </div>
+
+  <footer>© 我的工具箱　·　<a href="../index.html">回到工具清單</a></footer>
+</div>
+
+<!-- ══════════ 大廳 ══════════ -->
+<div class="wrap hide" id="viewLobby">
+
+  <div class="card lobby-card">
+    <h2>開一桌新的</h2>
+    <p class="muted">產生一組代碼，其他人輸入代碼和密碼就能加入，一起看同一桌分數。</p>
+    <label>底（每局基本）</label>
+    <input id="newBase" type="number" inputmode="numeric" value="100">
+    <label>台（每台加多少）</label>
+    <input id="newTai" type="number" inputmode="numeric" value="100">
+    <label>牌桌密碼（至少 4 個字，給要加入的人）</label>
+    <input id="newPwd" type="text" autocomplete="off" placeholder="例如：1234">
+    <div class="err" id="newErr"></div>
+    <button class="btn block" id="btnCreate" style="margin-top:8px">建立牌桌</button>
+  </div>
+
+  <div class="card lobby-card">
+    <h2>加入別人的桌</h2>
+    <label>牌桌代碼</label>
+    <input id="joinCode" type="text" autocomplete="off" placeholder="6 個字，例如 K7M2QP"
+           style="text-transform:uppercase;letter-spacing:.1em">
+    <label>牌桌密碼</label>
+    <input id="joinPwd" type="text" autocomplete="off">
+    <div class="err" id="joinErr"></div>
+    <button class="btn block ghost" id="btnJoin" style="margin-top:8px">加入</button>
+  </div>
+
+  <div class="card lobby-card" id="recentBox" style="display:none">
+    <h2>最近玩過</h2>
+    <div id="recentList"></div>
+  </div>
+
+  <footer>© 我的工具箱　·　<a href="../index.html">回到工具清單</a></footer>
+</div>
+
+<!-- ══════════ 牌桌 ══════════ -->
+<div class="wrap hide" id="viewTable">
+
+  <!-- 記分頁 -->
+  <div id="paneScore">
+    <div class="tableinfo">
+      <div>
+        <div class="muted" style="font-size:.78rem">牌桌代碼</div>
+        <div class="code" id="tCode">------</div>
+      </div>
+      <div style="text-align:right">
+        <div class="muted" id="tRule">底 100 / 台 100</div>
+        <button class="btn sm ghost" id="btnShare">分享</button>
+      </div>
+    </div>
+
+    <div class="seats" id="seats"></div>
+
+    <button class="btn block" id="btnRound" style="margin-top:16px;font-size:1.1rem;padding:16px">記一局</button>
+
+    <div class="log">
+      <h3>本桌記錄　<span class="muted" id="roundCount" style="font-weight:400"></span></h3>
+      <div id="logList"></div>
+    </div>
+  </div>
+
+  <!-- 統計頁 -->
+  <div id="paneStat" class="hide">
+    <h3 style="font-size:1rem;padding-bottom:10px;border-bottom:2px solid var(--ink)">統計</h3>
+    <div class="chips" id="statChips">
+      <button class="chip on" data-range="all">全部</button>
+      <button class="chip" data-range="today">今天</button>
+      <button class="chip" data-range="custom">自訂區間</button>
+    </div>
+    <div id="customRange" class="hide">
+      <div class="row" style="margin-top:12px">
+        <div><label style="margin-top:0">從</label><input id="dFrom" type="date"></div>
+        <div><label style="margin-top:0">到</label><input id="dTo" type="date"></div>
+      </div>
+    </div>
+    <div class="statwrap">
+      <table id="statTable"></table>
+    </div>
+    <p class="muted" style="margin-top:14px">
+      胡牌率＝胡牌局數 ÷ 總局數；自摸率＝自摸局數 ÷ 該玩家胡牌局數；放槍率＝放槍局數 ÷ 總局數。流局不列入分母。
+    </p>
+  </div>
+
+  <!-- 玩家頁 -->
+  <div id="panePlayer" class="hide">
+    <h3 style="font-size:1rem;padding-bottom:10px;border-bottom:2px solid var(--ink)">我的玩家名單</h3>
+    <p class="muted" style="margin-top:12px">名單會一直留著，每次開桌直接挑人就好，不用重打名字。</p>
+    <div class="plist" id="playerList"></div>
+    <button class="btn block ghost" id="btnAddPlayer" style="margin-top:14px">＋ 新增玩家</button>
+
+    <h3 style="font-size:1rem;padding-bottom:10px;border-bottom:2px solid var(--ink);margin-top:36px">本桌座位</h3>
+    <p class="muted" style="margin-top:12px">換位置不用重設，分數是跟著人走的。</p>
+    <div id="seatEdit" class="plist"></div>
+  </div>
+
+  <!-- 設定頁 -->
+  <div id="paneSet" class="hide">
+    <h3 style="font-size:1rem;padding-bottom:10px;border-bottom:2px solid var(--ink)">這一桌的設定</h3>
+    <label>底</label>
+    <input id="setBase" type="number" inputmode="numeric">
+    <label>台</label>
+    <input id="setTai" type="number" inputmode="numeric">
+    <button class="btn block" id="btnSaveRule" style="margin-top:16px">儲存</button>
+
+    <h3 style="font-size:1rem;padding-bottom:10px;border-bottom:2px solid var(--ink);margin-top:36px">離開</h3>
+    <button class="btn block ghost" id="btnLeave" style="margin-top:14px">回到大廳</button>
+    <button class="btn block danger" id="btnDelete" style="margin-top:10px">刪除這一桌</button>
+    <p class="muted" style="margin-top:10px">刪除後所有記錄都會消失，只有開桌的人和管理員可以刪。</p>
+
+    <div id="adminBox" class="hide">
+      <h3 style="font-size:1rem;padding-bottom:10px;border-bottom:2px solid var(--ink);margin-top:36px">管理員</h3>
+      <button class="btn block ghost" id="btnAdminList" style="margin-top:14px">列出所有牌桌</button>
+      <div id="adminList" class="plist"></div>
+    </div>
+  </div>
+
+  <footer>© 我的工具箱</footer>
+</div>
+
+<!-- ══════════ 底部頁籤 ══════════ -->
+<div class="navbar hide" id="navbar">
+  <button data-pane="Score" class="on"><span class="ico">🀄</span>記分</button>
+  <button data-pane="Stat"><span class="ico">📊</span>統計</button>
+  <button data-pane="Player"><span class="ico">👥</span>玩家</button>
+  <button data-pane="Set"><span class="ico">⚙️</span>設定</button>
+</div>
+
+<div id="modal"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signOut,
+  GoogleAuthProvider, signInWithPopup,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc,
+  onSnapshot, arrayUnion, serverTimestamp,
+  collection, getDocs, query, orderBy, limit
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+/* ══════════════════════════════════════
+   設定
+   ══════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey: "AIzaSyDJnuuQ1APxpb5aSFVE8ZsX9FDsOmQ0u8M",
+  authDomain: "piaoyang-mahjong.firebaseapp.com",
+  projectId: "piaoyang-mahjong",
+  storageBucket: "piaoyang-mahjong.firebasestorage.app",
+  messagingSenderId: "1048210082182",
+  appId: "1:1048210082182:web:fa008cf788bfcc57a04407"
+};
+const ADMIN_EMAIL = "ooproviceoo@gmail.com";
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+/* ══════════════════════════════════════
+   小工具
+   ══════════════════════════════════════ */
+const $  = id => document.getElementById(id);
+const el = (t, c, x) => { const n = document.createElement(t); if(c) n.className = c; if(x!=null) n.textContent = x; return n; };
+
+const ANIMALS = ["🐶","🐱","🐼","🐯","🦊","🐰","🐻","🐵","🦁","🐷","🐨","🐸","🐔","🐧","🐙","🦄"];
+const money = n => (n>0?"+":"") + n.toLocaleString("zh-TW");
+
+async function sha256(str){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function makeCode(){
+  const abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // 去掉 I O 0 1，避免抄錯
+  return Array.from({length:6}, ()=> abc[Math.floor(Math.random()*abc.length)]).join("");
+}
+function errText(e){
+  const m = {
+    "auth/invalid-email":"電子郵件格式不對",
+    "auth/missing-password":"請輸入密碼",
+    "auth/weak-password":"密碼至少要 6 個字",
+    "auth/email-already-in-use":"這個信箱已經註冊過了，請改用登入",
+    "auth/invalid-credential":"帳號或密碼不對",
+    "auth/user-not-found":"找不到這個帳號",
+    "auth/wrong-password":"密碼不對",
+    "auth/popup-closed-by-user":"登入視窗被關掉了",
+    "auth/unauthorized-domain":"這個網域還沒加到 Firebase 的授權網域清單",
+    "permission-denied":"沒有權限，請確認代碼和密碼"
+  };
+  return m[e?.code] || e?.message || String(e);
+}
+
+/* ══════════════════════════════════════
+   狀態
+   ══════════════════════════════════════ */
+let me = null;          // firebase user
+let myRoster = [];      // 我的玩家名單
+let tableCode = null;   // 目前桌代碼
+let table = null;       // 目前桌資料
+let unsub = null;       // onSnapshot 取消函式
+let statRange = "all";
+
+const isAdmin = () => me?.email === ADMIN_EMAIL;
+
+/* ══════════════════════════════════════
+   畫面切換
+   ══════════════════════════════════════ */
+function show(view){
+  $("boot").classList.add("hide");
+  for(const v of ["viewAuth","viewLobby","viewTable"]) $(v).classList.add("hide");
+  $(view).classList.remove("hide");
+  $("topbar").classList.toggle("hide", view==="viewAuth");
+  $("navbar").classList.toggle("hide", view!=="viewTable");
+  window.scrollTo(0,0);
+}
+function pane(name){
+  for(const p of ["Score","Stat","Player","Set"]) $("pane"+p).classList.add("hide");
+  $("pane"+name).classList.remove("hide");
+  for(const b of document.querySelectorAll(".navbar button")) b.classList.toggle("on", b.dataset.pane===name);
+  if(name==="Stat") renderStat();
+  if(name==="Player") renderPlayers();
+  if(name==="Set") renderSettings();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll(".navbar button").forEach(b=>b.onclick=()=>pane(b.dataset.pane));
+
+/* ══════════════════════════════════════
+   對話框
+   ══════════════════════════════════════ */
+function sheet(build){
+  const mask = el("div","mask");
+  const box  = el("div","sheet");
+  mask.appendChild(box);
+  mask.onclick = e => { if(e.target===mask) close(); };
+  function close(){ mask.remove(); }
+  build(box, close);
+  $("modal").appendChild(mask);
+  return close;
+}
+function confirmBox(title, msg, okText, onOk){
+  sheet((box, close)=>{
+    box.appendChild(el("h2",null,title));
+    box.appendChild(el("p","muted",msg));
+    const row = el("div","row");
+    const no  = el("button","btn ghost","取消"); no.onclick = close;
+    const yes = el("button","btn danger",okText); yes.onclick = ()=>{ close(); onOk(); };
+    row.append(no,yes); box.appendChild(row);
+  });
+}
+
+/* ══════════════════════════════════════
+   登入
+   ══════════════════════════════════════ */
+let authMode = "login";
+$("tabLogin").onclick = ()=>{ authMode="login"; $("tabLogin").classList.add("on"); $("tabReg").classList.remove("on"); $("btnAuth").textContent="登入"; $("authErr").textContent=""; };
+$("tabReg").onclick   = ()=>{ authMode="reg";   $("tabReg").classList.add("on"); $("tabLogin").classList.remove("on"); $("btnAuth").textContent="註冊"; $("authErr").textContent=""; };
+
+$("btnGoogle").onclick = async ()=>{
+  $("authErr").textContent = "";
+  try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+  catch(e){ $("authErr").textContent = errText(e); }
+};
+$("btnAuth").onclick = async ()=>{
+  const email = $("inEmail").value.trim(), pass = $("inPass").value;
+  $("authErr").textContent = "";
+  try {
+    if(authMode==="reg") await createUserWithEmailAndPassword(auth, email, pass);
+    else                 await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e){ $("authErr").textContent = errText(e); }
+};
+$("btnSignOut").onclick = ()=>{ if(unsub) unsub(); unsub=null; signOut(auth); };
+
+onAuthStateChanged(auth, async user=>{
+  me = user;
+  if(!user){ tableCode=null; table=null; show("viewAuth"); return; }
+  $("whoName").textContent = user.displayName || user.email;
+  await loadProfile();
+  const last = localStorage.getItem("mj_table");
+  if(last){ const ok = await openTable(last); if(ok) return; }
+  show("viewLobby");
+  renderRecent();
+});
+
+/* ══════════════════════════════════════
+   我的資料
+   ══════════════════════════════════════ */
+async function loadProfile(){
+  const ref = doc(db,"users",me.uid);
+  const snap = await getDoc(ref);
+  if(!snap.exists()){
+    myRoster = [];
+    await setDoc(ref,{ email: me.email||"", name: me.displayName||"", players: [], recent: [], createdAt: serverTimestamp() });
+  } else {
+    myRoster = snap.data().players || [];
+  }
+}
+async function saveRoster(){
+  await updateDoc(doc(db,"users",me.uid), { players: myRoster });
+}
+async function pushRecent(code){
+  const ref = doc(db,"users",me.uid);
+  const snap = await getDoc(ref);
+  const prev = (snap.data()?.recent || []).filter(c=>c!==code);
+  await updateDoc(ref,{ recent: [code, ...prev].slice(0,6) });
+}
+async function renderRecent(){
+  const snap = await getDoc(doc(db,"users",me.uid));
+  const list = snap.data()?.recent || [];
+  $("recentBox").style.display = list.length ? "" : "none";
+  const box = $("recentList"); box.innerHTML = "";
+  list.forEach(code=>{
+    const it = el("div","pitem");
+    it.appendChild(el("div","code",code));
+    const sp = el("div","nm",""); sp.style.flex="1"; it.appendChild(sp);
+    const b = el("button","btn sm ghost","打開");
+    b.onclick = ()=> openTable(code);
+    it.appendChild(b);
+    box.appendChild(it);
+  });
+}
+
+/* ══════════════════════════════════════
+   建立 / 加入牌桌
+   ══════════════════════════════════════ */
+$("btnCreate").onclick = async ()=>{
+  const base = parseInt($("newBase").value,10);
+  const tai  = parseInt($("newTai").value,10);
+  const pwd  = $("newPwd").value.trim();
+  $("newErr").textContent = "";
+  if(!(base>=0) || !(tai>=0)) return $("newErr").textContent = "底和台要填數字";
+  if(pwd.length < 4)          return $("newErr").textContent = "密碼至少 4 個字";
+
+  const code  = makeCode();
+  const proof = await sha256(code + "::" + pwd);
+  try{
+    await setDoc(doc(db,"tickets",proof), { code, createdAt: serverTimestamp() });
+    await setDoc(doc(db,"tables",code), {
+      owner: me.uid, members:[me.uid], proof,
+      base, tai,
+      seats: defaultSeats(),
+      rounds: [],
+      createdAt: serverTimestamp()
+    });
+    await openTable(code);
+  }catch(e){ $("newErr").textContent = errText(e); }
+};
+
+function defaultSeats(){
+  const pick = myRoster.slice(0,4);
+  const out = [];
+  for(let i=0;i<4;i++){
+    out.push(pick[i] || { id:"s"+i+"_"+Math.random().toString(36).slice(2,7),
+                          name:"玩家"+(i+1), av:ANIMALS[i] });
+  }
+  return out;
+}
+
+$("btnJoin").onclick = async ()=>{
+  const code = $("joinCode").value.trim().toUpperCase();
+  const pwd  = $("joinPwd").value.trim();
+  $("joinErr").textContent = "";
+  if(code.length !== 6) return $("joinErr").textContent = "代碼是 6 個字";
+  if(!pwd)              return $("joinErr").textContent = "請輸入密碼";
+
+  try{
+    const proof = await sha256(code + "::" + pwd);
+    const t = await getDoc(doc(db,"tickets",proof));
+    if(!t.exists() || t.data().code !== code)
+      return $("joinErr").textContent = "代碼或密碼不對";
+    await updateDoc(doc(db,"tables",code), { members: arrayUnion(me.uid), proof });
+    await openTable(code);
+  }catch(e){ $("joinErr").textContent = errText(e); }
+};
+
+/* ══════════════════════════════════════
+   打開牌桌（即時同步）
+   ══════════════════════════════════════ */
+function openTable(code){
+  return new Promise(resolve=>{
+    if(unsub) unsub();
+    let first = true;
+    unsub = onSnapshot(doc(db,"tables",code),
+      snap=>{
+        if(!snap.exists()){
+          if(first){ first=false; resolve(false); }
+          localStorage.removeItem("mj_table");
+          leaveToLobby();
+          return;
+        }
+        tableCode = code;
+        table = snap.data();
+        localStorage.setItem("mj_table", code);
+        $("brandSub").textContent = code;
+        show("viewTable");
+        renderTable();
+        if(first){
+          first = false;
+          pane("Score");
+          pushRecent(code);
+          resolve(true);
+        }
+      },
+      err=>{
+        console.warn(err);
+        if(first){ first=false; localStorage.removeItem("mj_table"); resolve(false); }
+      });
+  });
+}
+function leaveToLobby(){
+  if(unsub) unsub();
+  unsub=null; tableCode=null; table=null;
+  localStorage.removeItem("mj_table");
+  $("brandSub").textContent = "　";
+  show("viewLobby");
+  renderRecent();
+}
+$("btnLeave").onclick = leaveToLobby;
+
+/* ══════════════════════════════════════
+   記分頁
+   ══════════════════════════════════════ */
+function totals(rounds){
+  const t = {};
+  table.seats.forEach(s=> t[s.id]=0);
+  (rounds||table.rounds).forEach(r=>{
+    for(const k in r.d) t[k] = (t[k]||0) + r.d[k];
+  });
+  return t;
+}
+function avatarNode(s){
+  const av = el("div","av");
+  if(s.av && s.av.startsWith("data:")){ const i=new Image(); i.src=s.av; av.appendChild(i); }
+  else av.textContent = s.av || "🀄";
+  return av;
+}
+function renderTable(){
+  $("tCode").textContent = tableCode;
+  $("tRule").textContent = `底 ${table.base} / 台 ${table.tai}`;
+
+  const t = totals();
+  const box = $("seats"); box.innerHTML = "";
+  table.seats.forEach(s=>{
+    const c = el("div","seat");
+    c.appendChild(avatarNode(s));
+    c.appendChild(el("div","nm", s.name));
+    const v = t[s.id] || 0;
+    c.appendChild(el("div","sc " + (v>0?"plus":v<0?"minus":""), money(v)));
+    box.appendChild(c);
+  });
+
+  const rounds = table.rounds || [];
+  $("roundCount").textContent = rounds.length ? `共 ${rounds.length} 局` : "";
+  const log = $("logList"); log.innerHTML = "";
+  if(!rounds.length){
+    log.appendChild(el("p","muted","還沒有記錄。按上面的「記一局」開始。"));
+  }
+  [...rounds].reverse().forEach((r, i)=>{
+    const idx = rounds.length - i;
+    const it = el("div","logitem" + (r.type==="draw" ? " draw":""));
+    it.appendChild(el("div","n", "#"+idx));
+    const name = id => table.seats.find(s=>s.id===id)?.name || "？";
+    let txt;
+    if(r.type==="draw") txt = "流局";
+    else if(r.type==="self") txt = `${name(r.w)} 自摸　${r.tai} 台`;
+    else txt = `${name(r.w)} 胡　${name(r.l)} 放槍　${r.tai} 台`;
+    it.appendChild(el("div","t", txt));
+    const gain = r.type==="draw" ? 0 : (r.d[r.w] || 0);
+    it.appendChild(el("div","a", r.type==="draw" ? "—" : money(gain)));
+    const del = el("button","iconbtn","✕");
+    del.onclick = ()=> confirmBox("刪掉這一局？", txt, "刪掉", ()=> removeRound(idx-1));
+    it.appendChild(del);
+    log.appendChild(it);
+  });
+}
+async function removeRound(i){
+  const rounds = [...(table.rounds||[])];
+  rounds.splice(i,1);
+  await updateDoc(doc(db,"tables",tableCode), { rounds });
+}
+
+/* ══════════════════════════════════════
+   記一局
+   ══════════════════════════════════════ */
+$("btnRound").onclick = ()=> roundSheet();
+
+function roundSheet(){
+  let type = "self";     // self | deal | draw
+  let winner = null, loser = null, tai = 0;
+  let unit = null;       // 手動覆寫的每家金額
+
+  sheet((box, close)=>{
+    box.appendChild(el("h2",null,"記一局"));
+
+    // 類型
+    box.appendChild(el("label",null,"怎麼結束的"));
+    const typeBox = el("div","pick"); typeBox.style.gridTemplateColumns = "1fr 1fr 1fr";
+    const types = [["self","自摸"],["deal","放槍"],["draw","流局"]];
+    types.forEach(([k,label])=>{
+      const b = el("button",null,label);
+      b.onclick = ()=>{ type=k; refresh(); };
+      b.dataset.k = k; typeBox.appendChild(b);
+    });
+    box.appendChild(typeBox);
+
+    // 贏家
+    const lblW = el("label",null,"誰胡牌"); box.appendChild(lblW);
+    const winBox = el("div","pick"); box.appendChild(winBox);
+
+    // 放槍
+    const lblL = el("label",null,"誰放槍"); box.appendChild(lblL);
+    const loseBox = el("div","pick"); box.appendChild(loseBox);
+
+    table.seats.forEach(s=>{
+      const bw = el("button",null,s.name);
+      bw.onclick = ()=>{ winner = s.id; if(loser===winner) loser=null; refresh(); };
+      bw.dataset.w = s.id; winBox.appendChild(bw);
+
+      const bl = el("button",null,s.name);
+      bl.onclick = ()=>{ loser = s.id; refresh(); };
+      bl.dataset.l = s.id; loseBox.appendChild(bl);
+    });
+
+    // 台數
+    const lblT = el("label",null,"幾台"); box.appendChild(lblT);
+    const st = el("div","stepper");
+    const minus = el("button",null,"−"), plus = el("button",null,"＋");
+    const val = el("div","val","0");
+    minus.onclick = ()=>{ tai = Math.max(0, tai-1); unit=null; refresh(); };
+    plus.onclick  = ()=>{ tai = Math.min(99, tai+1); unit=null; refresh(); };
+    st.append(minus, val, plus); box.appendChild(st);
+
+    // 預覽 / 手動修正
+    const pv = el("div","preview"); box.appendChild(pv);
+    const lblM = el("label",null,"手動改金額（每家付多少）"); box.appendChild(lblM);
+    const inM = el("input"); inM.type="number"; inM.inputMode="numeric";
+    inM.oninput = ()=>{ const v = parseInt(inM.value,10); unit = isNaN(v)?null:v; refresh(true); };
+    box.appendChild(inM);
+
+    const row = el("div","row");
+    const no = el("button","btn ghost","取消"); no.onclick = close;
+    const ok = el("button","btn","確定");
+    ok.onclick = async ()=>{
+      const r = build();
+      if(!r) return;
+      ok.disabled = true;
+      try{
+        await updateDoc(doc(db,"tables",tableCode), { rounds: arrayUnion(r) });
+        close();
+      }catch(e){ ok.disabled=false; alert(errText(e)); }
+    };
+    row.append(no, ok); box.appendChild(row);
+
+    function calcUnit(){ return unit!=null ? unit : (table.base + table.tai * tai); }
+
+    function build(){
+      if(type==="draw") return { ts: Date.now(), type:"draw", tai:0, d:{} };
+      if(!winner){ alert("請選誰胡牌"); return null; }
+      if(type==="deal" && !loser){ alert("請選誰放槍"); return null; }
+      const u = calcUnit();
+      const d = {};
+      if(type==="self"){
+        table.seats.forEach(s=>{ if(s.id!==winner) d[s.id] = -u; });
+        d[winner] = u*3;
+      } else {
+        d[loser] = -u; d[winner] = u;
+      }
+      return { ts: Date.now(), type, w:winner, l: type==="deal"?loser:null, tai, d };
+    }
+
+    function refresh(keepInput){
+      for(const b of typeBox.children) b.classList.toggle("on", b.dataset.k===type);
+      const hideWin = type==="draw";
+      lblW.classList.toggle("hide", hideWin); winBox.classList.toggle("hide", hideWin);
+      const hideLose = type!=="deal";
+      lblL.classList.toggle("hide", hideLose); loseBox.classList.toggle("hide", hideLose);
+      lblT.classList.toggle("hide", hideWin); st.classList.toggle("hide", hideWin);
+      lblM.classList.toggle("hide", hideWin); inM.classList.toggle("hide", hideWin);
+      pv.classList.toggle("hide", hideWin);
+
+      for(const b of winBox.children)  b.classList.toggle("on", b.dataset.w===winner);
+      for(const b of loseBox.children){
+        b.classList.toggle("on", b.dataset.l===loser);
+        b.disabled = (b.dataset.l===winner);
+      }
+      val.textContent = tai;
+      const u = calcUnit();
+      if(!keepInput) inM.value = "";
+      inM.placeholder = String(table.base + table.tai * tai);
+
+      if(type==="self"){
+        pv.innerHTML = `每家付 <b>${u.toLocaleString()}</b>　→　贏家收 <b>${(u*3).toLocaleString()}</b>`;
+      } else if(type==="deal"){
+        pv.innerHTML = `放槍的付 <b>${u.toLocaleString()}</b>　→　贏家收 <b>${u.toLocaleString()}</b>`;
+      }
+    }
+    refresh();
+  });
+}
+
+/* ══════════════════════════════════════
+   統計
+   ══════════════════════════════════════ */
+$("statChips").onclick = e=>{
+  const b = e.target.closest(".chip"); if(!b) return;
+  statRange = b.dataset.range;
+  for(const c of $("statChips").children) c.classList.toggle("on", c===b);
+  $("customRange").classList.toggle("hide", statRange!=="custom");
+  renderStat();
+};
+$("dFrom").onchange = renderStat;
+$("dTo").onchange   = renderStat;
+
+function filteredRounds(){
+  const all = table.rounds || [];
+  if(statRange==="all") return all;
+  if(statRange==="today"){
+    const d = new Date(); d.setHours(0,0,0,0);
+    return all.filter(r=> r.ts >= d.getTime());
+  }
+  const f = $("dFrom").value ? new Date($("dFrom").value+"T00:00:00").getTime() : -Infinity;
+  const t = $("dTo").value   ? new Date($("dTo").value  +"T23:59:59").getTime() :  Infinity;
+  return all.filter(r=> r.ts>=f && r.ts<=t);
+}
+function renderStat(){
+  if(!table) return;
+  const rounds = filteredRounds();
+  const played = rounds.filter(r=> r.type!=="draw").length;
+
+  const st = {};
+  table.seats.forEach(s=> st[s.id] = { name:s.name, hu:0, self:0, deal:0, net:0 });
+  rounds.forEach(r=>{
+    for(const k in r.d) if(st[k]) st[k].net += r.d[k];
+    if(r.type==="draw") return;
+    if(st[r.w]){ st[r.w].hu++; if(r.type==="self") st[r.w].self++; }
+    if(r.type==="deal" && st[r.l]) st[r.l].deal++;
+  });
+
+  const pct = (a,b) => b ? (a/b*100).toFixed(0)+"%" : "—";
+  const tb = $("statTable");
+  tb.innerHTML = `<thead><tr>
+    <th>玩家</th><th>淨輸贏</th><th>胡牌</th><th>胡牌率</th><th>自摸率</th><th>放槍</th><th>放槍率</th>
+  </tr></thead>`;
+  const body = el("tbody");
+  Object.values(st).sort((a,b)=>b.net-a.net).forEach(p=>{
+    const tr = el("tr");
+    const cells = [
+      p.name,
+      money(p.net),
+      p.hu,
+      pct(p.hu, played),
+      pct(p.self, p.hu),
+      p.deal,
+      pct(p.deal, played)
+    ];
+    cells.forEach((v,i)=>{
+      const td = el("td",null,String(v));
+      if(i===1) td.style.color = p.net>0 ? "var(--win)" : p.net<0 ? "var(--lose)" : "";
+      if(i===1) td.style.fontWeight = "700";
+      tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  });
+  tb.appendChild(body);
+  const foot = el("tfoot");
+  const tr = el("tr");
+  const td = el("td", null, `區間內共 ${rounds.length} 局（流局 ${rounds.length-played} 局）`);
+  td.colSpan = 7; td.style.textAlign="left"; td.style.color="var(--ink-soft)"; td.style.fontSize=".85rem";
+  tr.appendChild(td); foot.appendChild(tr); tb.appendChild(foot);
+}
+
+/* ══════════════════════════════════════
+   玩家名單
+   ══════════════════════════════════════ */
+function renderPlayers(){
+  const box = $("playerList"); box.innerHTML = "";
+  if(!myRoster.length) box.appendChild(el("p","muted","名單還是空的，先新增幾個人。"));
+  myRoster.forEach((p,i)=>{
+    const it = el("div","pitem");
+    it.appendChild(avatarNode(p));
+    it.appendChild(el("div","nm", p.name));
+    const ed = el("button","iconbtn","✏️");
+    ed.onclick = ()=> playerSheet(p, updated=>{ myRoster[i]=updated; saveRoster().then(renderPlayers); });
+    const rm = el("button","iconbtn","🗑");
+    rm.onclick = ()=> confirmBox("刪掉這個玩家？", p.name + "　（已經記過的分數不會受影響）", "刪掉",
+      ()=>{ myRoster.splice(i,1); saveRoster().then(renderPlayers); });
+    it.append(ed, rm);
+    box.appendChild(it);
+  });
+
+  const se = $("seatEdit"); se.innerHTML = "";
+  table.seats.forEach((s,i)=>{
+    const it = el("div","pitem");
+    it.appendChild(avatarNode(s));
+    it.appendChild(el("div","nm", s.name));
+    const b = el("button","btn sm ghost","換人");
+    b.onclick = ()=> swapSheet(i);
+    it.appendChild(b);
+    se.appendChild(it);
+  });
+}
+$("btnAddPlayer").onclick = ()=> playerSheet(null, p=>{
+  myRoster.push(p); saveRoster().then(renderPlayers);
+});
+
+function playerSheet(existing, done){
+  let av = existing?.av || ANIMALS[Math.floor(Math.random()*ANIMALS.length)];
+  sheet((box, close)=>{
+    box.appendChild(el("h2",null, existing ? "編輯玩家" : "新增玩家"));
+    box.appendChild(el("label",null,"名字"));
+    const inName = el("input"); inName.value = existing?.name || ""; inName.maxLength = 12;
+    box.appendChild(inName);
+
+    box.appendChild(el("label",null,"頭像"));
+    const grid = el("div","avgrid");
+    ANIMALS.forEach(a=>{
+      const b = el("button",null,a);
+      b.onclick = ()=>{ av=a; mark(); };
+      b.dataset.a = a; grid.appendChild(b);
+    });
+    box.appendChild(grid);
+
+    const prev = el("div","pitem"); prev.style.marginTop="12px";
+    box.appendChild(prev);
+
+    box.appendChild(el("label",null,"或上傳照片"));
+    const file = el("input"); file.type="file"; file.accept="image/*";
+    file.onchange = async ()=>{
+      const f = file.files[0]; if(!f) return;
+      av = await shrink(f); mark();
+    };
+    box.appendChild(file);
+
+    const row = el("div","row");
+    const no = el("button","btn ghost","取消"); no.onclick = close;
+    const ok = el("button","btn","儲存");
+    ok.onclick = ()=>{
+      const name = inName.value.trim();
+      if(!name) return alert("請輸入名字");
+      close();
+      done({ id: existing?.id || "p_"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+             name, av });
+    };
+    row.append(no, ok); box.appendChild(row);
+
+    function mark(){
+      for(const b of grid.children) b.classList.toggle("on", b.dataset.a===av);
+      prev.innerHTML = "";
+      prev.appendChild(avatarNode({av}));
+      prev.appendChild(el("div","nm", inName.value || "預覽"));
+    }
+    inName.oninput = mark;
+    mark();
+  });
+}
+
+// 把上傳的圖縮成 96×96，避免佔用資料庫空間
+function shrink(file){
+  return new Promise((res, rej)=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const S = 96, c = document.createElement("canvas");
+        c.width = c.height = S;
+        const g = c.getContext("2d");
+        const side = Math.min(img.width, img.height);
+        g.drawImage(img, (img.width-side)/2, (img.height-side)/2, side, side, 0, 0, S, S);
+        res(c.toDataURL("image/jpeg", .75));
+      };
+      img.onerror = rej;
+      img.src = fr.result;
+    };
+    fr.onerror = rej;
+    fr.readAsDataURL(file);
+  });
+}
+
+function swapSheet(seatIndex){
+  sheet((box, close)=>{
+    box.appendChild(el("h2",null,"這個位置換誰坐"));
+    box.appendChild(el("p","muted","從名單挑一個人。分數是跟著人走的，換位置不影響計算。"));
+    const list = el("div","plist");
+    if(!myRoster.length) list.appendChild(el("p","muted","名單是空的，先到「玩家」頁新增。"));
+    myRoster.forEach(p=>{
+      const it = el("div","pitem");
+      it.appendChild(avatarNode(p));
+      it.appendChild(el("div","nm", p.name));
+      const b = el("button","btn sm","選這個");
+      b.onclick = async ()=>{
+        const seats = [...table.seats];
+        seats[seatIndex] = { id:p.id, name:p.name, av:p.av };
+        close();
+        await updateDoc(doc(db,"tables",tableCode), { seats });
+      };
+      it.appendChild(b);
+      list.appendChild(it);
+    });
+    box.appendChild(list);
+    const bye = el("button","btn block ghost","取消"); bye.style.marginTop="16px";
+    bye.onclick = close; box.appendChild(bye);
+  });
+}
+
+/* ══════════════════════════════════════
+   設定
+   ══════════════════════════════════════ */
+function renderSettings(){
+  $("setBase").value = table.base;
+  $("setTai").value  = table.tai;
+  $("btnDelete").style.display = (table.owner===me.uid || isAdmin()) ? "" : "none";
+  $("adminBox").classList.toggle("hide", !isAdmin());
+}
+$("btnSaveRule").onclick = async ()=>{
+  const base = parseInt($("setBase").value,10), tai = parseInt($("setTai").value,10);
+  if(!(base>=0)||!(tai>=0)) return alert("底和台要填數字");
+  await updateDoc(doc(db,"tables",tableCode), { base, tai });
+  alert("已儲存。之後記的局會用新的底台，先前的記錄不變。");
+};
+$("btnDelete").onclick = ()=> confirmBox("刪除這一桌？","所有記錄都會消失，沒辦法救回來。","刪除",
+  async ()=>{
+    const code = tableCode;
+    leaveToLobby();
+    await deleteDoc(doc(db,"tables",code));
+  });
+
+$("btnShare").onclick = ()=>{
+  sheet((box, close)=>{
+    box.appendChild(el("h2",null,"讓別人加入"));
+    box.appendChild(el("p","muted","把代碼和密碼給對方，他登入後在大廳輸入就能一起看這一桌。"));
+    const c = el("div","code", tableCode);
+    c.style.cssText = "font-size:2rem;text-align:center;margin:20px 0;padding:16px;background:var(--paper);border-radius:4px";
+    box.appendChild(c);
+    const b = el("button","btn block","複製代碼");
+    b.onclick = async ()=>{
+      try{ await navigator.clipboard.writeText(tableCode); b.textContent="已複製 ✓"; }
+      catch{ b.textContent = "請手動抄下來"; }
+    };
+    box.appendChild(b);
+    box.appendChild(el("p","muted","密碼是開桌的人設定的，這裡不顯示。忘記的話請開桌的人重開一桌。"));
+    const bye = el("button","btn block ghost","關閉"); bye.style.marginTop="12px";
+    bye.onclick = close; box.appendChild(bye);
+  });
+};
+
+/* ══════════════════════════════════════
+   管理員
+   ══════════════════════════════════════ */
+$("btnAdminList").onclick = async ()=>{
+  const box = $("adminList"); box.innerHTML = "載入中…";
+  try{
+    const q = query(collection(db,"tables"), orderBy("createdAt","desc"), limit(50));
+    const snap = await getDocs(q);
+    box.innerHTML = "";
+    if(snap.empty) box.appendChild(el("p","muted","目前沒有牌桌。"));
+    snap.forEach(d=>{
+      const t = d.data();
+      const it = el("div","pitem");
+      it.appendChild(el("div","code", d.id));
+      const info = el("div","nm", `${(t.rounds||[]).length} 局　底${t.base}/台${t.tai}`);
+      info.style.fontSize = ".85rem"; info.style.fontWeight = "400";
+      it.appendChild(info);
+      const b = el("button","btn sm ghost","打開");
+      b.onclick = ()=> openTable(d.id);
+      it.appendChild(b);
+      box.appendChild(it);
+    });
+  }catch(e){ box.textContent = errText(e); }
+};
+</script>
+</body>
+</html>
