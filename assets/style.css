@@ -93,6 +93,23 @@ body{
 .arrow{font-size:1.4rem;color:var(--blue);line-height:1}
 .row.wip .arrow{display:none}
 
+/* ── 首頁：有兩個按鈕的工具（線上使用型）─── */
+.row.multi{cursor:default}
+.row.multi:hover{border-color:var(--line);transform:none}
+.row-btns{
+  flex-shrink:0;display:flex;flex-direction:column;gap:8px;align-items:stretch;
+}
+.row-btns .btn,.row-btns .btn2{
+  display:block;text-decoration:none;text-align:center;white-space:nowrap;
+  font-size:.92rem;padding:10px 20px;border-radius:3px;
+}
+.btn2{
+  background:transparent;color:var(--blue);border:1px solid var(--line);
+  transition:border-color .15s;
+}
+.btn2:hover{border-color:var(--blue)}
+.btn2.off{color:var(--ink-soft);border-style:dashed;pointer-events:none}
+
 /* ── 標籤 ───────────────────────────── */
 .meta{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
 .tag{
@@ -200,6 +217,8 @@ footer a{color:var(--blue)}
 
   .row{flex-direction:column;align-items:flex-start;gap:14px;padding:20px}
   .row-side{width:100%;justify-content:space-between}
+  .row-btns{width:100%;flex-direction:row}
+  .row-btns .btn,.row-btns .btn2{flex:1}
 
   .download{flex-direction:column;align-items:stretch;gap:18px;padding:22px}
   .btn{display:block;text-align:center}
