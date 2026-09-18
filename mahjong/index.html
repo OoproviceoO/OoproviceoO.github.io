@@ -726,7 +726,12 @@ $('btnResetStats').onclick=async()=>{
   if(!await ask('真的要清空嗎？再確認一次。','確定清空'))return;
   S.rounds=[];S.archive=[];S.exPlayers=[];
   S.dealer=0;S.streak=0;S.passes=0;S.started=Date.now();
-  save();$('dlgSettings').close();renderTab();toast('已全部歸零');
+  ui.statP=null;ui.hscope='session';ui.range='all';ui.from='';ui.to='';
+  save();
+  dispatchEvent(new Event('mj-force-push'));   // 有連雲端的話立刻覆蓋，不要等
+  $('dlgSettings').close();
+  setTab('table');                              // 跳回牌桌，避免停在舊的子畫面
+  toast('已全部歸零');
 };
 $('tbSettings').onclick=()=>{
   $('sBase').value=S.base;$('sPer').value=S.per;$('sDealer').value=S.dealerTai;$('sStreak').checked=S.streakRule;
@@ -1349,6 +1354,8 @@ function schedulePush(){
   clearTimeout(timer);
   timer = setTimeout(push, 700);
 }
+// 歸零之類的重大變更：不等 debounce，立刻覆蓋雲端
+addEventListener("mj-force-push", () => { clearTimeout(timer); push(); });
 async function push(){
   if(!code || !me) return;
   try{
@@ -1617,7 +1624,6 @@ paintBtn();
 </script>
 
 <script>
-/* 離線快取：裝好之後沒網路也能開，也可以「加到主畫面」當 App 用 */
 if("serviceWorker" in navigator){
   addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
