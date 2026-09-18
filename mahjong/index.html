@@ -413,6 +413,11 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
     <span></span>
     <button class="primary small" id="btnSaveSettings">儲存</button>
   </div>
+  <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
+    <div class="label" style="margin-top:0">重新開始</div>
+    <p class="note" style="margin-top:0">錢算清了、要從頭開始的時候用。玩家名單和算法設定都會留著。</p>
+    <button class="ghost" id="btnResetStats" style="width:100%;padding:11px;border-color:var(--lose);color:var(--lose)">清空所有紀錄，全部歸零</button>
+  </div>
 </div></dialog>
 
 <dialog id="dlgEdit"><div class="dlg">
@@ -464,7 +469,7 @@ const uid=()=>Math.random().toString(36).slice(2,9);
 const DAY=86400000;
 function fresh(){
   const players=[1,2,3,4].map((n,i)=>({id:uid(),name:'玩家'+n,avatar:EMOJIS[i]}));
-  return {players,seats:players.map(p=>p.id),base:100,per:20,dealerTai:1,streakRule:true,dealer:0,streak:0,passes:0,theme:'auto',rounds:[],archive:[],started:Date.now()};
+  return {players,exPlayers:[],seats:players.map(p=>p.id),base:100,per:20,dealerTai:1,streakRule:true,dealer:0,streak:0,passes:0,theme:'auto',rounds:[],archive:[],started:Date.now()};
 }
 const $=id=>document.getElementById(id);
 let S=load();
@@ -483,6 +488,7 @@ function load(){
     }
   }catch(e){}}
   if(!s)s=fresh();
+  if(!Array.isArray(s.exPlayers))s.exPlayers=[];
   s.players.forEach((p,i)=>{if(!p.avatar)p.avatar=EMOJIS[i%EMOJIS.length];});
   s.rounds.forEach(r=>{if(!r.t)r.t=s.started||Date.now();});
   s.archive.forEach(a=>a.rounds.forEach(r=>{if(!r.t)r.t=a.started||a.ended||Date.now();}));
@@ -512,7 +518,7 @@ const fmt=n=>(n>0?'+':'')+n.toLocaleString('zh-TW');
 const fmtPlain=n=>n.toLocaleString('zh-TW');
 const cls=n=>n>0?'pos':n<0?'neg':'zero';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const player=id=>S.players.find(p=>p.id===id);
+const player=id=>S.players.find(p=>p.id===id)||(S.exPlayers||[]).find(p=>p.id===id);
 const pname=id=>{const p=player(id);return p?p.name:'?';};
 const seatName=i=>pname(S.seats[i]);
 function avHTML(id,size=''){
@@ -713,6 +719,15 @@ $('btnSeatsSave').onclick=()=>{
 
 // 設定
 function markTheme(){document.querySelectorAll('[data-theme-set]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.themeSet===S.theme));}
+$('btnResetStats').onclick=async()=>{
+  const n=allRounds().length;
+  if(!n){toast('本來就沒有紀錄');return;}
+  if(!await ask(`清空全部 ${n} 局紀錄？戰績、走勢、年度回顧都會歸零，沒辦法復原。玩家名單和算法設定會留著。`,'全部歸零'))return;
+  if(!await ask('真的要清空嗎？再確認一次。','確定清空'))return;
+  S.rounds=[];S.archive=[];S.exPlayers=[];
+  S.dealer=0;S.streak=0;S.passes=0;S.started=Date.now();
+  save();$('dlgSettings').close();renderTab();toast('已全部歸零');
+};
 $('tbSettings').onclick=()=>{
   $('sBase').value=S.base;$('sPer').value=S.per;$('sDealer').value=S.dealerTai;$('sStreak').checked=S.streakRule;
   markTheme();$('dlgSettings').showModal();
@@ -841,7 +856,7 @@ function renderStats(){
   const statRounds=metas.filter(m=>m.r.type!=='manual').length;
   const draws=metas.filter(m=>m.r.type==='draw').length;
   const days=new Set(metas.map(m=>dayKey(m.r.t))).size;
-  const ids=Object.keys(st).sort((a,b)=>st[b].money-st[a].money);
+  const ids=Object.keys(st).filter(id=>!!player(id)).sort((a,b)=>st[b].money-st[a].money);
   const best=fn=>{let b=null;ids.forEach(id=>{const v=fn(id);if(v>0&&(b===null||v>b.v))b={id,v};});return b;};
   const hi=[];
   const w=best(id=>st[id].money); if(w)hi.push([w.id,'最大贏家']);
@@ -865,7 +880,7 @@ function renderStats(){
   renderTrend(metas,ids);renderVs(metas,ids);
 }
 const PALETTE=['#E0533D','#2E86DE','#27AE60','#F39C12','#8E44AD','#16A085','#D35400','#C2185B','#607D8B'];
-function colorMap(){const m={};S.players.forEach((p,i)=>m[p.id]=PALETTE[i%PALETTE.length]);return m;}
+function colorMap(){const m={};S.players.concat(S.exPlayers||[]).forEach((p,i)=>m[p.id]=PALETTE[i%PALETTE.length]);return m;}
 function renderTrend(metas,ids){
   const col=colorMap();const N=metas.length;
   const cum={};ids.forEach(id=>cum[id]=[0]);
@@ -1187,9 +1202,11 @@ $('btnPDel').onclick=async()=>{
     $('pWarn').textContent='他正坐在桌上，請先用「換人/換位」把他換下來再刪。';return;
   }
   const n=allRounds().filter(r=>r.amounts&&r.amounts[editP]!==undefined).length;
-  const msg=n?`刪掉「${p.name}」？他有 ${n} 局的記錄，記錄不會消失，但裡面會顯示為「?」。`
+  const msg=n?`刪掉「${p.name}」？他會從名單上消失，但 ${n} 局的舊記錄和戰績都會留著。`
             :`刪掉「${p.name}」？`;
   if(!await ask(msg,'刪除'))return;
+  const keep=allRounds().some(r=>r.amounts&&r.amounts[editP]!==undefined);
+  if(keep&&!S.exPlayers.some(x=>x.id===editP))S.exPlayers.push({id:p.id,name:p.name,avatar:p.avatar});
   S.players=S.players.filter(x=>x.id!==editP);
   save();$('dlgPlayer').close();renderTab();toast('已刪除');
 };
