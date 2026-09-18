@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.ooproviceoo.twa",
+        "sha256_cert_fingerprints": ["5A:20:09:1C:DB:5F:63:D6:AC:A5:00:A7:1F:85:FF:88:A7:B8:AE:0B:E2:B5:7B:BF:A5:ED:0E:A1:DD:22:3A:F8"]
+      }
+    }]
