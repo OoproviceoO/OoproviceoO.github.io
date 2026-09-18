@@ -97,7 +97,7 @@ body{
 .row.multi{cursor:default}
 .row.multi:hover{border-color:var(--line);transform:none}
 .row-btns{
-  flex-shrink:0;display:flex;flex-direction:column;gap:8px;align-items:stretch;
+  flex-shrink:0;display:flex;flex-direction:column;gap:8px;align-items:stretch;min-width:170px;
 }
 .row-btns .btn,.row-btns .btn2{
   display:block;text-decoration:none;text-align:center;white-space:nowrap;
