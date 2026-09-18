@@ -1,6 +1,6 @@
 /* 麻將算錢 — 離線快取
    改版時把 VER 加一，使用者下次開啟就會拿到新版。 */
-const VER   = "mj-v1";
+const VER   = "mj-v2";
 const CORE  = [
   "./",
   "./index.html",
