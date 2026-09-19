@@ -74,11 +74,34 @@ img{max-width:100%}
 .hint{text-align:center;color:var(--muted);font-size:13px;margin:18px 0 0}
 .tblrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
 .pill2{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:14px;padding:12px 0;font-size:15px;color:var(--ink)}
-.dice{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:18px 0}
-.die{width:82px;height:82px;border-radius:16px;background:var(--card);box-shadow:var(--shadow);display:grid;place-items:center;font-size:58px;line-height:1}
-.die.wind{font-family:"Noto Serif TC",serif;font-weight:700;font-size:40px}
-.die.red{color:#C0392B} .die.green{color:#1E7A4D}
-.dsum{text-align:center;font-size:40px;font-weight:700;font-family:"Noto Serif TC",serif}
+/* ── 骰子桌 ── */
+.felt{position:relative;height:190px;border-radius:18px;margin:16px 0;overflow:hidden;
+  background:radial-gradient(circle at 50% 40%,#2F7D5B,#1B5540 70%,#134030);
+  box-shadow:inset 0 3px 14px rgba(0,0,0,.35)}
+.felt .hintx{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.55);font-size:14px}
+.die{position:absolute;width:62px;height:62px;border-radius:12px;background:linear-gradient(150deg,#fff,#E7E3DA);
+  box-shadow:0 5px 12px rgba(0,0,0,.4),inset 0 -3px 6px rgba(0,0,0,.12);
+  display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:8px;
+  transition:transform .08s linear;will-change:transform}
+.die.settle{transition:transform .5s cubic-bezier(.17,.89,.34,1.2)}
+.die i{width:10px;height:10px;border-radius:50%;background:#23282E;place-self:center}
+.die.wind{place-items:center;font-family:"Noto Serif TC",serif;font-weight:700;font-size:34px;color:#23282E;display:grid}
+.die.wind.red{color:#C0392B} .die.wind.green{color:#1B7A4D}
+.dsum{text-align:center;font-size:34px;font-weight:700;font-family:"Noto Serif TC",serif;min-height:1.2em}
+
+/* ── 牌牆 ── */
+.wallbox{display:grid;grid-template-columns:34px 1fr 34px;grid-template-rows:34px 1fr 34px;
+  gap:6px;aspect-ratio:1;max-width:340px;margin:14px auto;
+  background:radial-gradient(circle at 50% 50%,#2F7D5B,#1B5540);border-radius:16px;padding:10px}
+.wall{display:flex;gap:2px;align-items:center;justify-content:center}
+.wall.h{flex-direction:row} .wall.v{flex-direction:column}
+.wall.h .du{width:100%;height:20px;max-width:14px} .wall.v .du{height:100%;width:20px;max-height:14px}
+.du{flex:1;background:#EDE7DA;border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.du.on{background:var(--gold,#C8A23C);box-shadow:0 0 0 2px #fff,0 0 8px rgba(255,255,255,.6)}
+.du.skip{background:#9FB3A8}
+.wcenter{display:grid;place-items:center;text-align:center;color:#fff;font-size:13px;line-height:1.5}
+.wcenter b{font-family:"Noto Serif TC",serif;font-size:16px;display:block}
+.wname{position:absolute;color:#fff;font-size:11px}
 .dstep{border-top:1px solid var(--line);padding:10px 0;font-size:15px}
 .dstep b{font-family:"Noto Serif TC",serif}
 
@@ -426,10 +449,10 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
   <div class="field"><label for="sBase">底（元）</label><input id="sBase" type="number" inputmode="numeric" min="0"></div>
   <div class="field"><label for="sPer">每台（元）</label><input id="sPer" type="number" inputmode="numeric" min="0"></div>
   <div class="field"><label for="sDealer">莊家台數</label><input id="sDealer" type="number" inputmode="numeric" min="0"></div>
-  <div class="field"><label for="sSelf">自摸加台（自摸時自動多算幾台）</label><input id="sSelf" type="number" inputmode="numeric" min="0"></div>
-  <div class="field"><label for="sStreak">連莊「連一拉一」（每連一次多 2 台，不勾則每連一次多 1 台）</label><input id="sStreak" type="checkbox"></div>
+  <div class="field"><label for="sSelf">自摸加台</label><input id="sSelf" type="number" inputmode="numeric" min="0"></div>
+  <div class="field"><label for="sStreak">連莊連一拉一</label><input id="sStreak" type="checkbox"></div>
   <div class="row between" style="margin-top:16px">
-    <span></span>
+    <button class="ghost" id="btnSetCancel">取消</button>
     <button class="primary small" id="btnSaveSettings">儲存</button>
   </div>
   <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
@@ -483,7 +506,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
       <button class="pill2" id="dcPlus" style="width:52px">＋</button>
     </span>
   </div>
-  <div class="dice" id="diceBox"></div>
+  <div class="felt" id="diceBox"><div class="hintx">按下面的大按鈕擲骰</div></div>
   <div class="dsum" id="diceSum"></div>
   <button class="primary" id="btnRoll" style="width:100%;padding:17px;font-size:20px;margin-top:6px">擲骰子</button>
   <div class="row between" style="margin-top:12px"><span></span><button class="ghost" id="btnDiceClose">確定</button></div>
@@ -492,7 +515,17 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 <dialog id="dlgDeal"><div class="dlg">
   <h2>拿牌</h2>
   <p class="note" style="margin-top:0">莊家擲三顆骰子，決定從哪一家的哪一墩開始拿牌。</p>
-  <div class="dice" id="dealDice"></div>
+  <div class="row between" style="align-items:center;margin-bottom:6px">
+    <span class="note" style="margin:0">一排幾墩</span>
+    <span style="display:flex;align-items:center;gap:10px">
+      <button class="pill2" id="dnMinus" style="width:46px">−</button>
+      <b id="dnVal" style="font-size:20px;min-width:1.6em;text-align:center">17</b>
+      <button class="pill2" id="dnPlus" style="width:46px">＋</button>
+      <button class="pill2" id="dn17" style="padding:8px 10px;font-size:13px">無花17</button>
+      <button class="pill2" id="dn18" style="padding:8px 10px;font-size:13px">有花18</button>
+    </span>
+  </div>
+  <div class="felt" id="dealDice" style="height:150px"><div class="hintx">按下面的大按鈕擲骰</div></div>
   <div class="dsum" id="dealSum"></div>
   <button class="primary" id="btnDealRoll" style="width:100%;padding:17px;font-size:20px;margin-top:6px">擲骰子</button>
   <div id="dealResult"></div>
@@ -783,87 +816,144 @@ $('btnPass').onclick=passDealer;
 $('btnPass2').onclick=()=>{$('dlgDealer').close();passDealer();};
 
 /* ═══════════ 骰子 ═══════════ */
-const DIEF=['\u2680','\u2681','\u2682','\u2683','\u2684','\u2685'];
+const PIPS={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]};
 const WINDF=[['東',''],['南',''],['西',''],['北',''],['中','red'],['發','green']];
 let diceMode='num',diceN=3,diceVals=[];
 
-function dieHTML(v,mode){
-  return (mode||diceMode)==='wind'
-    ? `<span class="die wind ${WINDF[v-1][1]}">${WINDF[v-1][0]}</span>`
-    : `<span class="die">${DIEF[v-1]}</span>`;
+function faceHTML(v,mode){
+  if(mode==='wind')return `<div class="die wind ${WINDF[v-1][1]}">${WINDF[v-1][0]}</div>`;
+  const on=PIPS[v];
+  return `<div class="die">`+Array.from({length:9},(_,k)=>
+    on.includes(k+1)?`<i style="grid-area:${Math.floor(k/3)+1}/${k%3+1}"></i>`:'').join('')+`</div>`;
 }
-function renderDice(){
-  $('diceMode').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dm===diceMode));
-  $('dcVal').textContent=diceN;
-  $('diceBox').innerHTML=diceVals.length?diceVals.map(v=>dieHTML(v)).join('')
-    :'<p class="note">按下面的大按鈕開始</p>';
-  $('diceSum').textContent=(diceVals.length&&diceMode==='num')?'總和 '+diceVals.reduce((a,b)=>a+b,0):'';
-}
+// 在綠色桌面上滾骰子
 function rollInto(box,n,mode,done){
+  const W=box.clientWidth||300,H=box.clientHeight||190;
+  box.innerHTML=Array.from({length:n},()=>faceHTML(1,mode)).join('');
+  const dice=[...box.children];
+  const place=(d,i,jitter)=>{
+    const cols=Math.min(n,4);
+    const cw=W/cols, x=cw*(i%cols)+cw/2-31+(jitter?(Math.random()-.5)*cw*.5:0);
+    const rows=Math.ceil(n/cols);
+    const rh=H/rows, y=rh*Math.floor(i/cols)+rh/2-31+(jitter?(Math.random()-.5)*rh*.5:0);
+    const rot=jitter?(Math.random()*720-360):(Math.random()*24-12);
+    d.style.transform=`translate(${Math.max(4,Math.min(W-66,x))}px,${Math.max(4,Math.min(H-66,y))}px) rotate(${rot}deg)`;
+  };
+  dice.forEach((d,i)=>place(d,i,true));
   let k=0;
   const timer=setInterval(()=>{
     const tmp=Array.from({length:n},()=>1+Math.floor(Math.random()*6));
-    box.innerHTML=tmp.map(v=>dieHTML(v,mode)).join('');
-    if(++k>=9){
+    box.innerHTML=tmp.map(v=>faceHTML(v,mode)).join('');
+    [...box.children].forEach((d,i)=>place(d,i,true));
+    if(++k>=11){
       clearInterval(timer);
       const fin=Array.from({length:n},()=>1+Math.floor(Math.random()*6));
-      box.innerHTML=fin.map(v=>dieHTML(v,mode)).join('');
-      done(fin);
+      box.innerHTML=fin.map(v=>faceHTML(v,mode)).join('');
+      [...box.children].forEach((d,i)=>{d.classList.add('settle');place(d,i,false);});
+      setTimeout(()=>done(fin),260);
     }
-  },70);
+  },90);
 }
-$('btnDice').onclick=()=>{diceVals=[];renderDice();$('dlgDice').showModal();};
+$('btnDice').onclick=()=>{
+  diceVals=[];
+  $('diceBox').innerHTML='<div class="hintx">按下面的大按鈕擲骰</div>';
+  $('diceSum').textContent='';
+  $('dcRow').style.display=diceMode==='wind'?'none':'';
+  $('diceMode').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dm===diceMode));
+  $('dcVal').textContent=diceN;
+  $('dlgDice').showModal();
+};
 $('btnDiceClose').onclick=()=>$('dlgDice').close();
 $('diceMode').addEventListener('click',e=>{
   const b=e.target.closest('[data-dm]'); if(!b)return;
   diceMode=b.dataset.dm;diceVals=[];
+  $('diceMode').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.dm===diceMode));
   $('dcRow').style.display=diceMode==='wind'?'none':'';
-  if(diceMode==='wind')diceN=1;
-  renderDice();
+  $('diceBox').innerHTML='<div class="hintx">按下面的大按鈕擲骰</div>';
+  $('diceSum').textContent='';
 });
-$('dcMinus').onclick=()=>{diceN=Math.max(1,diceN-1);diceVals=[];renderDice();};
-$('dcPlus').onclick=()=>{diceN=Math.min(6,diceN+1);diceVals=[];renderDice();};
+$('dcMinus').onclick=()=>{diceN=Math.max(1,diceN-1);$('dcVal').textContent=diceN;};
+$('dcPlus').onclick=()=>{diceN=Math.min(6,diceN+1);$('dcVal').textContent=diceN;};
 $('btnRoll').onclick=()=>{
-  const n=diceMode==='wind'?diceN:diceN;
   $('btnRoll').disabled=true;$('diceSum').textContent='';
-  rollInto($('diceBox'),n,diceMode,fin=>{
+  rollInto($('diceBox'),diceMode==='wind'?diceN:diceN,diceMode,fin=>{
     diceVals=fin;$('btnRoll').disabled=false;
     $('diceSum').textContent=diceMode==='num'?'總和 '+fin.reduce((a,b)=>a+b,0):'';
   });
 };
 
 /* ═══════════ 拿牌 ═══════════ */
+let dunN=17;
+function setDun(v){dunN=Math.max(8,Math.min(30,v));$('dnVal').textContent=dunN;if($('dealResult').dataset.total)$('dealResult').innerHTML=dealPlan(+$('dealResult').dataset.total);}
 $('btnDeal').onclick=()=>{
-  $('dealDice').innerHTML='<p class="note">按下面的大按鈕擲骰</p>';
-  $('dealSum').textContent='';$('dealResult').innerHTML='';
+  $('dealDice').innerHTML='<div class="hintx">按下面的大按鈕擲骰</div>';
+  $('dealSum').textContent='';$('dealResult').innerHTML='';delete $('dealResult').dataset.total;
+  $('dnVal').textContent=dunN;
   $('dlgDeal').showModal();
 };
 $('btnDealClose').onclick=()=>$('dlgDeal').close();
+$('dnMinus').onclick=()=>setDun(dunN-1);
+$('dnPlus').onclick=()=>setDun(dunN+1);
+$('dn17').onclick=()=>setDun(17);
+$('dn18').onclick=()=>setDun(18);
 $('btnDealRoll').onclick=()=>{
   $('btnDealRoll').disabled=true;$('dealSum').textContent='';$('dealResult').innerHTML='';
   rollInto($('dealDice'),3,'num',fin=>{
     const total=fin.reduce((a,b)=>a+b,0);
     $('dealSum').textContent='總和 '+total;
+    $('dealResult').dataset.total=total;
     $('dealResult').innerHTML=dealPlan(total);
     $('btnDealRoll').disabled=false;
   });
 };
+
+// 以莊家為下方，順時針畫四面牆：下=莊、右=下家、上=對家、左=上家
 function dealPlan(total){
-  const step=((total-1)%4);
-  const open=(S.dealer+step)%4;            // 開門家：從莊家算起第 total 位（逆時針）
-  const order=[0,1,2,3].map(k=>(S.dealer+k)%4);
-  const nick=i=>i===S.dealer?'（莊家）':i===(S.dealer+1)%4?'（下家）':i===(S.dealer+2)%4?'（對家）':'（上家）';
-  const seq=order.map((i,k)=>`${k+1}. ${esc(pname(S.seats[i]))}${nick(i)}`).join('　→　');
+  const rel=['莊家','下家','對家','上家'];
+  const seatOf=k=>(S.dealer+k)%4;                 // k=0 莊家
+  const openRel=(total-1)%4;                      // 開門家（從莊家算起逆時針第幾位）
+  // 從開門家牌牆右端數 total 墩，超過就接到下一家的牆
+  let wallRel=openRel, skip=total;
+  while(skip>=dunN){skip-=dunN;wallRel=(wallRel+1)%4;}
+  const startDun=skip;                            // 0 起算，代表要從第 startDun+1 墩開始拿
+
+  // 四面牆：0下 1右 2上 3左（相對莊家）
+  const wallHTML=k=>{
+    const horiz=(k===0||k===2);
+    const cells=Array.from({length:dunN},(_,j)=>{
+      // j 以該家的「右手邊」為 0
+      const isStart=(k===wallRel&&j===startDun);
+      const isSkip =(k===wallRel&&j<startDun);
+      return `<span class="du${isStart?' on':isSkip?' skip':''}"></span>`;
+    });
+    // 讓「右手邊」在畫面上對應正確方向
+    if(k===0)cells.reverse();          // 下方牆：自己的右手邊在畫面右邊 → 由右往左排
+    if(k===3)cells.reverse();          // 左方牆
+    return `<div class="wall ${horiz?'h':'v'}">${cells.join('')}</div>`;
+  };
+
+  const nm=k=>esc(pname(S.seats[seatOf(k)]));
   return `
-  <div style="margin-top:16px">
-    <div class="dstep"><b>開門家</b>：${esc(pname(S.seats[open]))}${nick(open)}
-      <div class="note" style="margin:2px 0 0">從莊家 ${esc(pname(S.seats[S.dealer]))} 算起，逆時針數第 ${step+1} 位</div></div>
-    <div class="dstep"><b>從哪裡拿</b>：${esc(pname(S.seats[open]))} 面前的牌牆，
-      <b>從右邊數 ${total} 墩</b>，從<b>第 ${total+1} 墩</b>開始拿
-      <div class="note" style="margin:2px 0 0">方向往左（逆時針），數到底就接下一家的牌牆</div></div>
-    <div class="dstep"><b>誰先拿</b>：${seq}
+  <div class="wallbox">
+    <div></div>${wallHTML(2)}<div></div>
+    ${wallHTML(3)}
+    <div class="wcenter">
+      <div><b>${nm(openRel)}</b>開門<br>從右數 ${total} 墩<br>第 ${startDun+1} 墩起拿</div>
+    </div>
+    ${wallHTML(1)}
+    <div></div>${wallHTML(0)}<div></div>
+  </div>
+  <p class="note" style="text-align:center;margin-top:-4px">
+    上＝${nm(2)}（對家）　左＝${nm(3)}（上家）　右＝${nm(1)}（下家）　下＝${nm(0)}（莊家）
+  </p>
+  <div style="margin-top:10px">
+    <div class="dstep"><b>開門家</b>：${nm(openRel)}（${rel[openRel]}）
+      <div class="note" style="margin:2px 0 0">從莊家 ${nm(0)} 算起，逆時針數第 ${openRel+1} 位</div></div>
+    <div class="dstep"><b>從哪裡拿</b>：${nm(wallRel)} 的牌牆，從他右邊數 ${total>dunN?`${total} 墩（跨過一整排 ${dunN} 墩）`:`${total} 墩`}，從<b>第 ${startDun+1} 墩</b>開始
+      <div class="note" style="margin:2px 0 0">金色那一墩就是起點，灰色是數過去跳掉的。方向往左（逆時針），數到底接下一家的牆</div></div>
+    <div class="dstep"><b>誰先拿</b>：${[0,1,2,3].map(k=>`${k+1}. ${nm(k)}`).join('　→　')}
       <div class="note" style="margin:2px 0 0">每人一次拿 2 墩（4 張），輪 4 圈；最後莊家再多拿 1 張，莊家 17 張、其他人 16 張</div></div>
-    ${seated().length<4?'<p class="warn">目前有空位。三人麻將的牌牆排法各家規矩不同，上面是照四方位算的，實際以你們的習慣為準。</p>':''}
+    ${seated().length<4?'<p class="warn">目前有空位。三人麻將的牌牆排法各家規矩不同，上面照四方位算，實際以你們的習慣為準。</p>':''}
   </div>`;
 }
 
@@ -893,6 +983,7 @@ $('tbSettings').onclick=()=>{
   $('sBase').value=S.base;$('sPer').value=S.per;$('sDealer').value=S.dealerTai;$('sSelf').value=S.selfTai;$('sStreak').checked=S.streakRule;
   markTheme();$('dlgSettings').showModal();
 };
+$('btnSetCancel').onclick=()=>$('dlgSettings').close();
 $('btnSaveSettings').onclick=()=>{
   S.base=Math.max(0,parseInt($('sBase').value)||0);
   S.per=Math.max(0,parseInt($('sPer').value)||0);
