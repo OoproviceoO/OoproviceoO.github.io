@@ -68,9 +68,19 @@ img{max-width:100%}
 .s0{grid-area:bottom}.s1{grid-area:right}.s2{grid-area:top}.s3{grid-area:left}
 .mid{grid-area:mid;display:flex;flex-direction:column;align-items:center;gap:8px}
 .wind{border:0;background:none;color:var(--gold);font-family:"Noto Serif TC",serif;font-weight:700;font-size:17px;white-space:nowrap}
+.seat.seatempty{opacity:.42}
 .pill{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:14px;padding:9px 0;width:100%;font-size:16px}
 .textbtn{border:0;background:none;color:var(--muted);font-size:13px;text-decoration:underline}
 .hint{text-align:center;color:var(--muted);font-size:13px;margin:18px 0 0}
+.tblrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.pill2{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:14px;padding:12px 0;font-size:15px;color:var(--ink)}
+.dice{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:18px 0}
+.die{width:82px;height:82px;border-radius:16px;background:var(--card);box-shadow:var(--shadow);display:grid;place-items:center;font-size:58px;line-height:1}
+.die.wind{font-family:"Noto Serif TC",serif;font-weight:700;font-size:40px}
+.die.red{color:#C0392B} .die.green{color:#1E7A4D}
+.dsum{text-align:center;font-size:40px;font-weight:700;font-family:"Noto Serif TC",serif}
+.dstep{border-top:1px solid var(--line);padding:10px 0;font-size:15px}
+.dstep b{font-family:"Noto Serif TC",serif}
 
 .av{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:34px;line-height:1;overflow:hidden}
 .av img{width:100%;height:100%;object-fit:cover}
@@ -255,6 +265,11 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
   <div class="cross" id="cross"></div>
   <p class="hint">點胡牌的人來記這一局</p>
   <p class="hint" id="offseat" style="margin-top:4px"></p>
+  <div class="tblrow">
+    <button class="pill2" id="btnPass">過莊</button>
+    <button class="pill2" id="btnDice">🎲 骰子</button>
+    <button class="pill2" id="btnDeal">🀄 拿牌</button>
+  </div>
 </div>
 
 <!-- 戰績 -->
@@ -373,6 +388,9 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
     <button class="ghost" id="btnDealerCancel">取消</button>
     <button class="primary small" id="btnDealerSave">確定</button>
   </div>
+  <div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px">
+    <button class="ghost" id="btnPass2" style="width:100%;padding:11px">跳過這一莊（換下一家做莊）</button>
+  </div>
 </div></dialog>
 
 <dialog id="dlgPlayer"><div class="dlg">
@@ -408,15 +426,16 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
   <div class="field"><label for="sBase">底（元）</label><input id="sBase" type="number" inputmode="numeric" min="0"></div>
   <div class="field"><label for="sPer">每台（元）</label><input id="sPer" type="number" inputmode="numeric" min="0"></div>
   <div class="field"><label for="sDealer">莊家台數</label><input id="sDealer" type="number" inputmode="numeric" min="0"></div>
-  <div class="field"><label for="sStreak">連莊「連一拉一」（每連一次多 2 台）</label><input id="sStreak" type="checkbox"></div>
+  <div class="field"><label for="sSelf">自摸加台（自摸時自動多算幾台）</label><input id="sSelf" type="number" inputmode="numeric" min="0"></div>
+  <div class="field"><label for="sStreak">連莊「連一拉一」（每連一次多 2 台，不勾則每連一次多 1 台）</label><input id="sStreak" type="checkbox"></div>
   <div class="row between" style="margin-top:16px">
     <span></span>
     <button class="primary small" id="btnSaveSettings">儲存</button>
   </div>
   <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
     <div class="label" style="margin-top:0">重新開始</div>
-    <p class="note" style="margin-top:0">錢算清了、要從頭開始的時候用。玩家名單和算法設定都會留著。</p>
-    <button class="ghost" id="btnResetStats" style="width:100%;padding:11px;border-color:var(--lose);color:var(--lose)">清空所有紀錄，全部歸零</button>
+    <p class="note" style="margin-top:0">錢算清了、要從頭開始的時候用。所有牌局和戰績都會消失，只留下玩家名單和算法設定。</p>
+    <button class="ghost" id="btnResetStats" style="width:100%;padding:11px;border-color:var(--lose);color:var(--lose)">全部清空，回到初始狀態</button>
   </div>
 </div></dialog>
 
@@ -450,6 +469,36 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
   </div>
 </div></dialog>
 
+<dialog id="dlgDice"><div class="dlg">
+  <h2>骰子</h2>
+  <div class="seg two" id="diceMode">
+    <button data-dm="num">數字骰</button>
+    <button data-dm="wind">風骰</button>
+  </div>
+  <div id="dcRow" class="row between" style="margin-top:14px;align-items:center">
+    <span class="note" style="margin:0">幾顆</span>
+    <span style="display:flex;align-items:center;gap:14px">
+      <button class="pill2" id="dcMinus" style="width:52px">−</button>
+      <b id="dcVal" style="font-size:22px;min-width:1.4em;text-align:center">3</b>
+      <button class="pill2" id="dcPlus" style="width:52px">＋</button>
+    </span>
+  </div>
+  <div class="dice" id="diceBox"></div>
+  <div class="dsum" id="diceSum"></div>
+  <button class="primary" id="btnRoll" style="width:100%;padding:17px;font-size:20px;margin-top:6px">擲骰子</button>
+  <div class="row between" style="margin-top:12px"><span></span><button class="ghost" id="btnDiceClose">確定</button></div>
+</div></dialog>
+
+<dialog id="dlgDeal"><div class="dlg">
+  <h2>拿牌</h2>
+  <p class="note" style="margin-top:0">莊家擲三顆骰子，決定從哪一家的哪一墩開始拿牌。</p>
+  <div class="dice" id="dealDice"></div>
+  <div class="dsum" id="dealSum"></div>
+  <button class="primary" id="btnDealRoll" style="width:100%;padding:17px;font-size:20px;margin-top:6px">擲骰子</button>
+  <div id="dealResult"></div>
+  <div class="row between" style="margin-top:12px"><span></span><button class="ghost" id="btnDealClose">關閉</button></div>
+</div></dialog>
+
 <dialog id="dlgCloud"><div class="dlg" id="cloudBody"></div></dialog>
 
 <dialog id="dlgAsk"><div class="dlg">
@@ -469,7 +518,7 @@ const uid=()=>Math.random().toString(36).slice(2,9);
 const DAY=86400000;
 function fresh(){
   const players=[1,2,3,4].map((n,i)=>({id:uid(),name:'玩家'+n,avatar:EMOJIS[i]}));
-  return {players,exPlayers:[],seats:players.map(p=>p.id),base:100,per:20,dealerTai:1,streakRule:true,dealer:0,streak:0,passes:0,theme:'auto',rounds:[],archive:[],started:Date.now()};
+  return {players,exPlayers:[],seats:players.map(p=>p.id),base:100,per:20,dealerTai:1,selfTai:1,streakRule:true,dealer:0,streak:0,passes:0,theme:'auto',rounds:[],archive:[],started:Date.now()};
 }
 const $=id=>document.getElementById(id);
 let S=load();
@@ -483,12 +532,13 @@ function load(){
     if(o&&o.names){
       s=fresh();
       s.players=o.names.map((n,i)=>({id:uid(),name:n,avatar:EMOJIS[i]}));s.seats=s.players.map(p=>p.id);
-      ['base','per','dealerTai','streakRule','dealer','streak'].forEach(k=>{if(o[k]!==undefined)s[k]=o[k];});
+      ['base','per','dealerTai','selfTai','streakRule','dealer','streak'].forEach(k=>{if(o[k]!==undefined)s[k]=o[k];});
       s.rounds=(o.rounds||[]).map(r=>{const a={};r.amounts.forEach((v,i)=>a[s.seats[i]]=v);return {desc:r.desc,amounts:a,seats:[...s.seats],type:'manual',snap:{dealer:r.snap.dealer,streak:r.snap.streak,seats:[...s.seats]}};});
     }
   }catch(e){}}
   if(!s)s=fresh();
   if(!Array.isArray(s.exPlayers))s.exPlayers=[];
+  if(s.selfTai===undefined)s.selfTai=1;
   s.players.forEach((p,i)=>{if(!p.avatar)p.avatar=EMOJIS[i%EMOJIS.length];});
   s.rounds.forEach(r=>{if(!r.t)r.t=s.started||Date.now();});
   s.archive.forEach(a=>a.rounds.forEach(r=>{if(!r.t)r.t=a.started||a.ended||Date.now();}));
@@ -519,7 +569,9 @@ const fmtPlain=n=>n.toLocaleString('zh-TW');
 const cls=n=>n>0?'pos':n<0?'neg':'zero';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const player=id=>S.players.find(p=>p.id===id)||(S.exPlayers||[]).find(p=>p.id===id);
-const pname=id=>{const p=player(id);return p?p.name:'?';};
+const pname=id=>{if(!id)return'空位';const p=player(id);return p?p.name:'?';};
+const seated=()=>[0,1,2,3].filter(i=>S.seats[i]);
+function nextSeat(from){for(let k=1;k<=4;k++){const d=(from+k)%4;if(S.seats[d])return d;}return from;}
 const seatName=i=>pname(S.seats[i]);
 function avHTML(id,size=''){
   const p=player(id);const a=p?p.avatar:'❔';
@@ -528,7 +580,7 @@ function avHTML(id,size=''){
 }
 const allRounds=()=>S.archive.flatMap(a=>a.rounds).concat(S.rounds);
 function totals(rounds){const t={};rounds.forEach(r=>{for(const id in r.amounts)t[id]=(t[id]||0)+r.amounts[id];});return t;}
-function curDealerTai(){return S.dealerTai+(S.streakRule?2*S.streak:0);}
+function curDealerTai(){return S.dealerTai+(S.streakRule?2:1)*S.streak;}
 const windText=p=>`${WINDS[Math.floor(p/4)%4]}圈${WINDS[p%4]}風`;
 const dayKey=t=>{const d=new Date(t);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const dayLabel=k=>{const [y,m,d]=k.split('-');return `${y}/${+m}/${+d}`;};
@@ -554,12 +606,12 @@ function moneySize(v){const len=fmtPlain(v).length;return len<=2?46:len<=4?38:le
 function renderTable(){
   const t=totals(S.rounds);
   $('cross').innerHTML=[0,1,2,3].map(i=>{const id=S.seats[i],v=t[id]||0;return `
-    <button class="seat s${i}" data-seat-tap="${i}" aria-label="${esc(pname(id))} 胡牌，目前 ${v} 元">
+    <button class="seat s${i}${id?'':' seatempty'}" ${id?`data-seat-tap="${i}"`:'disabled'} aria-label="${esc(pname(id))}${id?` 胡牌，目前 ${v} 元`:''}">
       ${i===S.dealer?'<span class="badge-d">莊</span>':''}
       ${i===S.dealer&&S.streak>0?`<span class="streak">連${S.streak}</span>`:''}
-      ${avHTML(id)}
+      ${id?avHTML(id):'<span class="av" aria-hidden="true">＋</span>'}
       <span class="nm">${esc(pname(id))}</span>
-      <span class="mo ${cls(v)}" style="font-size:${moneySize(v)}px">${fmtPlain(v)}</span>
+      ${id?`<span class="mo ${cls(v)}" style="font-size:${moneySize(v)}px">${fmtPlain(v)}</span>`:'<span class="mo zero" style="font-size:15px">沒人</span>'}
     </button>`;}).join('')+`
     <div class="mid">
       <button class="wind" id="midWind">${windText(S.passes)} ›</button>
@@ -579,8 +631,9 @@ function renderTable(){
 
 function autoAmounts(){
   const a=[0,0,0,0];const w=ui.winner;
-  const n=Math.max(0,parseInt(ui.tai)||0);
-  const payers=ui.loser==='self'?[0,1,2,3].filter(i=>i!==w):(ui.loser==null?null:[ui.loser]);
+  const self=ui.loser==='self';
+  const n=Math.max(0,parseInt(ui.tai)||0)+(self?(S.selfTai||0):0);   // 自摸自動加台
+  const payers=self?seated().filter(i=>i!==w):(ui.loser==null?null:[ui.loser]);
   if(!payers)return null;
   payers.forEach(p=>{
     const extra=(w===S.dealer||p===S.dealer)?curDealerTai():0;
@@ -601,7 +654,7 @@ function openWin(i){
 function renderWin(){
   const w=ui.winner;
   $('pickLoser').innerHTML=`<button data-l="self" aria-pressed="${ui.loser==='self'}"><span class="big">摸</span><span>自摸</span></button>`+
-    [0,1,2,3].filter(i=>i!==w).map(i=>`<button data-l="${i}" aria-pressed="${ui.loser===i}">${avHTML(S.seats[i],'sm')}<span>${esc(seatName(i))}</span></button>`).join('');
+    seated().filter(i=>i!==w).map(i=>`<button data-l="${i}" aria-pressed="${ui.loser===i}">${avHTML(S.seats[i],'sm')}<span>${esc(seatName(i))}</span></button>`).join('');
   $('tai').value=ui.tai;
   $('quickTai').innerHTML=[1,2,3,4,5,8,16].map(n=>`<button data-q="${n}">${n}台</button>`).join('');
   renderPreview();
@@ -610,18 +663,18 @@ function renderPreview(){
   const p=$('preview');const amts=currentAmounts();
   if(!amts){p.innerHTML='<p class="note">選擇自摸或放槍的人，就會算出金額。</p>';$('btnWinSave').disabled=true;return;}
   const sum=amts.reduce((a,b)=>a+b,0);
-  p.innerHTML=[0,1,2,3].map(i=>`
+  p.innerHTML=seated().map(i=>`
     <div class="prow"><span class="who">${avHTML(S.seats[i],'sm')}${esc(seatName(i))}</span>
     <input type="number" inputmode="numeric" data-o="${i}" value="${amts[i]}" class="${ui.override[i]!==undefined?'edited':''}" aria-label="${esc(seatName(i))} 金額"></div>`).join('')
-    +`<p class="note">莊家相關的付款另加 ${curDealerTai()} 台${S.streak?`（含連${S.streak}拉${S.streak}）`:''}。金額可直接改。</p>`
+    +`<p class="note">莊家相關的付款另加 ${curDealerTai()} 台${S.streak?`（含連莊 ${S.streak} 次）`:''}${ui.loser==='self'&&S.selfTai?`；自摸另加 ${S.selfTai} 台`:''}。金額可直接改。</p>`
     +(sum!==0?`<p class="warn">四人加總是 ${fmt(sum)}，不等於 0。</p>`:'');
   $('btnWinSave').disabled=false;
 }
 function pushRound(rec,amounts,keeps){
   const snap={dealer:S.dealer,streak:S.streak,passes:S.passes,seats:[...S.seats]};
-  const a={};S.seats.forEach((id,i)=>a[id]=amounts[i]);
+  const a={};S.seats.forEach((id,i)=>{if(id)a[id]=amounts[i];});
   S.rounds.push(Object.assign(rec,{amounts:a,seats:[...S.seats],dealerId:S.seats[S.dealer],t:Date.now(),snap}));
-  if(keeps)S.streak++;else{S.dealer=(S.dealer+1)%4;S.streak=0;S.passes++;}
+  if(keeps)S.streak++;else{S.dealer=nextSeat(S.dealer);S.streak=0;S.passes++;}
   save();renderTab();
   if(!keeps&&S.passes%16===0){
     const t=totals(S.rounds);const lead=S.seats.slice().sort((a,b)=>(t[b]||0)-(t[a]||0))[0];
@@ -704,8 +757,9 @@ $('btnDealerSave').onclick=()=>{
 let draftSeats=[];
 const SEATPOS=['下方','右邊','上方','左邊'];
 function renderSeatDlg(){
-  $('seatFields').innerHTML=[0,1,2,3].map(i=>`<div class="field"><label for="seat${i}">${SEATPOS[i]}</label><select id="seat${i}" data-seat="${i}">${S.players.map(p=>`<option value="${p.id}" ${p.id===draftSeats[i]?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div>`).join('');
-  const dup=new Set(draftSeats).size<4;
+  $('seatFields').innerHTML=[0,1,2,3].map(i=>`<div class="field"><label for="seat${i}">${SEATPOS[i]}</label><select id="seat${i}" data-seat="${i}"><option value="" ${!draftSeats[i]?'selected':''}>（空位・三人麻將）</option>${S.players.map(p=>`<option value="${p.id}" ${p.id===draftSeats[i]?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div>`).join('');
+  const filled=draftSeats.filter(x=>x);
+  const dup=new Set(filled).size<filled.length;
   $('seatWarn').textContent=dup?'同一個人不能坐兩個位置。':'';
   $('btnSeatsSave').disabled=dup;
 }
@@ -719,28 +773,131 @@ $('btnSeatsSave').onclick=()=>{
 
 // 設定
 function markTheme(){document.querySelectorAll('[data-theme-set]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.themeSet===S.theme));}
+/* ═══════════ 過莊 ═══════════ */
+async function passDealer(){
+  if(!await ask('跳過這一莊？莊家換下一家，連莊歸零，不會記錄任何金額。','跳過'))return;
+  S.dealer=nextSeat(S.dealer);S.streak=0;S.passes++;
+  save();renderTab();toast('已過莊');
+}
+$('btnPass').onclick=passDealer;
+$('btnPass2').onclick=()=>{$('dlgDealer').close();passDealer();};
+
+/* ═══════════ 骰子 ═══════════ */
+const DIEF=['\u2680','\u2681','\u2682','\u2683','\u2684','\u2685'];
+const WINDF=[['東',''],['南',''],['西',''],['北',''],['中','red'],['發','green']];
+let diceMode='num',diceN=3,diceVals=[];
+
+function dieHTML(v,mode){
+  return (mode||diceMode)==='wind'
+    ? `<span class="die wind ${WINDF[v-1][1]}">${WINDF[v-1][0]}</span>`
+    : `<span class="die">${DIEF[v-1]}</span>`;
+}
+function renderDice(){
+  $('diceMode').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dm===diceMode));
+  $('dcVal').textContent=diceN;
+  $('diceBox').innerHTML=diceVals.length?diceVals.map(v=>dieHTML(v)).join('')
+    :'<p class="note">按下面的大按鈕開始</p>';
+  $('diceSum').textContent=(diceVals.length&&diceMode==='num')?'總和 '+diceVals.reduce((a,b)=>a+b,0):'';
+}
+function rollInto(box,n,mode,done){
+  let k=0;
+  const timer=setInterval(()=>{
+    const tmp=Array.from({length:n},()=>1+Math.floor(Math.random()*6));
+    box.innerHTML=tmp.map(v=>dieHTML(v,mode)).join('');
+    if(++k>=9){
+      clearInterval(timer);
+      const fin=Array.from({length:n},()=>1+Math.floor(Math.random()*6));
+      box.innerHTML=fin.map(v=>dieHTML(v,mode)).join('');
+      done(fin);
+    }
+  },70);
+}
+$('btnDice').onclick=()=>{diceVals=[];renderDice();$('dlgDice').showModal();};
+$('btnDiceClose').onclick=()=>$('dlgDice').close();
+$('diceMode').addEventListener('click',e=>{
+  const b=e.target.closest('[data-dm]'); if(!b)return;
+  diceMode=b.dataset.dm;diceVals=[];
+  $('dcRow').style.display=diceMode==='wind'?'none':'';
+  if(diceMode==='wind')diceN=1;
+  renderDice();
+});
+$('dcMinus').onclick=()=>{diceN=Math.max(1,diceN-1);diceVals=[];renderDice();};
+$('dcPlus').onclick=()=>{diceN=Math.min(6,diceN+1);diceVals=[];renderDice();};
+$('btnRoll').onclick=()=>{
+  const n=diceMode==='wind'?diceN:diceN;
+  $('btnRoll').disabled=true;$('diceSum').textContent='';
+  rollInto($('diceBox'),n,diceMode,fin=>{
+    diceVals=fin;$('btnRoll').disabled=false;
+    $('diceSum').textContent=diceMode==='num'?'總和 '+fin.reduce((a,b)=>a+b,0):'';
+  });
+};
+
+/* ═══════════ 拿牌 ═══════════ */
+$('btnDeal').onclick=()=>{
+  $('dealDice').innerHTML='<p class="note">按下面的大按鈕擲骰</p>';
+  $('dealSum').textContent='';$('dealResult').innerHTML='';
+  $('dlgDeal').showModal();
+};
+$('btnDealClose').onclick=()=>$('dlgDeal').close();
+$('btnDealRoll').onclick=()=>{
+  $('btnDealRoll').disabled=true;$('dealSum').textContent='';$('dealResult').innerHTML='';
+  rollInto($('dealDice'),3,'num',fin=>{
+    const total=fin.reduce((a,b)=>a+b,0);
+    $('dealSum').textContent='總和 '+total;
+    $('dealResult').innerHTML=dealPlan(total);
+    $('btnDealRoll').disabled=false;
+  });
+};
+function dealPlan(total){
+  const step=((total-1)%4);
+  const open=(S.dealer+step)%4;            // 開門家：從莊家算起第 total 位（逆時針）
+  const order=[0,1,2,3].map(k=>(S.dealer+k)%4);
+  const nick=i=>i===S.dealer?'（莊家）':i===(S.dealer+1)%4?'（下家）':i===(S.dealer+2)%4?'（對家）':'（上家）';
+  const seq=order.map((i,k)=>`${k+1}. ${esc(pname(S.seats[i]))}${nick(i)}`).join('　→　');
+  return `
+  <div style="margin-top:16px">
+    <div class="dstep"><b>開門家</b>：${esc(pname(S.seats[open]))}${nick(open)}
+      <div class="note" style="margin:2px 0 0">從莊家 ${esc(pname(S.seats[S.dealer]))} 算起，逆時針數第 ${step+1} 位</div></div>
+    <div class="dstep"><b>從哪裡拿</b>：${esc(pname(S.seats[open]))} 面前的牌牆，
+      <b>從右邊數 ${total} 墩</b>，從<b>第 ${total+1} 墩</b>開始拿
+      <div class="note" style="margin:2px 0 0">方向往左（逆時針），數到底就接下一家的牌牆</div></div>
+    <div class="dstep"><b>誰先拿</b>：${seq}
+      <div class="note" style="margin:2px 0 0">每人一次拿 2 墩（4 張），輪 4 圈；最後莊家再多拿 1 張，莊家 17 張、其他人 16 張</div></div>
+    ${seated().length<4?'<p class="warn">目前有空位。三人麻將的牌牆排法各家規矩不同，上面是照四方位算的，實際以你們的習慣為準。</p>':''}
+  </div>`;
+}
+
 $('btnResetStats').onclick=async()=>{
   const n=allRounds().length;
-  if(!n){toast('本來就沒有紀錄');return;}
-  if(!await ask(`清空全部 ${n} 局紀錄？戰績、走勢、年度回顧都會歸零，沒辦法復原。玩家名單和算法設定會留著。`,'全部歸零'))return;
-  if(!await ask('真的要清空嗎？再確認一次。','確定清空'))return;
-  S.rounds=[];S.archive=[];S.exPlayers=[];
+  if(!await ask(`確定要全部清空嗎？\n\n所有牌局、戰績、走勢、年度回顧（共 ${n} 局）都會消失，沒辦法復原。\n只有玩家名單和算法設定會留著。`,'全部清空'))return;
+
+  // 直接用初始狀態重建，只保留玩家、座位、算法、外觀
+  const keep={
+    players:S.players,seats:S.seats,theme:S.theme,
+    base:S.base,per:S.per,dealerTai:S.dealerTai,selfTai:S.selfTai,streakRule:S.streakRule
+  };
+  const blank=fresh();
+  Object.keys(S).forEach(k=>delete S[k]);
+  Object.assign(S,blank,keep);
+  S.exPlayers=[];S.rounds=[];S.archive=[];
   S.dealer=0;S.streak=0;S.passes=0;S.started=Date.now();
-  ui.statP=null;ui.hscope='session';ui.range='all';ui.from='';ui.to='';
+
+  Object.assign(ui,{statP:null,hscope:'session',range:'all',from:'',to:''});
   save();
   dispatchEvent(new Event('mj-force-push'));   // 有連雲端的話立刻覆蓋，不要等
   $('dlgSettings').close();
-  setTab('table');                              // 跳回牌桌，避免停在舊的子畫面
-  toast('已全部歸零');
+  setTab('table');
+  toast('已全部清空')
 };
 $('tbSettings').onclick=()=>{
-  $('sBase').value=S.base;$('sPer').value=S.per;$('sDealer').value=S.dealerTai;$('sStreak').checked=S.streakRule;
+  $('sBase').value=S.base;$('sPer').value=S.per;$('sDealer').value=S.dealerTai;$('sSelf').value=S.selfTai;$('sStreak').checked=S.streakRule;
   markTheme();$('dlgSettings').showModal();
 };
 $('btnSaveSettings').onclick=()=>{
   S.base=Math.max(0,parseInt($('sBase').value)||0);
   S.per=Math.max(0,parseInt($('sPer').value)||0);
   S.dealerTai=Math.max(0,parseInt($('sDealer').value)||0);
+  S.selfTai=Math.max(0,parseInt($('sSelf').value)||0);
   S.streakRule=$('sStreak').checked;
   save();$('dlgSettings').close();renderTab();
 };
