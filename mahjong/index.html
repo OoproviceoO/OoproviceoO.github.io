@@ -612,7 +612,8 @@ function avHTML(id,size=''){
 const allRounds=()=>S.archive.flatMap(a=>a.rounds).concat(S.rounds);
 function totals(rounds){const t={};rounds.forEach(r=>{for(const id in r.amounts)t[id]=(t[id]||0)+r.amounts[id];});return t;}
 function curDealerTai(){return S.dealerTai+(S.streakRule?2:1)*S.streak;}
-const windText=p=>`${WINDS[Math.floor(p/4)%4]}圈${WINDS[p%4]}風`;
+const windSeats=()=>Math.max(1,seated().length);
+const windText=(p,m)=>{m=m||windSeats();return `${WINDS[Math.floor(p/m)%4]}圈${WINDS[p%m]}風`;};
 const dayKey=t=>{const d=new Date(t);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const dayLabel=k=>{const [y,m,d]=k.split('-');return `${y}/${+m}/${+d}`;};
 
@@ -707,11 +708,12 @@ function pushRound(rec,amounts,keeps){
   S.rounds.push(Object.assign(rec,{amounts:a,seats:[...S.seats],dealerId:S.seats[S.dealer],t:Date.now(),snap}));
   if(keeps)S.streak++;else{S.dealer=nextSeat(S.dealer);S.streak=0;S.passes++;}
   save();renderTab();
-  if(!keeps&&S.passes%16===0){
+  const wm=windSeats();
+  if(!keeps&&S.passes%(wm*4)===0){
     const t=totals(S.rounds);const lead=S.seats.slice().sort((a,b)=>(t[b]||0)-(t[a]||0))[0];
     $('jiangMsg').textContent=`東南西北四圈都打完了。目前領先的是 ${pname(lead)}（${fmt(t[lead]||0)}）。要換位子嗎？`;
     setTimeout(()=>$('dlgJiang').showModal(),300);
-  }else if(!keeps&&S.passes%4===0){setTimeout(()=>toast(`進入${WINDS[Math.floor(S.passes/4)%4]}圈`),900);}
+  }else if(!keeps&&S.passes%wm===0){setTimeout(()=>toast(`進入${WINDS[Math.floor(S.passes/wm)%4]}圈`),900);}
 }
 $('btnWinSave').onclick=async()=>{
   const amounts=currentAmounts(); if(!amounts)return;
@@ -774,7 +776,8 @@ $('tbUndo').onclick=async()=>{
 function openDealer(){
   $('dSeat').innerHTML=[0,1,2,3].map(i=>`<option value="${i}" ${i===S.dealer?'selected':''}>${esc(seatName(i))}</option>`).join('');
   $('dStreak').value=S.streak;
-  $('dWind').innerHTML=Array.from({length:16},(_,p)=>`<option value="${p}" ${p===S.passes%16?'selected':''}>${windText(p)}</option>`).join('');
+  const wm=windSeats();
+  $('dWind').innerHTML=Array.from({length:wm*4},(_,p)=>`<option value="${p}" ${p===S.passes%(wm*4)?'selected':''}>${windText(p,wm)}</option>`).join('');
   $('dlgDealer').showModal();
 }
 $('tbDealer').onclick=openDealer;
@@ -788,7 +791,7 @@ $('btnDealerSave').onclick=()=>{
 let draftSeats=[];
 const SEATPOS=['下方','右邊','上方','左邊'];
 function renderSeatDlg(){
-  $('seatFields').innerHTML=[0,1,2,3].map(i=>`<div class="field"><label for="seat${i}">${SEATPOS[i]}</label><select id="seat${i}" data-seat="${i}"><option value="" ${!draftSeats[i]?'selected':''}>（空位・三人麻將）</option>${S.players.map(p=>`<option value="${p.id}" ${p.id===draftSeats[i]?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div>`).join('');
+  $('seatFields').innerHTML=[0,1,2,3].map(i=>`<div class="field"><label for="seat${i}">${SEATPOS[i]}</label><select id="seat${i}" data-seat="${i}"><option value="" ${!draftSeats[i]?'selected':''}>（空位）</option>${S.players.map(p=>`<option value="${p.id}" ${p.id===draftSeats[i]?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div>`).join('');
   const filled=draftSeats.filter(x=>x);
   const dup=new Set(filled).size<filled.length;
   $('seatWarn').textContent=dup?'同一個人不能坐兩個位置。':'';
