@@ -515,16 +515,14 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 <dialog id="dlgDeal"><div class="dlg">
   <h2>拿牌</h2>
   <p class="note" style="margin-top:0">莊家擲三顆骰子，決定從哪一家的哪一墩開始拿牌。</p>
-  <div class="row between" style="align-items:center;margin-bottom:6px">
-    <span class="note" style="margin:0">一排幾墩</span>
-    <span style="display:flex;align-items:center;gap:10px">
-      <button class="pill2" id="dnMinus" style="width:46px">−</button>
-      <b id="dnVal" style="font-size:20px;min-width:1.6em;text-align:center">17</b>
-      <button class="pill2" id="dnPlus" style="width:46px">＋</button>
-      <button class="pill2" id="dn17" style="padding:8px 10px;font-size:13px">無花17</button>
-      <button class="pill2" id="dn18" style="padding:8px 10px;font-size:13px">有花18</button>
-    </span>
+  <div class="field" style="margin-bottom:4px">
+    <label for="dnVal">一排幾墩</label>
+    <input id="dnVal" type="number" inputmode="numeric" min="6" max="40" value="17">
   </div>
+  <div class="seg" style="grid-template-columns:repeat(3,1fr);margin-bottom:4px">
+    <button id="dn16">16 墩</button><button id="dn17">17 墩</button><button id="dn18">18 墩</button>
+  </div>
+  <p class="note" id="dnNote" style="margin:4px 0 8px"></p>
   <div class="felt" id="dealDice" style="height:150px"><div class="hintx">按下面的大按鈕擲骰</div></div>
   <div class="dsum" id="dealSum"></div>
   <button class="primary" id="btnDealRoll" style="width:100%;padding:17px;font-size:20px;margin-top:6px">擲骰子</button>
@@ -876,7 +874,7 @@ $('dcMinus').onclick=()=>{diceN=Math.max(1,diceN-1);$('dcVal').textContent=diceN
 $('dcPlus').onclick=()=>{diceN=Math.min(6,diceN+1);$('dcVal').textContent=diceN;};
 $('btnRoll').onclick=()=>{
   $('btnRoll').disabled=true;$('diceSum').textContent='';
-  rollInto($('diceBox'),diceMode==='wind'?diceN:diceN,diceMode,fin=>{
+  rollInto($('diceBox'),diceMode==='wind'?1:diceN,diceMode,fin=>{   // 風骰固定一顆
     diceVals=fin;$('btnRoll').disabled=false;
     $('diceSum').textContent=diceMode==='num'?'總和 '+fin.reduce((a,b)=>a+b,0):'';
   });
@@ -884,16 +882,22 @@ $('btnRoll').onclick=()=>{
 
 /* ═══════════ 拿牌 ═══════════ */
 let dunN=17;
-function setDun(v){dunN=Math.max(8,Math.min(30,v));$('dnVal').textContent=dunN;if($('dealResult').dataset.total)$('dealResult').innerHTML=dealPlan(+$('dealResult').dataset.total);}
+function setDun(v,syncInput){
+  dunN=Math.max(6,Math.min(40,parseInt(v)||17));
+  if(syncInput!==false)$('dnVal').value=dunN;
+  $('dnNote').textContent=`${seated().length} 家，每家 ${dunN} 墩（${dunN*2} 張），全場 ${seated().length*dunN*2} 張`;
+  if($('dealResult').dataset.total)$('dealResult').innerHTML=dealPlan(+$('dealResult').dataset.total);
+}
 $('btnDeal').onclick=()=>{
   $('dealDice').innerHTML='<div class="hintx">按下面的大按鈕擲骰</div>';
   $('dealSum').textContent='';$('dealResult').innerHTML='';delete $('dealResult').dataset.total;
-  $('dnVal').textContent=dunN;
+  setDun(dunN);
   $('dlgDeal').showModal();
 };
 $('btnDealClose').onclick=()=>$('dlgDeal').close();
-$('dnMinus').onclick=()=>setDun(dunN-1);
-$('dnPlus').onclick=()=>setDun(dunN+1);
+$('dnVal').oninput=e=>setDun(e.target.value,false);
+$('dnVal').onblur=()=>setDun(dunN);
+$('dn16').onclick=()=>setDun(16);
 $('dn17').onclick=()=>setDun(17);
 $('dn18').onclick=()=>setDun(18);
 $('btnDealRoll').onclick=()=>{
@@ -907,53 +911,58 @@ $('btnDealRoll').onclick=()=>{
   });
 };
 
-// 以莊家為下方，順時針畫四面牆：下=莊、右=下家、上=對家、左=上家
+// 以莊家為下方畫牌牆：下=莊、右=下家、上=對家、左=上家
+// 空位沒有牌牆，開門家也只從有人的座位裡面算
 function dealPlan(total){
-  const rel=['莊家','下家','對家','上家'];
-  const seatOf=k=>(S.dealer+k)%4;                 // k=0 莊家
-  const openRel=(total-1)%4;                      // 開門家（從莊家算起逆時針第幾位）
-  // 從開門家牌牆右端數 total 墩，超過就接到下一家的牆
-  let wallRel=openRel, skip=total;
-  while(skip>=dunN){skip-=dunN;wallRel=(wallRel+1)%4;}
-  const startDun=skip;                            // 0 起算，代表要從第 startDun+1 墩開始拿
+  const order=[0,1,2,3].map(k=>(S.dealer+k)%4).filter(i=>S.seats[i]);  // 莊家排第一，逆時針
+  const m=order.length;
+  if(m<2)return '<p class="warn">桌上至少要有兩個人才能排牌牆。</p>';
 
-  // 四面牆：0下 1右 2上 3左（相對莊家）
+  const openPos=(total-1)%m;                 // 開門家在有人的順位裡是第幾個
+  let wallPos=openPos, skip=total;
+  while(skip>=dunN){skip-=dunN;wallPos=(wallPos+1)%m;}   // 數超過一整排就接下一家
+  const startDun=skip;                       // 0 起算，要從第 startDun+1 墩開始拿
+  const openSeat=order[openPos], wallSeat=order[wallPos];
+
+  const nm=i=>esc(pname(S.seats[i]));
+  const relName=i=>{const k=(i-S.dealer+4)%4;return ['莊家','下家','對家','上家'][k];};
+
+  // k = 相對莊家的方位：0下 1右 2上 3左
   const wallHTML=k=>{
+    const seat=(S.dealer+k)%4;
+    if(!S.seats[seat])return '<div></div>';   // 空位沒有牆
     const horiz=(k===0||k===2);
     const cells=Array.from({length:dunN},(_,j)=>{
-      // j 以該家的「右手邊」為 0
-      const isStart=(k===wallRel&&j===startDun);
-      const isSkip =(k===wallRel&&j<startDun);
+      const isStart=(seat===wallSeat&&j===startDun);
+      const isSkip =(seat===wallSeat&&j<startDun);
       return `<span class="du${isStart?' on':isSkip?' skip':''}"></span>`;
     });
-    // 讓「右手邊」在畫面上對應正確方向
-    if(k===0)cells.reverse();          // 下方牆：自己的右手邊在畫面右邊 → 由右往左排
-    if(k===3)cells.reverse();          // 左方牆
+    if(k===0||k===3)cells.reverse();          // 讓該家的右手邊對到畫面上正確的一端
     return `<div class="wall ${horiz?'h':'v'}">${cells.join('')}</div>`;
   };
 
-  const nm=k=>esc(pname(S.seats[seatOf(k)]));
+  const sideLabel=k=>{const seat=(S.dealer+k)%4;return S.seats[seat]?`${nm(seat)}（${relName(seat)}）`:'空位';};
+
   return `
   <div class="wallbox">
     <div></div>${wallHTML(2)}<div></div>
     ${wallHTML(3)}
     <div class="wcenter">
-      <div><b>${nm(openRel)}</b>開門<br>從右數 ${total} 墩<br>第 ${startDun+1} 墩起拿</div>
+      <div><b>${nm(openSeat)}</b>開門<br>從右數 ${total} 墩<br>第 ${startDun+1} 墩起拿</div>
     </div>
     ${wallHTML(1)}
     <div></div>${wallHTML(0)}<div></div>
   </div>
   <p class="note" style="text-align:center;margin-top:-4px">
-    上＝${nm(2)}（對家）　左＝${nm(3)}（上家）　右＝${nm(1)}（下家）　下＝${nm(0)}（莊家）
+    下＝${sideLabel(0)}　右＝${sideLabel(1)}<br>上＝${sideLabel(2)}　左＝${sideLabel(3)}
   </p>
   <div style="margin-top:10px">
-    <div class="dstep"><b>開門家</b>：${nm(openRel)}（${rel[openRel]}）
-      <div class="note" style="margin:2px 0 0">從莊家 ${nm(0)} 算起，逆時針數第 ${openRel+1} 位</div></div>
-    <div class="dstep"><b>從哪裡拿</b>：${nm(wallRel)} 的牌牆，從他右邊數 ${total>dunN?`${total} 墩（跨過一整排 ${dunN} 墩）`:`${total} 墩`}，從<b>第 ${startDun+1} 墩</b>開始
-      <div class="note" style="margin:2px 0 0">金色那一墩就是起點，灰色是數過去跳掉的。方向往左（逆時針），數到底接下一家的牆</div></div>
-    <div class="dstep"><b>誰先拿</b>：${[0,1,2,3].map(k=>`${k+1}. ${nm(k)}`).join('　→　')}
-      <div class="note" style="margin:2px 0 0">每人一次拿 2 墩（4 張），輪 4 圈；最後莊家再多拿 1 張，莊家 17 張、其他人 16 張</div></div>
-    ${seated().length<4?'<p class="warn">目前有空位。三人麻將的牌牆排法各家規矩不同，上面照四方位算，實際以你們的習慣為準。</p>':''}
+    <div class="dstep"><b>開門家</b>：${nm(openSeat)}（${relName(openSeat)}）
+      <div class="note" style="margin:2px 0 0">${m} 家在打，從莊家 ${nm(S.dealer)} 算起逆時針數第 ${openPos+1} 位</div></div>
+    <div class="dstep"><b>從哪裡拿</b>：${nm(wallSeat)} 的牌牆，從他右邊數 ${total} 墩，從<b>第 ${startDun+1} 墩</b>開始
+      <div class="note" style="margin:2px 0 0">金色那一墩是起點，灰色是數過去跳掉的。方向往左（逆時針），數到底接下一家的牆${total>=dunN?'　·　這次點數超過一整排，已經跨到下一家':''}</div></div>
+    <div class="dstep"><b>誰先拿</b>：${order.map((i,k)=>`${k+1}. ${nm(i)}`).join('　→　')}
+      <div class="note" style="margin:2px 0 0">每人一次拿 2 墩（4 張），輪 4 圈；最後莊家再多拿 1 張</div></div>
   </div>`;
 }
 
