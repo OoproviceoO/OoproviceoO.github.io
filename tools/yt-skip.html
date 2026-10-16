@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube 自動略過廣告 — 我的工具箱</title>
+<meta name="description" content="看 YouTube 時，廣告出現「略過」就自動幫你按掉。免費，不收集任何資料。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .big-steps{list-style:none;padding:0;margin-top:8px}
+  .big-step{
+    background:var(--card);border:1px solid var(--line);border-radius:3px;
+    padding:26px 28px;margin-top:18px;
+  }
+  .big-step .num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:34px;height:34px;border-radius:50%;
+    background:var(--blue);color:#fff;font-weight:700;margin-right:12px;
+  }
+  .big-step h3{display:flex;align-items:center;font-size:1.2rem;font-weight:700}
+  .big-step p{margin-top:12px;color:var(--ink-soft)}
+  .big-step .btn{margin-top:18px}
+  .big-step code{
+    background:var(--paper);border:1px solid var(--line);border-radius:3px;
+    padding:2px 8px;font-size:.95rem;color:var(--ink);user-select:all;
+  }
+  .big-step ol{margin-top:12px;padding-left:22px;color:var(--ink-soft)}
+  .big-step li{margin-top:6px}
+  .big-step li strong{color:var(--ink)}
+  .tip{
+    margin-top:14px;padding:12px 16px;border-left:3px solid var(--amber);
+    background:#FBF6EC;color:var(--ink-soft);font-size:.95rem;
+  }
+  .done{
+    margin-top:18px;padding:22px 28px;border-radius:3px;
+    background:#EAF4EC;border:1px solid #CFE5D4;
+  }
+  .done strong{display:block;font-size:1.1rem}
+  .done span{color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="sitename"><a href="../index.html">我的工具箱</a></span>
+    <nav><a href="https://github.com/OoproviceoO">GitHub</a></nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <a class="backlink" href="../index.html">‹ 回到工具清單</a>
+
+  <div class="tool-head">
+    <h1>YouTube 自動略過廣告</h1>
+    <p class="lead">看 YouTube 時，廣告一出現「略過」就自動幫你按掉。不能略過的廣告會自動靜音、快轉過去。裝好之後就不用管它。</p>
+    <div class="meta">
+      <span class="tag ver">v1.1</span>
+      <span class="tag">電腦版 Chrome</span>
+      <span class="tag">免費</span>
+      <span class="tag">不收集任何資料</span>
+    </div>
+  </div>
+
+  <!-- ═══ 安裝 ═══ -->
+  <div class="section">
+    <h2>安裝（只要做一次，約 2 分鐘）</h2>
+
+    <ol class="big-steps">
+      <li class="big-step">
+        <h3><span class="num">1</span>安裝 Tampermonkey</h3>
+        <p>這是一個很多人在用的免費小幫手，等一下要靠它來執行。按下面的按鈕，再按藍色的「<strong>加到 Chrome</strong>」→「<strong>新增擴充功能</strong>」。</p>
+        <a class="btn" href="https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank" rel="noopener">打開 Tampermonkey 安裝頁</a>
+      </li>
+
+      <li class="big-step">
+        <h3><span class="num">2</span>打開一個開關</h3>
+        <p>Chrome 為了安全，要你同意一次才會讓它工作。</p>
+        <ol>
+          <li>在 Chrome 最上面的網址列輸入 <code>chrome://extensions</code>，按 Enter。</li>
+          <li>找到 <strong>Tampermonkey</strong>，按它的「<strong>詳細資料</strong>」。</li>
+          <li>往下找到「<strong>允許使用者指令碼</strong>」，把開關打開（變藍色）。</li>
+        </ol>
+        <div class="tip">找不到這個開關？Chrome 版本比較舊的話，改成把右上角的「<strong>開發人員模式</strong>」打開就可以。</div>
+      </li>
+
+      <li class="big-step">
+        <h3><span class="num">3</span>安裝自動略過廣告</h3>
+        <p>按下面的按鈕，會跳出 Tampermonkey 的畫面，按「<strong>安裝</strong>」就好。</p>
+        <a class="btn" href="../downloads/youtube-auto-skip.user.js">安裝自動略過廣告</a>
+        <div class="tip">如果按了只看到一堆程式碼，代表第 1 或第 2 步還沒完成，回去檢查一下再按一次。</div>
+      </li>
+    </ol>
+
+    <div class="done">
+      <strong>完成！</strong>
+      <span>重新打開 YouTube 就會生效。以後有新版本會自動更新，不用再做任何事。</span>
+    </div>
+  </div>
+
+  <!-- ═══ 能做什麼 ═══ -->
+  <div class="section">
+    <h2>能做什麼</h2>
+    <ul>
+      <li><strong>自動按「略過」</strong>　廣告出現略過按鈕就馬上幫你按。</li>
+      <li><strong>不能略過的廣告</strong>　自動靜音、用 16 倍速播完，幾乎一閃就過。</li>
+      <li><strong>關掉影片上的橫幅廣告</strong>　影片下方跳出來的小廣告也會自動關掉。</li>
+      <li><strong>廣告結束自動還原</strong>　影片的音量和速度會回到你原本的設定。</li>
+    </ul>
+  </div>
+
+  <!-- ═══ 常見問題 ═══ -->
+  <div class="notice">
+    <h2>常見問題</h2>
+    <p>遇到下面的狀況，照著做就可以。</p>
+    <dl>
+      <dt>想暫時關掉</dt>
+      <dd>按 Chrome 右上角的拼圖圖示 → Tampermonkey，把「YouTube 自動略過廣告」的開關關掉。想恢復再打開。</dd>
+
+      <dt>裝完好像沒有效</dt>
+      <dd>把 YouTube 的分頁關掉重開。還是不行的話，確認第 2 步的開關有打開。</dd>
+
+      <dt>安全嗎？</dt>
+      <dd>它只在 YouTube 上執行，只會按「略過」和調整廣告的速度音量，不會連到其他網站，也不會收集任何資料。程式碼是公開的，任何人都可以檢查。</dd>
+
+      <dt>手機可以用嗎？</dt>
+      <dd>目前只支援電腦版 Chrome。</dd>
+    </dl>
+  </div>
+
+  <footer>
+    <div>有問題或發現 bug，歡迎到 <a href="https://github.com/OoproviceoO">GitHub</a> 留言。</div>
+  </footer>
+
+</div>
+
+</body>
+</html>
