@@ -835,7 +835,7 @@ const PXC='0123456789abcdef';
 function drawPx(px,w,h,x,y){if(!px){R('#c9a06e',x+2,y+10,12,12);R('#fff8e6',x+4,y+12,8,8);R('#8fbf7a',x+5,y+15,2,2);R('#f6b8c8',x+9,y+14,2,2);return}for(let j=0;j<h;j++)for(let i=0;i<w;i++){const c=px[j*w+i];if(c&&c!=='.')R(PAL[PXC.indexOf(c)]||'#000',x+i,y+j,1,1)}}
 const DTH={};const dthumb=(px,k)=>DTH[k+px]||(DTH[k+px]=k==='fit'?thumb(20,34,()=>drawAvatar(2,15,Object.assign({},S.av,{cf:px,hat:0}),{pose:'stand',dir:0,t:0})):thumb(20,28,()=>drawPx(px,16,24,2,2)));
 const thumb=(w,h,fn)=>{const c=document.createElement('canvas');c.width=w;c.height=h;withCtx(c.getContext('2d'),fn);return c.toDataURL()};
-const today=()=>new Date().toLocaleDateString('sv');
+let _tdK=0,_tdV='';const today=()=>{const n=Date.now(),k=Math.floor(n/1000);if(k!==_tdK){_tdK=k;_tdV=new Date(n).toLocaleDateString('sv')}return _tdV};
 const dayBefore=d=>{const t=new Date(d+'T12:00:00');t.setDate(t.getDate()-1);return t.toLocaleDateString('sv')};
 const rnd=n=>Math.floor(Math.random()*n);
 // 聲音：全部用程式合成，不用音檔。要加新音效就在 SFX 加一行
@@ -1341,7 +1341,7 @@ const dmScroll=()=>requestAnimationFrame(()=>{const p=$('panel');p.scrollTop=p.s
 const hm=ts=>{const d=new Date(ts);return (d.toLocaleDateString('sv')===today()?'':(d.getMonth()+1)+'/'+d.getDate()+' ')+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
 // 發動態：拍照（直接開相機，左下角圖片庫）、遊戲截圖、純文字
 let CP=null,cmpStream=null;const TXTBG=['#cfe3b8','#f6efb8','#f8d6c8','#d6ecd9','#e6dcf2','#5f9e4c'];
-function gameShot(){const k=Math.max(1,Math.floor(640/Math.max(cv.width,cv.height))),c=mkc(cv.width*k,cv.height*k),x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(cv,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.85)}
+function gameShot(){const k=Math.max(1,Math.floor(640/Math.max(VW,VH))),c=mkc(VW*k,VH*k),x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(cv,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.85)}
 function textImg(t,bg){const c=mkc(480,480),x=c.getContext('2d'),dark=bg==='#5f9e4c';x.fillStyle=bg;x.fillRect(0,0,480,480);x.fillStyle=dark?'rgba(255,255,255,.18)':'rgba(90,70,50,.12)';for(let i=12;i<480;i+=24)for(let j=12;j<480;j+=24)x.fillRect(i,j,3,3);
   x.fillStyle=dark?'#fff8e6':'#3a2e1e';x.textAlign='center';x.textBaseline='middle';const fs=t.length>40?28:t.length>16?34:44;x.font=`900 ${fs}px "Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif`;
   const lines=[];let cur='';for(const ch of t){if(ch==='\n'){lines.push(cur);cur='';continue}if(x.measureText(cur+ch).width>400){lines.push(cur);cur=ch}else cur+=ch}lines.push(cur);
@@ -1385,7 +1385,7 @@ function renderCmp(){const el=$('cmp');if(!CP){el.hidden=true;return}el.hidden=f
     if(k==='tag'){const id=b.dataset.k,i=CP.tags.indexOf(id);if(i<0)CP.tags.push(id);else CP.tags.splice(i,1);return renderCmp()}
     if(k==='post'){const data=CP.img,cap=CP.src==='text'?'':CP.cap,tags=whoList().filter(w=>CP.tags.includes(w.id));closeComposer();act('post',{data,cap,tags})}})}
 function flash(){const f=$('flash');f.hidden=false;f.classList.remove('go');void f.offsetWidth;f.classList.add('go');SFX.ui();setTimeout(()=>f.hidden=true,400)}
-const clampX=(v,s)=>Math.round(Math.max(0,Math.min(cv.width-s,v))),clampY=(v,s)=>Math.round(Math.max(0,Math.min(cv.height-s,v)));
+const clampX=(v,s)=>Math.round(Math.max(0,Math.min(VW-s,v))),clampY=(v,s)=>Math.round(Math.max(0,Math.min(VH-s,v)));
 // 限時動態（像 IG）：上方一人一顆頭像，點進去一張一張看，點右邊下一張、左邊上一張，左右滑換人，往下滑關閉
 const HT={};function headThumb(av){const k=JSON.stringify(av);return HT[k]||(HT[k]=thumb(18,18,()=>drawAvatar(1,10,av,{pose:'stand',dir:0,t:0})))}
 function storyPeople(){const ppl=[{id:'me',name:S.name,av:S.av}];peers.forEach(q=>ppl.push({id:q.id,name:q.name,av:q.av}));S.posts.forEach(p=>{if(!ppl.some(x=>x.id===p.by))ppl.push({id:p.by,name:p.name,av:p.av||S.av})});
@@ -1432,7 +1432,7 @@ function makePeers(){if(NET.on)return netPeers();peers.forEach(q=>q.tag&&q.tag.r
   q.tag=document.createElement('div');q.tag.className='tag';$('app').appendChild(q.tag);peers.push(q)}
 function peerSay(q,t,em){q.say=t;q.sayT=3.5;if(em){q.emote=em;q.et=2}}
 // 其他玩家下線：變灰、停在原地（躺床、坐著也一樣），上線後才會回訊息
-function peerEntry(q,oy){const off=q.online===false,seat=q.pose&&q.seat,pose=q.moving?'stand':(q.pose||'stand');let lx=q.fx+(q.shake>0?Math.round(Math.sin(time*70)*1.5):0),ly=q.fy+oy;
+function peerEntry(q,oy){const off=q.online===false,seat=q.pose&&q.seat,pose=q.moving?'stand':(q.pose||'stand');let lx=snp(q.fx)+(q.shake>0?Math.round(Math.sin(time*70)*1.5):0),ly=snp(q.fy)+oy;
   if(pose==='lie'&&seat){const o=lieXY(seat,q.x,q.y);lx=o[0];ly=o[1]+oy}
   return{z:pose!=='stand'&&seat?(seat.y+fh(seat))*T+.4:q.fy+T+.4,f:()=>outlined(lx,ly,(x,y)=>drawAvatar(x,y,q.av,{rot:seat?seat.r|0:0,party:fxToday().party.has(q.id),hand:off?null:q.gift,dance:!off&&q.danceT>0,pose,dir:q.dir,t:off?0:time+3,moving:q.moving,emote:!off&&q.et>0?q.emote:null}),off?'#7a7a72':0,off?'grayscale(1) brightness(1.08) opacity(.8)':0)}}
 function setOnline(q,v){if(q.online===v)return;q.online=v;if(!v){q.path=[];q.moving=false;q.follow=false;q.danceT=0;q.gift=null;q.sayT=0;q.offT=60+Math.random()*120;toast(q.name+'離線了')}
@@ -1453,7 +1453,7 @@ function updatePeers(dt){peers.forEach(q=>{if(q.net)return netUpd(q,dt);if(q.onl
     if((q.giftT-=dt)<=0&&!tab&&!editing){q.giftT=90+Math.random()*90;q.gift=RECIPES[rnd(RECIPES.length)].k;peerSay(q,'我煮了東西，拿去給你！');return}
     if(q.goal&&!q.pose&&cover(q.goal,q.x,q.y)&&S.items.includes(q.goal)){q.pose=F[q.goal.t].seat;q.seat=q.goal;q.goal=null}
     if((q.wait-=dt)<=0){q.wait=3+Math.random()*4;const seats=S.items.filter(i=>F[i.t].seat&&!seatTaken(i,q));if(seats.length&&Math.random()<.35){const it=seats[rnd(seats.length)],c=freeCell(it,q);q.goal=it;q.wait=10+Math.random()*12;q.path=seatPath(q.x,q.y,it,c[0],c[1])||[]}else{q.goal=null;for(let k=0;k<10;k++){const x=rnd(COLS),y=rnd(ROWS);if(!solidAt(x,y)){q.path=findPath(q.x,q.y,x,y);break}}}}})}
-function placeTags(){const r=cv.getBoundingClientRect(),k=r.width/cv.width,a=$('app').getBoundingClientRect();
+function placeTags(){if(!CR)cacheRects();const r=CR,k=r.width/VW,a=AR;
   {if(!meTag){meTag=document.createElement('div');meTag.className='tag';$('app').appendChild(meTag)}const tt=S.title&&ACH.find(x=>x.k===S.title),h=tt?`<b>〈${esc(tt.n)}〉${esc(S.name)}</b>`:'';if(meTag._h!==h){meTag.innerHTML=h;meTag._h=h}meTag.hidden=!tt||editing;if(tt){meTag.style.left=((OX+me.fx+8)*k+r.left-a.left)+'px';meTag.style.top=((OY+me.fy+WALL*T-16)*k+r.top-a.top)+'px'}}
 peers.forEach(q=>{const el=q.tag,txt=q.sayT>0?q.say:'';const off=q.online===false,h=`<b>${esc(q.name)}${off?'<i>離線</i>':q.test?'<i>測試</i>':''}</b>${txt&&!off?`<span>${esc(txt)}</span>`:''}`;el.classList.toggle('off',off);if(el._h!==h){el.innerHTML=h;el._h=h}
   el.style.left=((OX+q.fx+8)*k+r.left-a.left)+'px';el.style.top=((OY+q.fy+WALL*T-16)*k+r.top-a.top)+'px';el.hidden=editing})}
@@ -1490,7 +1490,7 @@ function netStop(quiet){if(NET.db&&NET.code){try{NET.refs.forEach(r=>r.off());ne
 function netLeave(){const own=S.net&&S.net.own;if(NET.on&&NET.uid&&!own)netRef('members/'+NET.uid).remove().catch(()=>{});netStop();S.net=null;S.gchat=[];
   if(!own&&S.homeBak){try{const b=JSON.parse(S.homeBak);S.scene=b.scene;S.items=b.items;S.cols=b.cols;S.rows=b.rows;S.scenes=b.scenes;S.pos=b.pos;if(b.exitC)S.exitC=b.exitC}catch(_){}S.homeBak=null;setSize();fit();syncRT(true)}
   makePeers();save();toast('已經離開線上小窩');render()}
-function netMe(){const st=me.seat&&!me.moving&&seatAt(S.pos.x,S.pos.y);return{n:S.name||'我',av:S.av,t:Date.now(),last:{sc:S.scene||'home',x:S.pos.x,y:S.pos.y,si:st?st.id:0}}}
+function netMe(){const st=me.seat&&!me.moving&&seatAt(S.pos.x,S.pos.y);return{n:S.name||'我',av:S.av,pid:S.uid||'',t:Date.now(),last:{sc:S.scene||'home',x:S.pos.x,y:S.pos.y,si:st?st.id:0}}}
 function netPres(){const st=me.seat&&!me.moving&&seatAt(S.pos.x,S.pos.y);return{sc:S.scene||'home',fx:Math.round(me.fx),fy:Math.round(me.fy),x:S.pos.x,y:S.pos.y,d:me.dir||1,si:st?st.id:0,e:me.et>0&&me.emote||'',dn:me.dance?1:0,h:S.hand||''}}
 function netListen(){const on=(p,ev,f)=>{const r=p.ref?p:netRef(p);r.on(ev,f,e=>netErr(e));NET.refs.push(r)};
   on('meta','value',s=>{const m=s.val();if(!m)return;NET.meta=m;if(m.name&&roomInfo().name!==m.name){S.room.name=m.name;if(tab==='room'||tab==='gchat')render()}});
@@ -1507,8 +1507,11 @@ function netListen(){const on=(p,ev,f)=>{const r=p.ref?p:netRef(p);r.on(ev,f,e=>
   on('shared/g','value',s=>ngOn(s.val()));on(netRef('shared/dg').limitToLast(40),'value',s=>dgOn(s.val()));
   ['home','yard'].forEach(k=>on('shared/sc/'+k,'value',s=>{const v=s.val();if(typeof v!=='string')return;NET.scRemote[k]=v;netApplyScene(k,v)}))}
 // 把其他玩家變成畫面上的人物
-function netPeers(){if(!NET.on)return;const sc=S.scene||'home',want=[];
-  for(const uid in NET.mem){if(uid===NET.uid)continue;const m=NET.mem[uid]||{},p=NET.pres[uid];let q=NET.q[uid];
+function netPeers(){if(!NET.on)return;const sc=S.scene||'home',want=[],best={},old=Date.now()-14*864e5;
+  // 同一個玩家換過身分（例如手機和 App、登入前後）只留一個；自己的舊身分不顯示；兩週沒上線的先藏起來
+  for(const uid in NET.mem){const m=NET.mem[uid]||{};if(uid===NET.uid||!m.pid)continue;const sc2=(NET.pres[uid]?2e13:0)+(m.t||0),b=best[m.pid];if(!b||sc2>b.s)best[m.pid]={uid,s:sc2}}
+  NET.hide={};for(const uid in NET.mem){const m=NET.mem[uid]||{};if(uid===NET.uid)continue;const ghost=!m.pid&&!NET.pres[uid]&&m.n===S.name&&JSON.stringify(m.av)===JSON.stringify(S.av);if(ghost||(m.pid&&(m.pid===S.uid||best[m.pid].uid!==uid))||(!NET.pres[uid]&&(m.t||0)<old))NET.hide[uid]=1}
+  for(const uid in NET.mem){if(uid===NET.uid||NET.hide[uid])continue;const m=NET.mem[uid]||{},p=NET.pres[uid];let q=NET.q[uid];
     if(!q){q=NET.q[uid]={id:uid,net:1,name:m.n||'朋友',av:m.av||S.av,x:0,y:0,fx:0,fy:0,tx:0,ty:0,path:[],dir:1,moving:false,et:0,emote:null,shake:0,say:'',sayT:0,gift:null,init:false};q.tag=document.createElement('div');q.tag.className='tag';$('app').appendChild(q.tag)}
     const src=p||m.last||{};q.name=m.n||q.name;if(m.av)q.av=m.av;const was=q.online;q.online=!!p;
     if(was===false&&q.online)toast(q.name+'上線了');else if(was===true&&!q.online)toast(q.name+'離線了');
@@ -1517,8 +1520,8 @@ function netPeers(){if(!NET.on)return;const sc=S.scene||'home',want=[];
     const seat=src.si&&S.items.find(i=>i.id===src.si);q.seat=seat||null;q.pose=seat?F[seat.t].seat:null;q.wantDir=src.d||1;
     if(p){if(p.e&&!(q.et>0)){q.emote=p.e;q.et=1.5}q.danceT=p.dn?2:0;q.gift=p.h||null}else{q.danceT=0;q.gift=null}
     want.push(q)}
-  for(const uid in NET.q)if(!want.includes(NET.q[uid]))NET.q[uid].tag.hidden=true;
-  peers=want}
+  for(const uid in NET.q){if(!want.includes(NET.q[uid]))NET.q[uid].tag.hidden=true;if(NET.hide[uid]&&NET.q[uid]){NET.q[uid].tag.remove();delete NET.q[uid]}}
+  peers=want;if(S.net&&S.net.own){NET.swept=NET.swept||{};for(const uid in NET.hide){const m=NET.mem[uid]||{};if(!NET.swept[uid]&&(m.pid===S.uid||(!m.pid&&m.n===S.name))){NET.swept[uid]=1;netRef('members/'+uid).remove().catch(()=>{})}}}}
 function netUpd(q,dt){if(q.et>0)q.et-=dt;if(q.sayT>0)q.sayT-=dt;if(q.shake>0)q.shake-=dt;if(q.danceT>0&&Math.random()<dt){q.emote='note';q.et=.8}
   const dx=q.tx-q.fx,dy=q.ty-q.fy,d=Math.hypot(dx,dy);if(d>48){q.fx=q.tx;q.fy=q.ty}else if(d>.5){const sp=Math.max(66,d*6)*dt;if(sp>=d){q.fx=q.tx;q.fy=q.ty}else{q.fx+=dx/d*sp;q.fy+=dy/d*sp}if(Math.abs(dx)>.3)q.dir=dx>0?1:-1}
   q.moving=d>.5;if(!q.moving)q.dir=q.wantDir||q.dir}
@@ -2107,14 +2110,14 @@ function drawPet(px,py,k,t,moving,heart,hat){const P=PETS[k],c=P.c,d=P.d,y=py+(m
   if(hat)drawHat({hat},{dir:0},px+2,y+3,c);
   if(heart)bits(BIT.heart,px+4,y-8,'#d9604a')}
 const poseNow=()=>{if(me.moving||!me.seat)return'stand';const s=seatAt(S.pos.x,S.pos.y);return s?F[s.t].seat:'stand'};
-function draw(){g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);camera();g.translate(OX,OY);drawOutside();drawRoom();const oy=WALL*T;
+function draw(){g.setTransform(RK,0,0,RK,0,0);g.clearRect(0,0,VW,VH);camera();g.translate(OX,OY);drawOutside();drawRoom();const oy=WALL*T;
   S.items.filter(i=>F[i.t].flat).forEach(i=>F[i.t].d(i.x*T,i.y*T+oy,i));drawPicks();
   if(editing){g.fillStyle='rgba(36,48,32,.12)';for(let x=1;x<COLS;x++)g.fillRect(x*T,oy,1,ROWS*T);for(let y=1;y<ROWS;y++)g.fillRect(0,y*T+oy,W,1)}
   const list=S.items.filter(i=>!F[i.t].flat).map(i=>({z:(i.y+fh(i))*T,f:()=>{if(F[i.t].raw)return F[i.t].d(i.x*T,i.y*T+oy,i);outlined(i.x*T,i.y*T+oy,(x,y)=>F[i.t].d(x,y,i),i.up?'#c9961a':0,i.col||i.hue|0);if(i.up)sparkle(i,oy)}}));
   const pose=poseNow(),seat=seatAt(S.pos.x,S.pos.y);
-  list.push({z:pose!=='stand'&&seat?(seat.y+fh(seat))*T+.5:me.fy+T+.5,f:()=>{let lx=me.fx,ly=me.fy+oy;if(pose==='lie'){const q=lieXY(seat,S.pos.x,S.pos.y);lx=q[0];ly=q[1]+oy}if(me.shake>0)lx+=Math.round(Math.sin(time*70)*1.5);outlined(lx,ly,(ax,ay)=>drawAvatar(ax,ay,S.av,{party:fxToday().party.has('me'),hand:me.eatT>0?me.eatK:S.hand,rot:seat?seat.r|0:0,pose,dir:me.dir,t:time,moving:me.moving,dance:me.dance,emote:me.et>0?me.emote:(me.dance?'note':null)}))}});
+  list.push({z:pose!=='stand'&&seat?(seat.y+fh(seat))*T+.5:me.fy+T+.5,f:()=>{let lx=snp(me.fx),ly=snp(me.fy)+oy;if(pose==='lie'){const q=lieXY(seat,S.pos.x,S.pos.y);lx=q[0];ly=q[1]+oy}if(me.shake>0)lx+=Math.round(Math.sin(time*70)*1.5);outlined(lx,ly,(ax,ay)=>drawAvatar(ax,ay,S.av,{party:fxToday().party.has('me'),hand:me.eatT>0?me.eatK:S.hand,rot:seat?seat.r|0:0,pose,dir:me.dir,t:time,moving:me.moving,dance:me.dance,emote:me.et>0?me.emote:(me.dance?'note':null)}))}});
   peers.forEach(q=>list.push(peerEntry(q,oy)));
-  (S.scene==='yard'?[]:S.pets).forEach(p=>{const r=petRT[p.id];if(r)list.push({z:r.fy+T+.2,f:()=>outlined(r.fx,r.fy+oy,(x,y)=>drawPet(x,y,p.k,time+p.id,r.moving,r.et>0,p.hat))})});
+  (S.scene==='yard'?[]:S.pets).forEach(p=>{const r=petRT[p.id];if(r)list.push({z:r.fy+T+.2,f:()=>outlined(snp(r.fx),snp(r.fy)+oy,(x,y)=>drawPet(x,y,p.k,time+p.id,r.moving,r.et>0,p.hat))})});
   list.sort((a,b)=>a.z-b.z).forEach(o=>o.f());drawFrontWalls();drawNight();drawFx();drawDuo(oy);ngDrawMarks(oy);
   if(near&&!tab){const b=Math.floor(time*3)%2;let mx=null,my;if(near.pet){const r=petRT[near.pet.id];if(r){mx=r.fx+5;my=r.fy+oy-12}}else if(near.item){const i=near.item;mx=i.x*T+fw(i)*T/2-3;my=i.y*T+oy-30}else{mx=(near.fix==='exit'?156:139)+exOff();my=3}
     if(mx!==null){bits(BIT.arrow,mx,my+b+1,'#243020');bits(BIT.arrow,mx,my+b,'#f6c94a')}}
@@ -2129,17 +2132,20 @@ function syncRT(force){if(force||!me.init){me.fx=S.pos.x*T;me.fy=S.pos.y*T;me.pa
   for(const id in petRT)if(!S.pets.some(p=>p.id==id))delete petRT[id]}
 function stepTo(o,tx,ty,sp,dt){const dx=tx-o.fx,dy=ty-o.fy,d=Math.hypot(dx,dy),s=sp*dt;if(d<=s){o.fx=tx;o.fy=ty;return true}o.fx+=dx/d*s;o.fy+=dy/d*s;return false}
 function fit(){const vw=cv.clientWidth||innerWidth,vh=cv.clientHeight||innerHeight;
-  SC=Math.max(1,Math.min(Math.max(vw/W,vh/H),Math.min(vw/W,vh/H)*(S.zoom===0?1.6:2.4)));cv.width=Math.ceil(vw/SC);cv.height=Math.ceil(vh/SC);g.imageSmoothingEnabled=false}
+  SC=Math.max(1,Math.min(Math.max(vw/W,vh/H),Math.min(vw/W,vh/H)*(S.zoom===0?1.6:2.4)));VW=Math.ceil(vw/SC);VH=Math.ceil(vh/SC);RK=Math.max(1,Math.min(3,Math.round(SC*Math.min(2,devicePixelRatio||1))));cv.width=VW*RK;cv.height=VH*RK;g.imageSmoothingEnabled=false;cacheRects()}
+// 畫布用 RK 倍解析度畫，鏡頭可以用很小的步伐移動，走路才不會一格一格跳
+var VW=1,VH=1,RK=1,CR=null,AR=null;const snp=v=>Math.round(v*RK)/RK;
+function cacheRects(){CR=cv.getBoundingClientRect();AR=$('app').getBoundingClientRect()}addEventListener('scroll',()=>CR&&cacheRects(),true);setInterval(()=>{if(!document.hidden)cacheRects()},1500);
 let HUDB=0,BOTB=0;function measureHud(){const a=$('app').getBoundingClientRect(),h=document.querySelector('.hud').getBoundingClientRect();HUDB=Math.max(0,h.bottom-a.top)+4;BOTB=editing?0:84}
-function camera(){const vw=cv.width,vh=cv.height;if(!editing){cam.x=me.fx+8;cam.y=me.fy+WALL*T+4}
+function camera(){const vw=VW,vh=VH;if(!editing){cam.x=snp(me.fx)+8;cam.y=snp(me.fy)+WALL*T+4}
   if(vw<W)cam.x=Math.max(vw/2,Math.min(W-vw/2,cam.x));
-  OX=vw>=W?Math.round((vw-W)/2):-Math.round(cam.x-vw/2);
+  OX=vw>=W?Math.round((vw-W)/2):-Math.round((cam.x-vw/2)*RK)/RK;
   // 上面狀態列、下面按鈕的高度換算成畫面格數，房間可以捲到它們下面露出來
   const ti=editing?0:HUDB/SC,bi=BOTB/SC,av=vh-ti-bi;
-  if(H<=av)OY=Math.round(ti+(av-H)*.5);else OY=Math.round(Math.min(ti,Math.max(vh-bi-H,ti+av/2-cam.y)))}
+  if(H<=av)OY=Math.round(ti+(av-H)*.5);else OY=Math.round(Math.min(ti,Math.max(vh-bi-H,ti+av/2-cam.y))*RK)/RK}
 let shooting=0;
 // 房間外面：家裡是淡綠底加小圓點，院子是淡黃到淡綠的天空加雲
-function drawOutside(){const x0=-OX,y0=-OY,w=cv.width,h=cv.height;if(shooting)return R('#eef5e6',x0,y0,w,h);
+function drawOutside(){const x0=Math.floor(-OX),y0=Math.floor(-OY),w=VW+2,h=VH+2;if(shooting)return R('#eef5e6',x0,y0,w,h);
   if(S.scene==='yard'){const gr=g.createLinearGradient(0,y0,0,y0+h);gr.addColorStop(0,'#fbf3d6');gr.addColorStop(.6,'#e6f1d4');gr.addColorStop(1,'#cfe6b8');g.fillStyle=gr;g.fillRect(x0,y0,w,h);
     const cl=(cx,cy,s)=>{R('#ffffff',cx,cy,s*4,s);R('#ffffff',cx+s,cy-s,s*2,s);R('#f2f2ea',cx,cy+s,s*4,1)};const t=Math.floor(time*3)%400;cl(x0+((20+t)%(w+40))-20,y0+6,3);cl(x0+((120+t*.6)%(w+40))-20,y0+18,2);cl(x0+((200+t*.8)%(w+40))-20,y0+10,2);return}
   R('#e8f1dd',x0,y0,w,h);const sx=((x0%10)+10)%10,sy=((y0%10)+10)%10;for(let yy=y0-sy;yy<y0+h;yy+=10)for(let xx=x0-sx+((Math.round(yy/10))%2?5:0);xx<x0+w;xx+=10)R('#d6e6c6',xx,yy,1,1);
@@ -2188,19 +2194,19 @@ function doAct(){const n=near;if(!n||tab||editing)return;
   if(f.open){tab=f.open;return render()}
   if(f.toggle)act('toggle',{id:i.id})}
 function placeSay(dt){const el=$('say');if(el.hidden)return;if((sayT-=dt)<=0){el.hidden=true;return}
-  const r=cv.getBoundingClientRect(),k=r.width/cv.width,a=$('app').getBoundingClientRect();el.style.left=((OX+me.fx+8)*k+r.left-a.left)+'px';el.style.top=((OY+me.fy+WALL*T-18)*k+r.top-a.top)+'px'}
+  if(!CR)cacheRects();const r=CR,k=r.width/VW,a=AR;el.style.left=((OX+me.fx+8)*k+r.left-a.left)+'px';el.style.top=((OY+me.fy+WALL*T-18)*k+r.top-a.top)+'px'}
 function petFind(p,r){const d=today(),lv=plv(p);if(lv<2||p.happy<60)return;if(!S.pk||S.pk.day!==d)S.pk={day:d,n:0};if(S.pk.n>=15)return;S.pk.n++;const c=gain(3*lv*(bOn('petcoin')?2:1));S.coins+=c;r.et=2;SFX.coin();toast(`${p.name}撿到 ${c} 金幣`);save();if(!tab)render()}
 let last=0;function frame(now){const dt=Math.min(.05,(now-last)/1000||0);last=now;update(dt);trackNear();draw();placeSay(dt);placeTags();svTick(dt);if(tab==='fishing'&&fz.st==='bite'){fz.p+=fz.dir*fz.v*dt;if(fz.p>1){fz.p=1;fz.dir=-1}if(fz.p<0){fz.p=0;fz.dir=1}const fm=$('fmark');if(fm)fm.style.left=(fz.p*100)+'%'}requestAnimationFrame(frame)}
 
 /* ========== 畫面輸入 ========== */
-function tileOf(e){const r=cv.getBoundingClientRect(),k=cv.width/r.width;const x=Math.floor(((e.clientX-r.left)*k-OX)/T),y=Math.floor(((e.clientY-r.top)*k-OY)/T)-WALL;
+function tileOf(e){const r=cv.getBoundingClientRect(),k=VW/r.width;const x=Math.floor(((e.clientX-r.left)*k-OX)/T),y=Math.floor(((e.clientY-r.top)*k-OY)/T)-WALL;
   return{x:Math.max(0,Math.min(COLS-1,x)),y:Math.max(0,Math.min(ROWS-1,y))}}
 cv.addEventListener('pointerdown',e=>{lastPT=e.pointerType||'mouse';pd={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY};dragged=false;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
 const setGhost=t=>{if(!ghost||t.x!==ghost.x||t.y!==ghost.y){ghost=t;render()}};
 cv.addEventListener('pointermove',e=>{hover=tileOf(e);
   if(editing&&hold&&!pd&&e.pointerType==='mouse')setGhost(hover); // 滑鼠：游標指到哪，預覽就到哪
   if(!pd)return;const dx=e.clientX-pd.x,dy=e.clientY-pd.y,d=Math.hypot(dx,dy);
-  if(editing){if(d>10)dragged=true;if(hold){if(dragged)setGhost(hover)}else if(dragged){const k=cv.width/cv.getBoundingClientRect().width;cam.x-=(e.clientX-pd.lx)*k;cam.y-=(e.clientY-pd.ly)*k}pd.lx=e.clientX;pd.ly=e.clientY;return}
+  if(editing){if(d>10)dragged=true;if(hold){if(dragged)setGhost(hover)}else if(dragged){const k=VW/cv.getBoundingClientRect().width;cam.x-=(e.clientX-pd.lx)*k;cam.y-=(e.clientY-pd.ly)*k}pd.lx=e.clientX;pd.ly=e.clientY;return}
   if(!joy.on&&d>10){joy.on=dragged=true;const a=$('app').getBoundingClientRect(),j=$('joy');j.style.left=(pd.x-a.left)+'px';j.style.top=(pd.y-a.top)+'px';j.hidden=false;me.path=me.path.slice(0,1);me.dance=false}
   if(joy.on){const m=Math.min(d,40)/(d||1);$('knob').style.transform=`translate(${dx*m}px,${dy*m}px)`;joy.dx=d>14?dx:0;joy.dy=d>14?dy:0}});
 const endJoy=()=>{pd=null;joy.on=false;joy.dx=joy.dy=0;$('joy').hidden=true;$('knob').style.transform=''};
@@ -2409,7 +2415,7 @@ room(){const r=roomInfo(),days=Math.floor((Date.now()-r.born)/864e5)+1,d=new Dat
   <div class="sgroup"><div class="srow"><span class="sic">${r.priv?'🔒':'🔓'}</span><span class="stx"><b>私人小窩</b><small>開啟後，新的朋友不能再用代碼加入</small></span><button class="tg ${r.priv?'on':''}" data-a="rpriv" type="button" role="switch" aria-checked="${!!r.priv}"><i></i></button></div></div>
   <div class="sec"><h3>小窩代碼</h3><div class="row" style="flex-wrap:nowrap"><div class="rcode">${r.code}</div><button class="btn sun" data-a="rcopy" type="button">複製</button><button class="btn soft" data-a="rshare" type="button">分享</button></div></div>${netSection()}
   <div class="sec"><h3>小窩年齡</h3><div class="sgroup"><div class="srow"><span class="sic">🕰️</span><span class="stx"><b>${days} 天</b><small>建立於 ${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日</small></span></div></div></div>
-  <div class="sec"><h3>小窩成員（${mem.length}/20）</h3><div class="sgroup">${mem.map(m=>`<div class="srow"><img class="pix hd" src="${headThumb(m.av)}" width="40" height="40" alt="" style="${m.off?'filter:grayscale(1)':''}"><span class="stx"><b>${esc(m.n)} ${m.id==='me'?'<span class="meta">（你）</span>':''}</b>${m.off?'<small>離線中</small>':''}</span></div>`).join('')}</div></div>`},
+  <div class="sec"><h3>小窩成員（${mem.length}/20）</h3><div class="sgroup">${mem.map(m=>`<div class="srow"><img class="pix hd" src="${headThumb(m.av)}" width="40" height="40" alt="" style="${m.off?'filter:grayscale(1)':''}"><span class="stx"><b>${esc(m.n)} ${m.id==='me'?'<span class="meta">（你）</span>':''}</b>${m.off?'<small>離線中</small>':''}</span>${m.off&&NET.on&&S.net&&S.net.own&&m.id!=='me'?`<button class="btn soft small" data-a="netkick" data-k="${esc(m.id)}" type="button">移出</button>`:''}</div>`).join('')}</div></div>`},
 draw(){const ds=(S.designs||[]).filter(d=>d.kind===DR.kind),fit=DR.kind==='fit';
   return `<div><h2>畫畫工作室</h2><p class="lead">${fit?'畫一件衣服，存起來就能穿。之後連線，朋友看到的也是你畫的樣子。':'畫一件 1 格大的家具，做成家具要 '+DFURN+' 金幣，做好放在佈置的倉庫。'}</p></div>
   <div class="dtabs"><button class="${fit?'on':''}" data-a="dkind" data-k="fit" type="button">👕 衣服</button><button class="${fit?'':'on'}" data-a="dkind" data-k="furn" type="button">🪑 家具</button></div>
@@ -2621,7 +2627,7 @@ set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="but
   ${row('📂','匯入存檔','讀回之前匯出的檔案','','importsave')}
   ${askReset?`<div class="srow"><span class="sic">⚠️</span><span class="stx"><b>確定清掉所有進度？</b></span><button class="btn small" style="background:var(--bad);box-shadow:none!important" data-a="reset" type="button">清掉</button><button class="btn soft small" data-a="noreset" type="button">取消</button></div>`:row('🔄','重新開始','進度自動存在這個瀏覽器','','askreset')}
   </div></div>
-  <p class="lead" style="text-align:center">像素小窩 v0.63</p>`},
+  <p class="lead" style="text-align:center">像素小窩 v0.65</p>`},
 feed(){const left=Math.max(0,POST_MAX-(S.pd.day===today()?S.pd.n:0)),mt=thumb(20,34,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}));
   return `<div><h2>動態</h2><p class="lead">上方頭像列只放 24 小時內的動態，過了還是留在這裡。按「📌 釘到照片牆」的照片會一直掛在照片牆上，不會被新動態擠掉（最多 9 張，走到照片牆旁邊按「看照片牆」就能一張一張看）。拍一張照片、寫一句話就能發布。每篇得 ${POST_PAY} 金幣，今天還能領 ${left} 次。</p></div>
   <div class="post"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${draft.d?`<img class="draft" src="${draft.d}" alt="要發布的照片">`:''}<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><input class="field wide" id="cap" placeholder="寫點什麼…" maxlength="200" value="${esc(draft.cap)}"><div class="row"><button class="btn soft small" data-a="pick" type="button">${draft.d?'重拍':'拍照'}</button><button class="btn small" data-a="post" type="button" ${draft.d?'':'disabled'}>發布</button></div></div></div></div>
@@ -2641,17 +2647,26 @@ function shopExtra(){const ev=evNow(),sold=S.limBuy===today();
   ${ev?`<div class="sec"><h3>${ev.n}限定・只到 ${ev.m}/31</h3><div class="grid">${ev.items.map(shopCard).join('')}<div class="card"><img src="${cosThumb('hat',ev.hat)}" alt=""><span class="name">${HATS[ev.hat]}</span>${S.cos['hat:'+ev.hat]?'<span class="meta">已擁有</span>':`<button class="btn sun small" data-a="buyhat" data-i="${ev.hat}" type="button" ${S.coins<HATP?'disabled':''}>${coin(HATP)}</button>`}</div></div></div>`:''}`}
 function cropBag(){const ks=Object.keys(CROPS).filter(k=>S.crop[k]>0);return `<div class="sec"><h3>收成和漁獲</h3>${ks.length?`<div class="row">${ks.map(k=>`<button class="btn soft small" data-a="sellcrop" data-k="${k}" type="button">${CROPS[k].e} ${CROPS[k].n} ×${S.crop[k]}　賣 ${sellAt(CROPS[k].sell,k)}</button>`).join('')}</div>`:'<p class="empty">還沒有收成。</p>'}</div>`}
 const CTH={};function cosThumb(l,i){const k=l+':'+i;return CTH[k]||(CTH[k]=thumb(20,34,()=>drawAvatar(2,15,{skin:0,hair:l==='hair'?i:0,style:0,shirt:0,hat:0,[l==='hair'?'_':l]:i},{pose:'stand',dir:0,t:0})))}
+// 面板只更新有變的地方（整個重畫在手機上很卡）
+function morphKids(a,b){const an=[...a.childNodes],bn=[...b.childNodes];for(let i=0;i<bn.length;i++){const x=an[i],y=bn[i];if(!x)a.appendChild(y);else morphNode(a,x,y)}for(let i=bn.length;i<an.length;i++)an[i].remove()}
+function morphNode(p,x,y){if(x.nodeType!==y.nodeType||x.nodeName!==y.nodeName||x.nodeName==='CANVAS'||(x.id||'')!==(y.id||'')){p.replaceChild(y,x);return}
+  if(x.nodeType!==1){if(x.nodeValue!==y.nodeValue)x.nodeValue=y.nodeValue;return}
+  for(const at of [...x.attributes])if(!y.hasAttribute(at.name))x.removeAttribute(at.name);for(const at of y.attributes)if(x.getAttribute(at.name)!==at.value)x.setAttribute(at.name,at.value);
+  const nn=x.nodeName;if(nn==='INPUT'){if(x.type==='checkbox'||x.type==='radio')x.checked=y.hasAttribute('checked');else if(x.type!=='file'&&x.value!==(y.getAttribute('value')||''))x.value=y.getAttribute('value')||''}
+  if(nn==='TEXTAREA'){if(x.value!==y.textContent)x.value=y.textContent;return}
+  morphKids(x,y);if(nn==='SELECT'){const o=[...x.options].findIndex(o=>o.hasAttribute('selected'));x.selectedIndex=o<0?0:o}}
+function setH(el,h){if(el._h!==h){el.innerHTML=h;el._h=h}}
 function render(){applyTheme();requestAnimationFrame(measureHud);
-  $('stats').innerHTML=`<span class="stat coin" title="金幣">🪙 <b>${S.coins.toLocaleString("en-US")}</b></span><span class="stat" title="房間等級">🏠 <b>Lv.${level()}</b></span><span class="stat" title="連續登入天數">🔥 <b>${S.streak}</b></span>`+buffChips();
-  $('stories').hidden=editing;$('stories').innerHTML='<div class="sto"><button class="story newp" data-story="new" type="button"><i>＋</i><span>發動態</span></button></div>'+storyPeople().map(x=>{const n=x.posts.length,un=x.posts.some(p=>!(S.seen||{})[p.id]);return `<div class="sto"><button class="story ${n?(un?'un':'seen'):'none'}" data-sp="${x.id}" type="button" aria-label="${esc(x.name)}的動態"><img class="pix" src="${headThumb(x.av)}" alt=""><span>${x.id==='me'?'你':esc(x.name)}</span></button></div>`}).join('');
-  $('dock').innerHTML=editing?`<button data-undo type="button" aria-label="復原" ${UNDO.length?'':'disabled'}>↶</button><button data-redo type="button" aria-label="重做" ${REDO.length?'':'disabled'}>↷</button><span class="edcount">🪑 ${S.items.length}</span><span class="meta edhint">${hold&&hold.t==='__exit'?'點地板選大門要放在哪一欄':hold?'拖曳或點地板移動，綠框才放得下':'點家具拿起來，就能旋轉或搬走'}</span>${hold&&hold.t==='__exit'?`<button data-store type="button">取消</button><button class="main" data-place type="button" ${ghost&&exitOk(ghost.x)?'':'disabled'}>放這裡</button>`:hold?`<button data-rot type="button">旋轉</button><label class="dyel">🎨 自選顏色 100<input type="color" id="dyein" value="${hold.col||'#8fbf7a'}"></label>${hold.col||hold.hue?'<button data-undye type="button">原色</button>':''}<button data-up type="button" ${hold.up?'disabled':''}>${hold.up?'已升級':'升級 200'}</button><button data-store type="button">收起來</button><button class="main" data-place type="button" ${ghost&&canPlace(hold.t,ghost.x,ghost.y,hold.r)?'':'disabled'}>放這裡</button>`:'<button data-exitmv type="button">搬大門</button><button data-open="edit" type="button">倉庫</button><button class="main" data-done type="button">完成</button>'}`
-    :TABS.map(([id,n])=>`<button data-open="${id}" type="button"><i>${TICON[id]||'✨'}</i>${n}</button>`).join('')+[['dance','跳舞','💃'],['heart','愛心','💗'],['note','哼歌','🎵']].map(([k,n,ic])=>`<button class="em" data-emote="${k}" type="button"><i>${ic}</i>${n}</button>`).join('');
+  setH($('stats'),`<span class="stat coin" title="金幣">🪙 <b>${S.coins.toLocaleString("en-US")}</b></span><span class="stat" title="房間等級">🏠 <b>Lv.${level()}</b></span><span class="stat" title="連續登入天數">🔥 <b>${S.streak}</b></span>`+buffChips());
+  $('stories').hidden=editing;setH($('stories'),'<div class="sto"><button class="story newp" data-story="new" type="button"><i>＋</i><span>發動態</span></button></div>'+storyPeople().map(x=>{const n=x.posts.length,un=x.posts.some(p=>!(S.seen||{})[p.id]);return `<div class="sto"><button class="story ${n?(un?'un':'seen'):'none'}" data-sp="${x.id}" type="button" aria-label="${esc(x.name)}的動態"><img class="pix" src="${headThumb(x.av)}" alt=""><span>${x.id==='me'?'你':esc(x.name)}</span></button></div>`}).join(''));
+  setH($('dock'),editing?`<button data-undo type="button" aria-label="復原" ${UNDO.length?'':'disabled'}>↶</button><button data-redo type="button" aria-label="重做" ${REDO.length?'':'disabled'}>↷</button><span class="edcount">🪑 ${S.items.length}</span><span class="meta edhint">${hold&&hold.t==='__exit'?'點地板選大門要放在哪一欄':hold?'拖曳或點地板移動，綠框才放得下':'點家具拿起來，就能旋轉或搬走'}</span>${hold&&hold.t==='__exit'?`<button data-store type="button">取消</button><button class="main" data-place type="button" ${ghost&&exitOk(ghost.x)?'':'disabled'}>放這裡</button>`:hold?`<button data-rot type="button">旋轉</button><label class="dyel">🎨 自選顏色 100<input type="color" id="dyein" value="${hold.col||'#8fbf7a'}"></label>${hold.col||hold.hue?'<button data-undye type="button">原色</button>':''}<button data-up type="button" ${hold.up?'disabled':''}>${hold.up?'已升級':'升級 200'}</button><button data-store type="button">收起來</button><button class="main" data-place type="button" ${ghost&&canPlace(hold.t,ghost.x,ghost.y,hold.r)?'':'disabled'}>放這裡</button>`:'<button data-exitmv type="button">搬大門</button><button data-open="edit" type="button">倉庫</button><button class="main" data-done type="button">完成</button>'}`
+    :TABS.map(([id,n])=>`<button data-open="${id}" type="button"><i>${TICON[id]||'✨'}</i>${n}</button>`).join('')+[['dance','跳舞','💃'],['heart','愛心','💗'],['note','哼歌','🎵']].map(([k,n,ic])=>`<button class="em" data-emote="${k}" type="button"><i>${ic}</i>${n}</button>`).join(''));
   if(S.hand&&!(S.dish[S.hand]>0))S.hand=null;{const hc=$('handchip'),r=S.hand&&RECIPES.find(x=>x.k===S.hand);hc.hidden=!r||editing;if(r)hc.innerHTML=`<span>手上 ${DI(r)} ${r.n}</span><button data-h="eat" type="button">吃掉</button><button data-h="put" type="button">放下</button>`}
   $('chatbtn').hidden=editing;$('hudr').hidden=editing;{const d=dmUnread(),n=(S.notif||[]).filter(x=>!x.read).length;$('dmbadge').hidden=!d;$('dmbadge').textContent=d;$('ntbadge').hidden=!n;$('ntbadge').textContent=n}if(editing)$('chatbar').hidden=true;
   $('dockw').className='dock'+(editing?'':' pop');$('dockw').hidden=!editing&&!menuOpen;const mb=$('menu');mb.hidden=editing;mb.textContent=menuOpen?'✕':'選單';mb.setAttribute('aria-expanded',menuOpen);$('veil').hidden=!tab;$('close').hidden=tab==='setup'||(!S.setup&&(tab==='acct'||tab==='accpick'));
-  if(tab){$('panel').innerHTML=V[tab]();{const h=$('panel').querySelector('h2');if(tab==='draw')drawEditor();if(tab==='dg')dgCanvas();if(tab==='ngame')ngCanvas();{const h=$('panel').querySelector('h2'),nx=h&&h.nextElementSibling;if(nx&&nx.matches('p.lead')&&!['setup','remind','gift','login','idiom','peer','accpick'].includes(tab))nx.remove()}
+  if(tab){const tp=document.createElement('template');tp.innerHTML=V[tab]();{const h=tp.content.querySelector('h2'),nx=h&&h.nextElementSibling;if(nx&&nx.matches('p.lead')&&!['setup','remind','gift','login','idiom','peer','accpick'].includes(tab))nx.remove();if(h)h.remove();const pn=$('panel');if(pn._tab!==tab){pn.replaceChildren(tp.content);pn._tab=tab}else morphKids(pn,tp.content);if(tab==='draw')drawEditor();if(tab==='dg')dgCanvas();if(tab==='ngame')ngCanvas();
     $('help').hidden=!TUT[tab];if(TUT[tab]&&!(S.tut||{})[tab]&&!tutK&&S.setup)setTimeout(()=>{if(tab&&TUT[tab]&&!(S.tut||{})[tab]&&!tutK)showTut(tab)},250);
-    $('mtitle').innerHTML=h?h.innerHTML:tab==='dm'&&dmWith?esc((peerById(dmWith)||{}).name||''):'';if(h)h.remove()}const pv=$('pv');if(pv){const c=pv.getContext('2d');c.clearRect(0,0,20,34);withCtx(c,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}))}}
+    $('mtitle').innerHTML=h?h.innerHTML:tab==='dm'&&dmWith?esc((peerById(dmWith)||{}).name||''):''}const pv=$('pv');if(pv){const c=pv.getContext('2d');c.clearRect(0,0,20,34);withCtx(c,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}))}}
   syncRT()}
 setTimeout(()=>{kInit();yardMigrate();save();render()},300);
 setTimeout(()=>{const pr=location.protocol;if((pr==='file:'||pr==='content:')&&!sessionStorage.getItem('pnwarn')){try{sessionStorage.setItem('pnwarn',1)}catch(_){}const el=$('invite');if(inv)return;el.hidden=false;el.innerHTML=`<div class="invbox"><span class="invemo">💾</span><div class="stx"><b>用檔案打開，進度可能存不住</b><small>有些手機每次開檔都會當成新遊戲。建議用網址開，或到設定「匯出存檔」備份</small></div><button class="btn small" id="invok" type="button">知道了</button></div>`;$('invok').onclick=()=>{el.hidden=true}}},2500);
@@ -2680,7 +2695,7 @@ $('dmbtn').onclick=()=>{if(SV||CP)return;dmWith=null;menuOpen=false;tab='dm';ren
 $('shotbtn').onclick=()=>{if(SV||CP)return;openShot()};
 // 先把整間房子畫成一張大圖，再讓人自己框要拍的範圍
 let SHT=null;
-function fullShot(){const M=12,k=3;cv.width=W+M*2;cv.height=H+M*2;g.imageSmoothingEnabled=false;shooting=1;draw();shooting=0;const c=mkc(cv.width*k,cv.height*k),x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(cv,0,0,c.width,c.height);const ox=OX,oy0=OY;
+function fullShot(){const M=12,k=3;VW=W+M*2;VH=H+M*2;RK=1;cv.width=VW;cv.height=VH;g.imageSmoothingEnabled=false;shooting=1;draw();shooting=0;const c=mkc(cv.width*k,cv.height*k),x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(cv,0,0,c.width,c.height);const ox=OX,oy0=OY;
   // 照片上也標名字，像 Peeps 一樣
   x.font='bold 18px "Noto Sans TC",sans-serif';x.textAlign='center';x.textBaseline='middle';
   [{n:S.name,fx:me.fx,fy:me.fy,off:false}].concat(peers.map(q=>({n:q.name,fx:q.fx,fy:q.fy,off:q.online===false}))).forEach(o=>{const tx=(ox+o.fx+8)*k,ty=(oy0+o.fy+WALL*T+19)*k,w=x.measureText(o.n).width+16;x.fillStyle=o.off?'rgba(110,110,100,.85)':'rgba(42,53,36,.82)';x.beginPath();x.roundRect?x.roundRect(tx-w/2,ty-13,w,26,13):x.rect(tx-w/2,ty-13,w,26);x.fill();x.fillStyle='#fff';x.fillText(o.n,tx,ty+1)});
@@ -2728,7 +2743,7 @@ $('panel').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(
   tput(){act('tput',{k:d.k})},tback(){act('tback',{id:+d.id,j:+d.j})},teat(){tEat(+d.id,+d.j)},thide(){tHide=tHide?0:1;render()},tleave(){act('tleave')},raceinv(){raceInvite()},tutopen(){showTut(d.k)},cooksel(){cookSel=d.k;render()},shopt(){shopTab=d.k;render()},
   opengame(){tab=d.k;render()},gback(){tab='game';render()},qzpick(){act('qzpick',{i:+d.i})},qznext(){act('qznext')},
   gopen(){tab='gchat';render();gScroll()},gemot(){gEmo=gEmo?0:1;render();gScroll()},gemo(){act('gchat',{e:d.e});gScroll()},gstk(){act('gchat',{st:S.stk[+d.i]});gScroll()},demot(){dEmo=dEmo?0:1;render();dmScroll()},demo(){dEmo=0;act('dm',{to:dmWith,t:d.e})},dstk(){dEmo=0;act('dm',{to:dmWith,st:S.stk[+d.i]})},
-  rname(){act('rname',{v:$('rname').value});if(NET.on&&S.net&&S.net.own)netRef('meta/name').set(roomInfo().name).catch(()=>{})},netup(){netStart(roomInfo().code,'create')},netjoin(){netStart(($('netcode')||{}).value,'join')},netleave(){netLeave()},netre(){netStart(S.net.code,S.net.own?'create':'join')},netev(){const q=NET.q[peerSel];if(q&&netSend('ev',{to:q.id,k:d.k})){me.emote=d.k==='heart'?'heart':'note';me.et=2;toast(d.k==='heart'?'💗 比了愛心':'👋 打了招呼');tab=null;render()}},rpriv(){act('rpriv')},rcopy(){const c=roomInfo().code;try{navigator.clipboard.writeText(c).then(()=>toast('代碼 '+c+' 複製好了'),()=>toast('代碼是 '+c))}catch(_){toast('代碼是 '+c)}},
+  rname(){act('rname',{v:$('rname').value});if(NET.on&&S.net&&S.net.own)netRef('meta/name').set(roomInfo().name).catch(()=>{})},netup(){netStart(roomInfo().code,'create')},netjoin(){netStart(($('netcode')||{}).value,'join')},netleave(){netLeave()},netkick(){const id=d.k,m=NET.mem[id];if(!m)return;if(NG.kick!==id){NG.kick=id;toast('再按一次「移出」，把'+(m.n||'他')+'移出小窩');return}NG.kick=null;netRef('members/'+id).remove().then(()=>toast('已經把'+(m.n||'他')+'移出小窩')).catch(netErr)},netre(){netStart(S.net.code,S.net.own?'create':'join')},netev(){const q=NET.q[peerSel];if(q&&netSend('ev',{to:q.id,k:d.k})){me.emote=d.k==='heart'?'heart':'note';me.et=2;toast(d.k==='heart'?'💗 比了愛心':'👋 打了招呼');tab=null;render()}},rpriv(){act('rpriv')},rcopy(){const c=roomInfo().code;try{navigator.clipboard.writeText(c).then(()=>toast('代碼 '+c+' 複製好了'),()=>toast('代碼是 '+c))}catch(_){toast('代碼是 '+c)}},
   rshare(){const r=roomInfo(),t='來我的像素小窩「'+r.name+'」玩！小窩代碼：'+r.code;if(navigator.share)navigator.share({text:t}).catch(()=>{});else{try{navigator.clipboard.writeText(t)}catch(_){}toast('邀請文字複製好了')}},
   calt(){calTab=d.k;memSel=-1;render()},memf(){memWho=d.k;render()},memo(){memSel=+d.i;render();$('panel').scrollTop=0},memx(){memSel=-1;render()},memstk(){const l=allPhotos().filter(x=>memWho==='all'||x.by===memWho)[+d.i];if(l)addSticker(l.d)},
   hatch(){act('hatch',{id:+d.id})},dtclaim(){act('dtclaim',{k:d.k})},chest(){act('chest')},
