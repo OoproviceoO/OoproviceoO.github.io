@@ -215,7 +215,7 @@ h3{margin:0;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.08
 .stat.buff{background:var(--surface);color:var(--ink);font-size:12px}.stat.buff b{font-size:13px}
 .toast{border:2px solid var(--outline)}
 .tag{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:none;z-index:1}
-.tag b{background:var(--ink);color:var(--bg);font-size:11px;padding:1px 7px;border-radius:99px;white-space:nowrap}
+.tag b{background:var(--ink);color:var(--bg);font-size:14px;font-weight:700;padding:3px 10px;letter-spacing:.02em;box-shadow:0 2px 6px rgba(0,0,0,.15);border-radius:99px;white-space:nowrap}
 .tag i{font-style:normal;font-weight:400;margin-left:4px;opacity:.7}
 .tag span{order:-1;background:var(--surface);color:var(--ink);border:2px solid var(--outline);border-radius:12px;padding:4px 10px;font-weight:700;font-size:13px;max-width:200px;text-align:center}
 .pokes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
@@ -1112,7 +1112,7 @@ function eatFx(r,q){S.buff=S.buff||{};if(r.tox&&Math.random()<({3:0,2:.2,1:.45}[
   me.emote='heart';me.et=2;SFX.open(3);toast(`吃了${QN[q]}的${r.n}！${r.fx.split('・⚠️')[0]}${r.bm&&m>0?'，'+Math.round(r.bm*m)+' 分鐘':''}`)}
 const STL={pot:'🍲 鍋子',grill:'🔥 烤台',blend:'🥤 果汁機',oven:'🧁 烤箱'};
 const STARTER=['soup','salad','grill','gcorn','jtomato','bgratin'];
-function kInit(){if(!S.tfix){S.tfix=1;S.items.forEach(i=>{if(i.t==='table'&&i.food&&i.food.length>1){i.food.splice(1).forEach(f=>dishAdd(f.k,f.q))}})}S.gotSt=S.gotSt||{};['grill','blender','oven'].forEach(t=>{if(!S.gotSt[t]&&!(t==='grill'&&S.gotGrill)){S.inv[t]=(S.inv[t]|0)+1}S.gotSt[t]=1});if(!S.uid)S.uid=Math.random().toString(36).slice(2,10);if(!S.known)S.known=((S.st||{}).cook||RECIPES.some(r=>S.dish[r.k]>0))?['cornsoup','curry','cake','pie']:[];STARTER.forEach(k=>{if(!S.known.includes(k))S.known.push(k)});S.dq=S.dq||{}}
+function kInit(){if(!S.tfix){S.tfix=1;S.items.forEach(i=>{if(i.t==='table'&&i.food&&i.food.length>1){i.food.splice(1).forEach(f=>dishAdd(f.k,f.q))}})}S.gotSt=S.gotSt||{};['grill','blender','oven'].forEach(t=>{if(!S.gotSt[t]&&!(t==='grill'&&S.gotGrill)){S.inv[t]=(S.inv[t]|0)+1}S.gotSt[t]=1});if(!S.uid)S.uid=Math.random().toString(36).slice(2,10);if(!S.known)S.known=((S.st||{}).cook||RECIPES.some(r=>S.dish[r.k]>0))?['cornsoup','curry','cake','pie']:[];if(!S.newbie)STARTER.forEach(k=>{if(!S.known.includes(k))S.known.push(k)});S.dq=S.dq||{}}
 const rPrice=r=>Math.round(r.sell*1.2/10)*10;
 function rShop(){kInit();const rr=seeded('rs'+S.uid+today()),pool=RECIPES.filter(r=>!r.h&&!STARTER.includes(r.k)),out=[];while(out.length<3&&pool.length)out.push(pool.splice(Math.floor(rr()*pool.length),1)[0]);return out}
 let race=null,inv=null,invT=null,lastInv=Date.now();
@@ -1210,12 +1210,14 @@ const owned=(l,i)=>!(RARE[l]&&RARE[l][i])||!!S.cos[l+':'+i];
 const GACHA1=100,GACHA10=900,POST_PAY=50,POST_MAX=5,REACTS=['❤️','😂','😮','👍','🥹'];
 
 /* ========== 存檔（S 是唯一的遊戲狀態，之後連線就是同步這包） ========== */
-const fresh=()=>({v:1,crop:{},dish:{},cos:{},posts:[],pd:{day:'',n:0},coins:300,name:'我',av:{skin:0,hair:0,style:0,shirt:0,hat:0},pos:{x:6,y:4},wall:0,floor:0,own:{wall:[0],floor:[0]},
-  items:[{id:1,t:'sofa',x:2,y:1},{id:2,t:'rug',x:5,y:3},{id:3,t:'plant',x:0,y:0},{id:4,t:'lamp',x:11,y:0},{id:5,t:'table',x:5,y:1},{id:6,t:'bed',x:9,y:5},{id:8,t:'wardrobe',x:8,y:0},{id:9,t:'gachapon',x:7,y:0}],
-  inv:{cactus:1},nid:10,pets:[{id:7,k:'bunny',name:'麻糬',happy:70,x:8,y:2}],dex:{bunny:1},know:{},food:{carrot:2,apple:1},
+const fresh=()=>({v:1,crop:{},dish:{},cos:{},posts:[],pd:{day:'',n:0},coins:100,name:'我',newbie:1,m:9,known:['soup','salad'],gotSt:{grill:1,blender:1,oven:1},av:{skin:0,hair:0,style:0,shirt:0,hat:0},pos:{x:6,y:4},wall:0,floor:0,own:{wall:[0],floor:[0]},
+  items:[{id:2,t:'rug',x:5,y:3},{id:3,t:'plant',x:0,y:0},{id:4,t:'stove',x:2,y:0},{id:5,t:'table',x:5,y:1},{id:6,t:'bed',x:9,y:5},{id:8,t:'wardrobe',x:8,y:0},{id:9,t:'gachapon',x:7,y:0}],
+  inv:{},nid:10,pets:[{id:7,k:'bunny',name:'麻糬',happy:70,x:8,y:2}],dex:{bunny:1},know:{},food:{carrot:2,apple:1},
   q:{day:'',ids:[],done:{}},photos:[],streak:0,lastFull:'',xp:0});
+// 舊存檔不套用新手的少量起始設定
+const oldBase=d=>{const b=fresh();if(!('newbie' in d)){delete b.known;delete b.gotSt;b.newbie=0;b.m=0}return b};
 let S=fresh();
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===1)S=Object.assign(fresh(),d)}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===1)S=Object.assign(oldBase(d),d)}catch(e){}}
 function save(){const w=()=>localStorage.setItem(KEY,JSON.stringify(S));
   try{w();saveFail=0}catch(e){const steps=[()=>{S.photos=S.photos.slice(-Math.ceil(S.photos.length/2))},()=>{const keep=Math.ceil(S.posts.length/2);S.posts=S.posts.filter((p,i)=>pinned(p.id)||i>=S.posts.length-keep)},()=>{S.stk=(S.stk||[]).slice(0,6)},()=>{for(const id in (S.dm||{}))S.dm[id].forEach(m=>{m.ph=''})},()=>{for(const k in (S.cal||{}))S.cal[k].forEach(x=>{x.ph=''})},()=>{S.photos=[];S.posts=S.posts.filter(p=>pinned(p.id))}];
     for(const f of steps){try{f();w();toast('儲存空間快滿了，自動清掉一些舊照片');saveFail=0;return}catch(_){}}if(!saveFail)toast('⚠️ 進度存不進去了，記得到設定「匯出存檔」備份');saveFail=1}}
@@ -2316,7 +2318,7 @@ set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="but
   ${row('🪙','測試金幣','直接拿 1000 金幣','','cheat')}
   ${askReset?`<div class="srow"><span class="sic">⚠️</span><span class="stx"><b>確定清掉所有進度？</b></span><button class="btn small" style="background:var(--bad);box-shadow:none!important" data-a="reset" type="button">清掉</button><button class="btn soft small" data-a="noreset" type="button">取消</button></div>`:row('🔄','重新開始','進度自動存在這個瀏覽器','','askreset')}
   </div></div>
-  <p class="lead" style="text-align:center">像素小窩 v0.52</p>`},
+  <p class="lead" style="text-align:center">像素小窩 v0.53</p>`},
 feed(){const left=Math.max(0,POST_MAX-(S.pd.day===today()?S.pd.n:0)),mt=thumb(20,34,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}));
   return `<div><h2>動態</h2><p class="lead">上方頭像列只放 24 小時內的動態，過了還是留在這裡。按「📌 釘到照片牆」的照片會一直掛在照片牆上，不會被新動態擠掉（最多 9 張，走到照片牆旁邊按「看照片牆」就能一張一張看）。拍一張照片、寫一句話就能發布。每篇得 ${POST_PAY} 金幣，今天還能領 ${left} 次。</p></div>
   <div class="post"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${draft.d?`<img class="draft" src="${draft.d}" alt="要發布的照片">`:''}<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><input class="field wide" id="cap" placeholder="寫點什麼…" maxlength="200" value="${esc(draft.cap)}"><div class="row"><button class="btn soft small" data-a="pick" type="button">${draft.d?'重拍':'拍照'}</button><button class="btn small" data-a="post" type="button" ${draft.d?'':'disabled'}>發布</button></div></div></div></div>
@@ -2486,7 +2488,7 @@ function tapTap(){if(mg.over)return;if(mg.st==='idle'){mg.st='run';mg.n=1;mg.tim
   if(mg.st==='run'){mg.n++;const p=document.querySelector('.pad');if(p)p.textContent=mg.n+' 下'}}
 
 /* ========== 開始 ========== */
-function start(data){if(data&&data.v===1)S=Object.assign(fresh(),data);else load();setSize();migrate();mkInit();mkCatch();if(S.ck)setTimeout(finishCook,Math.max(0,S.ck.t0+4000-Date.now()));setInterval(mkCatch,1000);bgmSync();ensureDay();fit();makePeers();if(S.net)setTimeout(()=>netStart(S.net.code,S.net.own?'create':'join'),300);loginCheck();remindCheck();if(!S.setup)tab='setup';addEventListener('resize',()=>{fit();measureHud()});render();requestAnimationFrame(frame);setInterval(()=>{const d=S.q.day;ensureDay();if(d!==S.q.day)render()},60000)}
+function start(data){if(data&&data.v===1)S=Object.assign(oldBase(data),data);else load();setSize();migrate();mkInit();mkCatch();if(S.ck)setTimeout(finishCook,Math.max(0,S.ck.t0+4000-Date.now()));setInterval(mkCatch,1000);bgmSync();ensureDay();fit();makePeers();if(S.net)setTimeout(()=>netStart(S.net.code,S.net.own?'create':'join'),300);loginCheck();remindCheck();if(!S.setup)tab='setup';addEventListener('resize',()=>{fit();measureHud()});render();requestAnimationFrame(frame);setInterval(()=>{const d=S.q.day;ensureDay();if(d!==S.q.day)render()},60000)}
 const hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(()=>S);
 if(hot&&hot.ready)hot.ready(start);else start(hot&&hot.data);
