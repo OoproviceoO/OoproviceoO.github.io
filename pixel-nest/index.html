@@ -2,7 +2,14 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#D6ECC4">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="像素小窩">
 <title>像素小窩</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Pixelify+Sans:wght@500;700&display=swap">
 <style>
@@ -748,6 +755,11 @@ select.field{appearance:auto}
 .dgfeed{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto;background:var(--bg);border-radius:16px;padding:10px}.dgfeed div{display:flex;gap:8px;align-items:baseline;font-size:15px}.dgfeed b{flex:none;color:var(--muted,#7a8070);font-size:13px}.dgfeed .ok span{font-weight:700;color:#4f8a3c}.dgfeed .me b{color:#9a6ad0}
 .ngbet{background:var(--sun);border-radius:14px;padding:8px 12px;font-weight:700;text-align:center}
 .dghint{background:var(--lav);border-radius:14px;padding:10px 12px;font-weight:700;text-align:center}
+.accbox{display:flex;flex-direction:column;gap:4px;background:var(--surface);border-radius:20px;padding:14px 16px}.accbox small{color:var(--muted,#7a8070)}.accbtns{margin-top:8px;flex-wrap:wrap}
+.accg{background:#fff!important;color:#3a4a32!important;box-shadow:0 3px 0 #dcdcd0!important;border:1px solid #e4e0cc}.gl{font-weight:900;background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:17px;margin-right:2px}
+.accform{display:flex;flex-direction:column;gap:6px}.accform .btn{margin-top:8px}.accerr{background:var(--pink,#fbe0e8);border-radius:12px;padding:8px 12px;font-weight:700;margin:4px 0 0}
+.accor{display:flex;align-items:center;gap:10px;color:var(--muted,#7a8070);font-size:13px}.accor:before,.accor:after{content:'';flex:1;height:1px;background:var(--outline,#e4e0cc)}
+.accpick{display:flex;flex-direction:column;align-items:flex-start;gap:2px;border:0;background:var(--surface);border-radius:18px;padding:14px 16px;text-align:left;box-shadow:0 3px 0 rgba(60,80,40,.12);width:100%}.accpick b{font-size:16px}.accpick small{color:var(--muted,#7a8070)}
 </style>
 </head>
 <body>
@@ -1237,7 +1249,7 @@ const oldBase=d=>{const b=fresh();if(!('newbie' in d)){delete b.known;delete b.g
 let S=fresh();
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===1)S=Object.assign(oldBase(d),d)}catch(e){}}
 function save(){const w=()=>localStorage.setItem(KEY,JSON.stringify(S));
-  try{w();saveFail=0}catch(e){const steps=[()=>{S.photos=S.photos.slice(-Math.ceil(S.photos.length/2))},()=>{const keep=Math.ceil(S.posts.length/2);S.posts=S.posts.filter((p,i)=>pinned(p.id)||i>=S.posts.length-keep)},()=>{S.stk=(S.stk||[]).slice(0,6)},()=>{for(const id in (S.dm||{}))S.dm[id].forEach(m=>{m.ph=''})},()=>{for(const k in (S.cal||{}))S.cal[k].forEach(x=>{x.ph=''})},()=>{S.photos=[];S.posts=S.posts.filter(p=>pinned(p.id))}];
+  try{w();saveFail=0;accQueue()}catch(e){const steps=[()=>{S.photos=S.photos.slice(-Math.ceil(S.photos.length/2))},()=>{const keep=Math.ceil(S.posts.length/2);S.posts=S.posts.filter((p,i)=>pinned(p.id)||i>=S.posts.length-keep)},()=>{S.stk=(S.stk||[]).slice(0,6)},()=>{for(const id in (S.dm||{}))S.dm[id].forEach(m=>{m.ph=''})},()=>{for(const k in (S.cal||{}))S.cal[k].forEach(x=>{x.ph=''})},()=>{S.photos=[];S.posts=S.posts.filter(p=>pinned(p.id))}];
     for(const f of steps){try{f();w();toast('儲存空間快滿了，自動清掉一些舊照片');saveFail=0;return}catch(_){}}if(!saveFail)toast('⚠️ 進度存不進去了，記得到設定「匯出存檔」備份');saveFail=1}}
 let saveFail=0;
 // 匯出／匯入存檔：換手機、換瀏覽器、換新版檔案都能帶著走
@@ -1460,6 +1472,7 @@ function netStart(code,mode){code=(code||'').toUpperCase().replace(/[^A-Z0-9]/g,
   netLoadSdk().then(()=>{if(!firebase.apps.length)firebase.initializeApp(FBCFG);NET.db=firebase.database();return firebase.auth().currentUser?{user:firebase.auth().currentUser}:firebase.auth().signInAnonymously()})
   .then(u=>{NET.uid=u.user.uid;NET.code=code;return netRef('meta').once('value')})
   .then(s=>{const m=s.val();
+    if(mode==='create'&&m&&m.owner!==NET.uid&&S.net&&S.net.code===code)mode='join';
     if(mode==='create'){if(m&&m.owner!==NET.uid)throw{code:'TAKEN'};if(!m)return netRef('meta').set({name:roomInfo().name,owner:NET.uid,born:roomInfo().born||Date.now()}).then(()=>({name:roomInfo().name,owner:NET.uid}))}
     else if(!m)throw{code:'NOROOM'};else if(m.priv&&m.owner!==NET.uid&&!(S.net&&S.net.code===code))throw{code:'PRIV'};return m})
   .then(m=>{NET.meta=m;const mine=m.owner===NET.uid,first=!S.net||S.net.code!==code;
@@ -1737,6 +1750,61 @@ function dgView(){if(!NET.on)return `<h2>你畫我猜</h2><p class="empty">先�
   ${ids.length?`<div class="dggrid">${ids.map(id=>{const d=DG.list[id],got=d.got||{},mine=d.u===NET.uid,me1=got[NET.uid],out=((S.dgT||{})[id]|0)>=DG_TRY,n=Object.keys(got).length,img=DG.img[id],lv=DGL[d.lv|0];
     const tag=mine?'✏️ 你畫的':me1?'✅ 猜中了':out?'😢 沒猜到':n<DG_TOP?'🪙 還有獎勵':'🎈 可以猜';
     return `<button class="dgcard ${mine||me1||out?'done':''}" data-a="dgopen" data-id="${id}" type="button"><span class="dgimg">${img&&img!=='…'?`<img src="${img}" alt="">`:''}</span><b>${esc(d.n)}</b><small>${tag}</small></button>`}).join('')}</div>`:'<p class="empty">畫畫牆還是空的，畫第一張吧！</p>'}`}
+
+// ===== 帳號登入（Google / Email）＋ 雲端存檔 =====
+var ACX={ready:false,user:null,cloud:null,busy:false,mode:'in',err:'',pushT:0,lastPush:0,pick:null,sdk:false};
+const accName=u=>u?(u.email||u.displayName||'已登入'):'';
+function accAuth(){return firebase.auth()}
+function accInit(){if(!/^https?:$/.test(location.protocol))return;netLoadSdk().then(()=>{if(!firebase.apps.length)firebase.initializeApp(FBCFG);ACX.sdk=true;const a=accAuth();a.languageCode='zh-TW';
+    a.getRedirectResult().catch(e=>{ACX.err=accMsg(e);if(tab==='acct')render()});
+    a.onAuthStateChanged(u=>{const real=u&&!u.isAnonymous?u:null,was=ACX.user&&ACX.user.uid;ACX.user=real;ACX.ready=true;if(real&&real.uid!==was)accLogged(real);else if(tab==='set'||tab==='acct')render()})})
+  .catch(()=>{ACX.ready=true})}
+// 錯誤訊息翻成中文
+function accMsg(e){const c=(e&&e.code)||'';return({'auth/invalid-email':'Email 格式不對','auth/missing-password':'請輸入密碼','auth/weak-password':'密碼至少要 6 個字','auth/email-already-in-use':'這個 Email 已經註冊過了，請直接登入','auth/invalid-credential':'Email 或密碼不對','auth/wrong-password':'Email 或密碼不對','auth/user-not-found':'找不到這個帳號，要不要先註冊？','auth/invalid-login-credentials':'Email 或密碼不對','auth/too-many-requests':'試太多次了，等一下再試','auth/network-request-failed':'網路連不上，請確認網路','auth/popup-closed-by-user':'登入視窗被關掉了','auth/cancelled-popup-request':'登入視窗被關掉了','auth/unauthorized-domain':'這個網址還不能登入，請用 ooproviceoo.github.io 開','auth/operation-not-allowed':'這種登入方式還沒開啟'})[c]||('登入失敗（'+(c||'未知錯誤')+'）')}
+function accReady(){if(!ACX.sdk){toast('還在連線，請稍等一下再按');return false}return true}
+// 用 Google 登入：如果正在用訪客身分連線，就把訪客升級成正式帳號（房間成員不會變）
+function accGoogle(){if(!accReady()||ACX.busy)return;ACX.busy=true;ACX.err='';const a=accAuth(),p=new firebase.auth.GoogleAuthProvider(),cur=a.currentUser;
+  const go=cur&&cur.isAnonymous?cur.linkWithPopup(p).catch(e=>{if(e.code==='auth/credential-already-in-use'&&e.credential)return a.signInWithCredential(e.credential);throw e}):a.signInWithPopup(p);
+  go.catch(e=>{if(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment')return a.signInWithRedirect(p);ACX.err=accMsg(e);toast('⚠️ '+ACX.err)}).finally(()=>{ACX.busy=false;render()})}
+function accEmail(kind){if(!accReady()||ACX.busy)return;const em=($('accem')||{}).value||'',pw=($('accpw')||{}).value||'';ACX.em=em;ACX.err='';const a=accAuth(),cur=a.currentUser;
+  if(kind==='reset'){if(!em.trim())return accShow('先輸入你的 Email');ACX.busy=true;return a.sendPasswordResetEmail(em.trim()).then(()=>{ACX.err='';toast('📧 重設密碼的信寄出了，去信箱看看');ACX.mode='in'}).catch(e=>accShow(accMsg(e))).finally(()=>{ACX.busy=false;render()})}
+  if(!em.trim()||!pw)return accShow('Email 和密碼都要填');ACX.busy=true;render();
+  let go;if(kind==='up'){const cred=firebase.auth.EmailAuthProvider.credential(em.trim(),pw);go=cur&&cur.isAnonymous?cur.linkWithCredential(cred):a.createUserWithEmailAndPassword(em.trim(),pw)}else go=a.signInWithEmailAndPassword(em.trim(),pw);
+  go.then(()=>{if(kind==='up')toast('🎉 註冊好了！');if(tab==='acct')tab='set'}).catch(e=>accShow(accMsg(e))).finally(()=>{ACX.busy=false;render()})}
+function accShow(m){ACX.err=m;render()}
+function accLogout(){if(!ACX.user)return;accPushNow().finally(()=>{netStop(true);accAuth().signOut().then(()=>{S.acc=null;save();toast('已經登出，這台的進度還留著');render()})})}
+// 登入成功：決定要用雲端的進度還是這台的
+function accLogged(u){if(!(S.acc&&S.acc.uid===u.uid))toast('☁️ 已登入：'+accName(u));if(tab==='acct')tab=S.setup?'set':'setup';
+  firebase.database().ref('users/'+u.uid+'/meta').once('value').then(s=>{const m=s.val();ACX.cloud=m;
+    if(!m){S.acc={uid:u.uid,t:Date.now()};accPushNow();toast('☁️ 這台的進度已經存到雲端');}
+    else if(S.acc&&S.acc.uid===u.uid){if((m.t||0)>(S.acc.t||0)+1500)accLoadCloud(true);else accPushNow()}
+    else{ACX.pick=m;tab='accpick'}
+    if(S.net&&NET.on&&NET.uid!==u.uid)netStart(S.net.code,S.net.own?'create':'join');render()}).catch(e=>{console.warn(e);render()})}
+function accLoadCloud(auto){const u=ACX.user;if(!u)return;firebase.database().ref('users/'+u.uid+'/save').once('value').then(s=>{const v=s.val();if(!v)return;let d;try{d=JSON.parse(v)}catch(_){return}if(!d||d.v!==1)return;
+    d.acc={uid:u.uid,t:Date.now()};try{localStorage.setItem(KEY,JSON.stringify(d))}catch(_){}toast(auto?'☁️ 換成另一台的最新進度…':'☁️ 讀取雲端進度…');setTimeout(()=>location.reload(),700)})}
+function accUseLocal(){const u=ACX.user;if(!u)return;S.acc={uid:u.uid,t:Date.now()};ACX.pick=null;tab=null;accPushNow().then(()=>toast('☁️ 已經用這台的進度蓋過雲端'));render()}
+// 存檔：本機每次都存，雲端最多 8 秒存一次
+function accQueue(){if(!ACX.user||!S.acc||S.acc.uid!==ACX.user.uid)return;clearTimeout(ACX.pushT);ACX.pushT=setTimeout(accPushNow,Math.max(1500,8000-(Date.now()-ACX.lastPush)))}
+function accPushNow(){const u=ACX.user;if(!u||!S.acc||S.acc.uid!==u.uid||!NET.db&&!ACX.sdk)return Promise.resolve();clearTimeout(ACX.pushT);const js=JSON.stringify(S);if(js.length>9e6){toast('⚠️ 存檔太大，雲端存不下，清掉一些照片看看');return Promise.resolve()}
+  const t=Date.now(),meta={t,n:S.name||'我',lv:level(),coins:S.coins|0,size:js.length};ACX.lastPush=t;
+  return firebase.database().ref('users/'+u.uid).set({save:js,meta}).then(()=>{ACX.cloud=meta;S.acc.t=t;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}if(tab==='set')render()}).catch(e=>console.warn('cloud',e))}
+addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')accPushNow()});
+const accAgo=t=>{if(!t)return'還沒';const m=Math.round((Date.now()-t)/60000);return m<1?'剛剛':m<60?m+' 分鐘前':new Date(t).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})};
+// 設定頁最上面的「帳號」
+function accSection(){const u=ACX.user;
+  if(u)return `<div class="sec"><h3>帳號</h3><div class="sgroup"><div class="srow"><span class="sic">☁️</span><span class="stx"><b>${esc(accName(u))}</b><small>雲端存檔：${accAgo(ACX.cloud&&ACX.cloud.t)}・換手機登入同一個帳號就能接著玩</small></span><button class="btn soft small" data-a="accsync" type="button">立即存</button></div><button class="srow" data-a="acclogout" type="button"><span class="sic">🚪</span><span class="stx"><b>登出</b><small>這台的進度會留著</small></span><span class="chev">›</span></button></div></div>`;
+  return `<div class="sec"><h3>帳號</h3><div class="accbox"><b>☁️ 登入後進度會存到雲端</b><small>換手機、清掉瀏覽器也不會不見</small><div class="row accbtns"><button class="btn accg" data-a="accg" type="button" ${ACX.busy?'disabled':''}><span class="gl">G</span> 用 Google 登入</button><button class="btn soft" data-a="accmail" type="button">✉️ 用 Email 登入</button></div></div></div>`}
+// Email 登入／註冊畫面
+function accView(){const up=ACX.mode==='up',rs=ACX.mode==='reset';
+  return `<h2>${rs?'忘記密碼':up?'註冊帳號':'Email 登入'}</h2><div class="seg"><button class="${!up&&!rs?'on':''}" data-a="accmode" data-k="in" type="button">登入</button><button class="${up?'on':''}" data-a="accmode" data-k="up" type="button">註冊</button></div>
+  <form class="accform" onsubmit="event.preventDefault();accEmail('${rs?'reset':up?'up':'in'}')"><label class="meta" for="accem">Email</label><input class="field wide" id="accem" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" value="${esc(ACX.em||'')}">
+  ${rs?'':`<label class="meta" for="accpw">密碼${up?'（至少 6 個字）':''}</label><input class="field wide" id="accpw" type="password" autocomplete="${up?'new-password':'current-password'}" placeholder="密碼">`}
+  ${ACX.err?`<p class="accerr">⚠️ ${esc(ACX.err)}</p>`:''}<button class="btn big" data-send type="submit" ${ACX.busy?'disabled':''}>${ACX.busy?'處理中…':rs?'寄重設密碼的信':up?'註冊並登入':'登入'}</button></form>
+  ${rs?`<button class="btn soft small" data-a="accmode" data-k="in" type="button" style="align-self:center">回登入</button>`:up?'':`<button class="btn soft small" data-a="accmode" data-k="reset" type="button" style="align-self:center">忘記密碼？</button>`}
+  ${ACX.back==='setup'?`<button class="btn soft small" data-a="accback" type="button" style="align-self:center">← 回去設定角色</button>`:''}<div class="accor"><span>或</span></div><button class="btn accg" data-a="accg" type="button" style="align-self:center"><span class="gl">G</span> 用 Google 登入</button>`}
+// 登入時發現雲端已經有進度
+function accPickView(){const m=ACX.pick||{},here={n:S.name,lv:level(),coins:S.coins|0,t:Date.now()};const card=(x,a,ttl,sub)=>`<button class="accpick" data-a="${a}" type="button"><b>${ttl}</b><span>${esc(x.n||'我')}・Lv.${x.lv||1}・🪙 ${(x.coins|0).toLocaleString('en-US')}</span><small>${sub}・${accAgo(x.t)}</small></button>`;
+  return `<h2>要用哪一份進度？</h2><p class="lead">這個帳號在雲端已經有存檔了。選一份繼續玩，另一份會被蓋掉。</p>${card(m,'acccloud','☁️ 雲端的進度','上次存檔')}${card(here,'acclocal','📱 這台的進度','現在')}`}
 
 let duoFx={t:0};
 function drawDuo(oy){if(!(duoFx.t>0)||!duoFx.a)return;const q=duoFx.a,k=1-duoFx.t/2.4,x=Math.round((me.fx+q.fx)/2+8),y=Math.round(Math.min(me.fy,q.fy)+oy-10-k*14),H=['.##.##.','#######','#######','.#####.','..###..','...#...'];
@@ -2374,6 +2442,8 @@ pet(){S.pets.forEach(p=>{if(!p.born)p.born=Date.now()});const foods=Object.keys(
   <div class="sec"><h3>神秘蛋</h3><div class="row"><button class="btn sun" data-a="egg" type="button">孵一顆蛋　${coin(EGG_PRICE)}</button><span class="meta">房間等級越高能養越多隻</span></div></div>
   <div class="sec"><h3>圖鑑 ${Object.keys(S.dex).length}/${Object.keys(PETS).length}</h3><div class="row">${Object.keys(PETS).map(k=>`<span class="card" style="padding:8px 10px;${S.dex[k]?'':'opacity:.35'}"><img src="${PTHUMB[k]}" alt="" style="height:36px;${S.dex[k]?'':'filter:brightness(0)'}"><span class="meta">${S.dex[k]?PETS[k].n:'？？'}</span></span>`).join('')}</div></div>`},
 ngame(){return ngView()},
+acct(){return accView()},
+accpick(){return accPickView()},
 dg(){return dgView()},
 game(){const qd=S.qz&&S.qz.d===today()&&S.qz.over,id=S.idm&&S.idm.d===today()&&S.idm.over,card=(a,k,e,n,d,dis)=>`<button class="gcard gc-${k}" data-a="${a}" ${a==='play'?'data-id':'data-k'}="${k}" type="button" ${dis?'disabled':''}><i>${e}</i><b>${n}</b><small>${d}</small></button>`;
   if(!mg.id)return `<h2>遊戲</h2>
@@ -2488,7 +2558,7 @@ remind(){const r=remQ[0];if(!r)return'';const Tg=TAGS[r.e.tag],who=whoNames(r.e)
   ${ph.length?`<div class="sec"><h3>回顧往年的這一天</h3><div class="memgrid">${ph.map(p=>`<figure><img src="${p.ph}" alt=""><figcaption>${p.y} 年</figcaption></figure>`).join('')}</div></div>`:'<p class="lead" style="text-align:center">往年這天還沒有照片，今年記得拍一張！</p>'}
   <div class="row" style="justify-content:center">${bd?'<button class="btn sun" data-a="sing" type="button">🎵 再唱一次</button>':''}<button class="btn" data-a="remok" type="button">${r.kind==='day'?(bd?'切蛋糕！':'一起慶祝'):'知道了'}</button><button class="btn soft" data-a="remcal" type="button">打開日曆</button></div>`},
 setup(){SD=SD||{name:S.name==='我'?'':S.name,bd:S.bday||''};const sw=(k,arr,n)=>`<div class="row">${arr.slice(0,n).map((c,i)=>`<button class="sw" style="background:${c}" aria-pressed="${S.av[k]===i}" data-a="av" data-k="${k}" data-v="${i}" type="button" aria-label="顏色 ${i+1}"></button>`).join('')}</div>`;
-  return `<div class="giftbox"><h2>歡迎來到像素小窩</h2><p class="lead" style="margin:0">先設定你自己，之後都能在「設定」和衣櫃裡改。</p></div>
+  return `<div class="giftbox"><h2>歡迎來到像素小窩</h2><p class="lead" style="margin:0">先設定你自己，之後都能在「設定」和衣櫃裡改。</p><button class="btn soft small" data-a="accmail" type="button" style="margin-top:8px">☁️ 已經有帳號？登入</button></div>
   <div class="lookwrap"><div class="lookopts">
   <div class="sec"><h3>名字</h3><input class="field wide" id="sname" maxlength="10" value="${esc(SD.name)}" placeholder="你想被叫什麼？"></div>
   <div class="sec"><h3>生日</h3>${bdSel('sbd',SD.bd)}<p class="lead" style="margin:0">生日當天會戴上派對帽、聽生日快樂歌，還有禮物。</p></div>
@@ -2525,7 +2595,7 @@ gift(){const g=giftIn,q=g&&peers.find(x=>x.id===g.from),r=g&&RECIPES.find(x=>x.k
   <div class="row" style="justify-content:center"><button class="btn" data-a="gok" type="button">收下</button><button class="btn soft" data-a="gno" type="button">不用了</button></div></div>`},
 set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="button" role="switch" aria-checked="${!!on}"><i></i></button>`,seg=(arr)=>`<div class="seg">${arr.map(([n,a,on,v])=>`<button class="${on?'on':''}" data-a="${a}" ${v!=null?`data-v="${v}"`:''} type="button">${n}</button>`).join('')}</div>`,row=(ic,t,sub,right,a)=>`<${a?'button':'div'} class="srow"${a?` data-a="${a}" type="button"`:''}><span class="sic">${ic}</span><span class="stx"><b>${t}</b>${sub?`<small>${sub}</small>`:''}</span>${right||''}${a?'<span class="chev">›</span>':''}</${a?'button':'div'}>`,th=S.theme||'light';
   return `<h2>設定</h2>
-  <div class="sec"><h3>一般</h3><div class="sgroup">
+  ${accSection()}<div class="sec"><h3>一般</h3><div class="sgroup">
   ${row('🧑','角色設定','更改名字、服裝與生日','','openlook')}
   ${row('🏠','小窩管理','名字、代碼、成員','','openroom')}
   ${row('📖','教學本','忘記怎麼玩，點開重看','','openguide')}
@@ -2542,7 +2612,7 @@ set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="but
   ${row('📂','匯入存檔','讀回之前匯出的檔案','','importsave')}
   ${askReset?`<div class="srow"><span class="sic">⚠️</span><span class="stx"><b>確定清掉所有進度？</b></span><button class="btn small" style="background:var(--bad);box-shadow:none!important" data-a="reset" type="button">清掉</button><button class="btn soft small" data-a="noreset" type="button">取消</button></div>`:row('🔄','重新開始','進度自動存在這個瀏覽器','','askreset')}
   </div></div>
-  <p class="lead" style="text-align:center">像素小窩 v0.60</p>`},
+  <p class="lead" style="text-align:center">像素小窩 v0.61</p>`},
 feed(){const left=Math.max(0,POST_MAX-(S.pd.day===today()?S.pd.n:0)),mt=thumb(20,34,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}));
   return `<div><h2>動態</h2><p class="lead">上方頭像列只放 24 小時內的動態，過了還是留在這裡。按「📌 釘到照片牆」的照片會一直掛在照片牆上，不會被新動態擠掉（最多 9 張，走到照片牆旁邊按「看照片牆」就能一張一張看）。拍一張照片、寫一句話就能發布。每篇得 ${POST_PAY} 金幣，今天還能領 ${left} 次。</p></div>
   <div class="post"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${draft.d?`<img class="draft" src="${draft.d}" alt="要發布的照片">`:''}<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><input class="field wide" id="cap" placeholder="寫點什麼…" maxlength="200" value="${esc(draft.cap)}"><div class="row"><button class="btn soft small" data-a="pick" type="button">${draft.d?'重拍':'拍照'}</button><button class="btn small" data-a="post" type="button" ${draft.d?'':'disabled'}>發布</button></div></div></div></div>
@@ -2569,8 +2639,8 @@ function render(){applyTheme();requestAnimationFrame(measureHud);
     :TABS.map(([id,n])=>`<button data-open="${id}" type="button"><i>${TICON[id]||'✨'}</i>${n}</button>`).join('')+[['dance','跳舞','💃'],['heart','愛心','💗'],['note','哼歌','🎵']].map(([k,n,ic])=>`<button class="em" data-emote="${k}" type="button"><i>${ic}</i>${n}</button>`).join('');
   if(S.hand&&!(S.dish[S.hand]>0))S.hand=null;{const hc=$('handchip'),r=S.hand&&RECIPES.find(x=>x.k===S.hand);hc.hidden=!r||editing;if(r)hc.innerHTML=`<span>手上 ${DI(r)} ${r.n}</span><button data-h="eat" type="button">吃掉</button><button data-h="put" type="button">放下</button>`}
   $('chatbtn').hidden=editing;$('hudr').hidden=editing;{const d=dmUnread(),n=(S.notif||[]).filter(x=>!x.read).length;$('dmbadge').hidden=!d;$('dmbadge').textContent=d;$('ntbadge').hidden=!n;$('ntbadge').textContent=n}if(editing)$('chatbar').hidden=true;
-  $('dockw').className='dock'+(editing?'':' pop');$('dockw').hidden=!editing&&!menuOpen;const mb=$('menu');mb.hidden=editing;mb.textContent=menuOpen?'✕':'選單';mb.setAttribute('aria-expanded',menuOpen);$('veil').hidden=!tab;$('close').hidden=tab==='setup';
-  if(tab){$('panel').innerHTML=V[tab]();{const h=$('panel').querySelector('h2');if(tab==='draw')drawEditor();if(tab==='dg')dgCanvas();if(tab==='ngame')ngCanvas();{const h=$('panel').querySelector('h2'),nx=h&&h.nextElementSibling;if(nx&&nx.matches('p.lead')&&!['setup','remind','gift','login','idiom','peer'].includes(tab))nx.remove()}
+  $('dockw').className='dock'+(editing?'':' pop');$('dockw').hidden=!editing&&!menuOpen;const mb=$('menu');mb.hidden=editing;mb.textContent=menuOpen?'✕':'選單';mb.setAttribute('aria-expanded',menuOpen);$('veil').hidden=!tab;$('close').hidden=tab==='setup'||(!S.setup&&(tab==='acct'||tab==='accpick'));
+  if(tab){$('panel').innerHTML=V[tab]();{const h=$('panel').querySelector('h2');if(tab==='draw')drawEditor();if(tab==='dg')dgCanvas();if(tab==='ngame')ngCanvas();{const h=$('panel').querySelector('h2'),nx=h&&h.nextElementSibling;if(nx&&nx.matches('p.lead')&&!['setup','remind','gift','login','idiom','peer','accpick'].includes(tab))nx.remove()}
     $('help').hidden=!TUT[tab];if(TUT[tab]&&!(S.tut||{})[tab]&&!tutK&&S.setup)setTimeout(()=>{if(tab&&TUT[tab]&&!(S.tut||{})[tab]&&!tutK)showTut(tab)},250);
     $('mtitle').innerHTML=h?h.innerHTML:tab==='dm'&&dmWith?esc((peerById(dmWith)||{}).name||''):'';if(h)h.remove()}const pv=$('pv');if(pv){const c=pv.getContext('2d');c.clearRect(0,0,20,34);withCtx(c,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}))}}
   syncRT()}
@@ -2679,7 +2749,7 @@ $('panel').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(
   dmopen(){dmWith=d.k;render();dmScroll()},dmback(){dmWith=null;render()},dmph(){pendingQuest='dm';$('photo').click()},dmto(){dmWith=peerSel;tab='dm';render();dmScroll()},
   ntopen(){const n=(S.notif||[]).find(x=>x.id===+d.id);if(n&&n.ref){const p=S.posts.find(x=>x.id===n.ref);if(p&&fresh24(p)){tab=null;render();SVP=storyPeople().filter(x=>x.posts.length);const pi=SVP.findIndex(x=>x.id===p.by);if(pi>=0){SV={pi,i:Math.max(0,SVP[pi].posts.findIndex(x=>x.id===p.id)),t:0,pause:false};return renderStory()}}tab='feed';render();const el=$('post-'+n.ref);if(el)el.scrollIntoView()}},
   botonline(){const q=bot0();if(q){setOnline(q,q.online===false);tab='set';render()}},
-  ttt(){tttMove(+d.i)},gmk(){gmkMove(+d.x,+d.y)},ngnew(){if(tab==='ngame'&&NG.gm&&NG.gm.k===d.k)NG.bet=NG.gm.bet|0;ngCreate(d.k)},ngbet(){NG.bet=+d.k;render()},dgwall(){DG.cur=null;DG.sel=null;tab='dg';dgRender()},dgnew(){dgNew()},dglv(){dgLv(+d.k)},dgre(){dgReroll()},dgcol(){DG.col=d.k;DG.pen=d.k==='#fffdf6'?16:5;dgRender()},dgtool(){DG.tool=d.k;dgRender()},dgundo(){DG.strokes.pop();dgRender()},dgclr(){DG.strokes=[];dgRender()},dgpost(){dgPost()},dgcancel(){DG.cur=null;dgRender()},dgopen(){DG.sel=d.id;DG.hint='';dgRender()},dgback(){DG.sel=null;DG.hint='';dgRender()},dgdel(){dgDel(d.id)},ngoff(){tab='room';render()},ngstart(){ngStart()},ngjoin(){ngJoin()},ngleave(){ngLeave()},ngclose(){tab=null;render()},ngrps(){ngRps(d.k)},ngb(){ngBoard(+d.i)},ngfish(){tab='fishing';render()},ngcol(){NG.col=d.k;NG.pen=d.k==='#fffdf6'?14:4;ngRender()},ngclr(){NG.strokes=[];NG.dirty=true;ngRender()},react(){reactTap()},tap(){tapTap()}
+  ttt(){tttMove(+d.i)},gmk(){gmkMove(+d.x,+d.y)},accg(){accGoogle()},accmail(){ACX.back=tab;ACX.mode='in';ACX.err='';tab='acct';render()},accmode(){ACX.mode=d.k;ACX.err='';render()},accsync(){accPushNow().then(()=>toast('☁️ 存到雲端了'))},acclogout(){accLogout()},acccloud(){accLoadCloud()},acclocal(){accUseLocal()},accback(){tab=ACX.back||null;render()},ngnew(){if(tab==='ngame'&&NG.gm&&NG.gm.k===d.k)NG.bet=NG.gm.bet|0;ngCreate(d.k)},ngbet(){NG.bet=+d.k;render()},dgwall(){DG.cur=null;DG.sel=null;tab='dg';dgRender()},dgnew(){dgNew()},dglv(){dgLv(+d.k)},dgre(){dgReroll()},dgcol(){DG.col=d.k;DG.pen=d.k==='#fffdf6'?16:5;dgRender()},dgtool(){DG.tool=d.k;dgRender()},dgundo(){DG.strokes.pop();dgRender()},dgclr(){DG.strokes=[];dgRender()},dgpost(){dgPost()},dgcancel(){DG.cur=null;dgRender()},dgopen(){DG.sel=d.id;DG.hint='';dgRender()},dgback(){DG.sel=null;DG.hint='';dgRender()},dgdel(){dgDel(d.id)},ngoff(){tab='room';render()},ngstart(){ngStart()},ngjoin(){ngJoin()},ngleave(){ngLeave()},ngclose(){tab=null;render()},ngrps(){ngRps(d.k)},ngb(){ngBoard(+d.i)},ngfish(){tab='fishing';render()},ngcol(){NG.col=d.k;NG.pen=d.k==='#fffdf6'?14:4;ngRender()},ngclr(){NG.strokes=[];NG.dirty=true;ngRender()},react(){reactTap()},tap(){tapTap()}
 }[d.a]||(()=>{}))()});
 
 /* ========== 小遊戲 ========== */
@@ -2712,7 +2782,7 @@ function tapTap(){if(mg.over)return;if(mg.st==='idle'){mg.st='run';mg.n=1;mg.tim
   if(mg.st==='run'){mg.n++;const p=document.querySelector('.pad');if(p)p.textContent=mg.n+' 下'}}
 
 /* ========== 開始 ========== */
-function start(data){if(data&&data.v===1)S=Object.assign(oldBase(data),data);else load();setSize();migrate();mkInit();mkCatch();if(S.ck)setTimeout(finishCook,Math.max(0,S.ck.t0+4000-Date.now()));setInterval(mkCatch,1000);bgmSync();ensureDay();fit();makePeers();if(S.net)setTimeout(()=>netStart(S.net.code,S.net.own?'create':'join'),300);loginCheck();remindCheck();if(!S.setup)tab='setup';addEventListener('resize',()=>{fit();measureHud()});render();requestAnimationFrame(frame);setInterval(()=>{const d=S.q.day;ensureDay();if(d!==S.q.day)render()},60000)}
+function start(data){if(data&&data.v===1)S=Object.assign(oldBase(data),data);else load();setSize();migrate();mkInit();mkCatch();if(S.ck)setTimeout(finishCook,Math.max(0,S.ck.t0+4000-Date.now()));setInterval(mkCatch,1000);bgmSync();ensureDay();fit();makePeers();if(S.net)setTimeout(()=>netStart(S.net.code,S.net.own?'create':'join'),300);loginCheck();remindCheck();if(!S.setup)tab='setup';addEventListener('resize',()=>{fit();measureHud()});render();accInit();if('serviceWorker'in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{});requestAnimationFrame(frame);setInterval(()=>{const d=S.q.day;ensureDay();if(d!==S.q.day)render()},60000)}
 const hot=window.claude&&window.claude.hot;
 if(hot&&hot.snapshot)hot.snapshot(()=>S);
 if(hot&&hot.ready)hot.ready(start);else start(hot&&hot.data);

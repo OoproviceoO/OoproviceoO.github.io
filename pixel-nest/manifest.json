@@ -1,0 +1,20 @@
+{
+  "name": "像素小窩",
+  "short_name": "像素小窩",
+  "description": "像素風的線上同居小遊戲：佈置房間、煮菜、釣魚、你畫我猜，和朋友用代碼進同一個小窩一起玩。",
+  "id": "/pixel-nest/",
+  "start_url": "/pixel-nest/",
+  "scope": "/pixel-nest/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EEF5E4",
+  "theme_color": "#D6ECC4",
+  "lang": "zh-Hant",
+  "dir": "ltr",
+  "categories": ["games", "social"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
