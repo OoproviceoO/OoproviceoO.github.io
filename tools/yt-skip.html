@@ -16,30 +16,31 @@
     padding:26px 28px;margin-top:18px;
   }
   .big-step .num{
-    display:inline-flex;align-items:center;justify-content:center;
+    display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
     width:34px;height:34px;border-radius:50%;
     background:var(--blue);color:#fff;font-weight:700;margin-right:12px;
   }
-  .big-step h3{display:flex;align-items:center;font-size:1.2rem;font-weight:700}
+  .big-step h3{display:flex;align-items:center;font-size:1.2rem;font-weight:700;line-height:1.4}
   .big-step p{margin-top:12px;color:var(--ink-soft)}
-  .big-step .btn{margin-top:18px}
   .big-step code{
     background:var(--paper);border:1px solid var(--line);border-radius:3px;
     padding:2px 8px;font-size:.95rem;color:var(--ink);user-select:all;
   }
   .big-step ol{margin-top:12px;padding-left:22px;color:var(--ink-soft)}
-  .big-step li{margin-top:6px}
+  .big-step li{margin-top:8px}
   .big-step li strong{color:var(--ink)}
   .tip{
     margin-top:14px;padding:12px 16px;border-left:3px solid var(--amber);
     background:#FBF6EC;color:var(--ink-soft);font-size:.95rem;
   }
+  .tip strong{color:var(--ink)}
   .done{
     margin-top:18px;padding:22px 28px;border-radius:3px;
     background:#EAF4EC;border:1px solid #CFE5D4;
   }
   .done strong{display:block;font-size:1.1rem}
   .done span{color:var(--ink-soft)}
+  @media(max-width:620px){ .big-step{padding:22px 20px} }
 </style>
 </head>
 <body>
@@ -57,48 +58,74 @@
 
   <div class="tool-head">
     <h1>YouTube 自動略過廣告</h1>
-    <p class="lead">看 YouTube 時，廣告一出現「略過」就自動幫你按掉。不能略過的廣告會自動靜音、快轉過去。裝好之後就不用管它。</p>
+    <p class="lead">看 YouTube 時，廣告一出現「略過」就自動幫你按掉。等待略過的那幾秒會自動靜音、快轉。裝好之後就不用管它。</p>
     <div class="meta">
-      <span class="tag ver">v1.3</span>
-      <span class="tag">電腦版 Chrome</span>
+      <span class="tag ver">v2.0</span>
+      <span class="tag">電腦版 Chrome／Edge</span>
       <span class="tag">免費</span>
       <span class="tag">不收集任何資料</span>
     </div>
   </div>
 
+  <!-- ═══ 下載區 ═══ -->
+  <div class="download">
+    <div class="download-info">
+      <strong>下載壓縮檔</strong>
+      <span>約 7 KB　·　下載後照下面的步驟做</span>
+    </div>
+    <div>
+      <a class="btn" href="../downloads/YTAutoSkip.zip">下載壓縮檔</a>
+      <span class="side-note">請用電腦下載</span>
+    </div>
+  </div>
+
   <!-- ═══ 安裝 ═══ -->
   <div class="section">
-    <h2>安裝（只要做一次，約 2 分鐘）</h2>
+    <h2>安裝步驟（只要做一次，約 3 分鐘）</h2>
 
     <ol class="big-steps">
+
       <li class="big-step">
-        <h3><span class="num">1</span>安裝 Tampermonkey</h3>
-        <p>這是一個很多人在用的免費小幫手，等一下要靠它來執行。按下面的按鈕，再按藍色的「<strong>加到 Chrome</strong>」→「<strong>新增擴充功能</strong>」。</p>
-        <a class="btn" href="https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank" rel="noopener">打開 Tampermonkey 安裝頁</a>
+        <h3><span class="num">1</span>下載壓縮檔</h3>
+        <p>按上面的「下載壓縮檔」，檔案會存到電腦的「<strong>下載</strong>」資料夾。</p>
       </li>
 
       <li class="big-step">
-        <h3><span class="num">2</span>打開一個開關</h3>
-        <p>Chrome 為了安全，要你同意一次才會讓它工作。</p>
+        <h3><span class="num">2</span>解壓縮到「文件」資料夾</h3>
         <ol>
-          <li>在 Chrome 最上面的網址列輸入 <code>chrome://extensions</code>，按 Enter。</li>
-          <li>找到 <strong>Tampermonkey</strong>，按它的「<strong>詳細資料</strong>」。</li>
-          <li>往下找到「<strong>允許使用者指令碼</strong>」，把開關打開（變藍色）。</li>
+          <li>打開「<strong>下載</strong>」資料夾，找到 <strong>YTAutoSkip.zip</strong>。</li>
+          <li>在它上面按<strong>滑鼠右鍵</strong> → 選「<strong>解壓縮全部</strong>」。</li>
+          <li>跳出的視窗按「<strong>瀏覽</strong>」→ 點左邊的「<strong>文件</strong>」→ 按「<strong>選取資料夾</strong>」。</li>
+          <li>按「<strong>解壓縮</strong>」。</li>
         </ol>
-        <div class="tip">找不到這個開關？Chrome 版本比較舊的話，改成把右上角的「<strong>開發人員模式</strong>」打開就可以。</div>
+        <div class="tip">為什麼要放到「文件」？因為之後 Chrome 會一直從這個資料夾讀取。放在「下載」很容易被不小心刪掉，刪掉就會失效。</div>
       </li>
 
       <li class="big-step">
-        <h3><span class="num">3</span>安裝自動略過廣告</h3>
-        <p>按下面的按鈕，會跳出 Tampermonkey 的畫面，按「<strong>安裝</strong>」就好。</p>
-        <a class="btn" href="../downloads/youtube-auto-skip.user.js">安裝自動略過廣告</a>
-        <div class="tip">如果按了只看到一堆程式碼，代表第 1 或第 2 步還沒完成，回去檢查一下再按一次。</div>
+        <h3><span class="num">3</span>打開「開發人員模式」</h3>
+        <ol>
+          <li>打開 Chrome，在最上面的網址列輸入 <code>chrome://extensions</code>，按 Enter。</li>
+          <li>把<strong>右上角</strong>的「<strong>開發人員模式</strong>」開關打開。</li>
+        </ol>
+        <div class="tip">用 Edge 的話，網址改成 <code>edge://extensions</code>，「開發人員模式」在<strong>左邊</strong>。</div>
       </li>
+
+      <li class="big-step">
+        <h3><span class="num">4</span>載入擴充功能</h3>
+        <ol>
+          <li>按左上角出現的「<strong>載入未封裝項目</strong>」。</li>
+          <li>跳出的視窗點左邊的「<strong>文件</strong>」。</li>
+          <li>點一下 <strong>YTAutoSkip</strong> 資料夾（點一下就好，<strong>不要點兩下</strong>進去）。</li>
+          <li>按「<strong>選取資料夾</strong>」。</li>
+        </ol>
+        <div class="tip">如果出現「<strong>無法載入資訊清單</strong>」：代表選錯層了。再按一次「載入未封裝項目」，這次點兩下 YTAutoSkip 進去，看裡面如果還有一個 YTAutoSkip，就點那一個再按「選取資料夾」。</div>
+      </li>
+
     </ol>
 
     <div class="done">
       <strong>完成！</strong>
-      <span>重新打開 YouTube 就會生效。以後有新版本會自動更新，不用再做任何事。</span>
+      <span>清單裡出現「YouTube 自動略過廣告」就裝好了。打開 YouTube 看影片，廣告出現「略過」時就會自動被按掉。</span>
     </div>
   </div>
 
@@ -106,10 +133,10 @@
   <div class="section">
     <h2>能做什麼</h2>
     <ul>
-      <li><strong>自動略過廣告</strong>　廣告一開始就直接跳到結尾，跟按「略過」一樣。</li>
-      <li><strong>不能略過的廣告</strong>　自動靜音、用 16 倍速播完，幾乎一閃就過。</li>
+      <li><strong>自動按「略過」</strong>　按鈕一出現就幫你按，跟你自己用滑鼠按一樣。</li>
+      <li><strong>等待時靜音、快轉</strong>　略過按鈕出現前的那幾秒，會自動靜音並用 16 倍速播放。</li>
       <li><strong>關掉影片上的橫幅廣告</strong>　影片下方跳出來的小廣告也會自動關掉。</li>
-      <li><strong>廣告結束自動還原</strong>　影片的音量和速度會回到你原本的設定。</li>
+      <li><strong>可以調整</strong>　按瀏覽器右上角的拼圖圖示 → YouTube 自動略過廣告，可以開關功能、調整快轉倍數，還能看已經幫你略過幾次。</li>
     </ul>
   </div>
 
@@ -118,17 +145,29 @@
     <h2>常見問題</h2>
     <p>遇到下面的狀況，照著做就可以。</p>
     <dl>
-      <dt>想暫時關掉</dt>
-      <dd>按 Chrome 右上角的拼圖圖示 → Tampermonkey，把「YouTube 自動略過廣告」的開關關掉。想恢復再打開。</dd>
+      <dt>畫面上方閃了一下黃色的「正在偵錯」提示</dt>
+      <dd>這是正常的。這個工具是靠它來模擬真的滑鼠點擊，按完「略過」就會自己消失，不用理它，也不要按「取消」。</dd>
 
-      <dt>裝完好像沒有效</dt>
-      <dd>把 YouTube 的分頁關掉重開。還是不行的話，確認第 2 步的開關有打開。</dd>
+      <dt>Chrome 跳出「停用開發人員模式擴充功能」</dt>
+      <dd>按「×」關掉提示就好，<strong>不要按停用</strong>，按了這個工具就會失效。</dd>
+
+      <dt>突然沒有效了</dt>
+      <dd>先確認「文件」裡的 YTAutoSkip 資料夾還在、沒有被移動。還是不行的話，可能是 YouTube 改版了，請看下一題更新。</dd>
+
+      <dt>有新版本要怎麼更新</dt>
+      <dd>重新下載壓縮檔，照第 2 步解壓縮到同一個位置，問你要不要取代檔案時選「<strong>取代</strong>」。接著到 <code>chrome://extensions</code>，在「YouTube 自動略過廣告」上按 <strong>↻ 重新載入</strong>。</dd>
+
+      <dt>想暫時關掉</dt>
+      <dd>按右上角的拼圖圖示 → YouTube 自動略過廣告，把「啟用」關掉。想恢復再打開。</dd>
+
+      <dt>不想用了，要怎麼移除</dt>
+      <dd>到 <code>chrome://extensions</code>，在「YouTube 自動略過廣告」按「移除」，再把「文件」裡的 YTAutoSkip 資料夾刪掉。</dd>
 
       <dt>安全嗎？</dt>
-      <dd>它只在 YouTube 上執行，只會按「略過」和調整廣告的速度音量，不會連到其他網站，也不會收集任何資料。程式碼是公開的，任何人都可以檢查。</dd>
+      <dd>它只在 YouTube 上執行，只會按「略過」和調整廣告的速度音量，不會連到其他網站，也不會收集任何資料。</dd>
 
       <dt>手機可以用嗎？</dt>
-      <dd>目前只支援電腦版 Chrome。</dd>
+      <dd>不行，只支援電腦版的 Chrome 和 Edge。</dd>
     </dl>
   </div>
 
