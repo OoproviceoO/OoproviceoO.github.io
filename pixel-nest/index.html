@@ -1248,7 +1248,10 @@ const fresh=()=>({v:1,crop:{},dish:{},cos:{},posts:[],pd:{day:'',n:0},coins:100,
 const oldBase=d=>{const b=fresh();if(!('newbie' in d)){delete b.known;delete b.gotSt;b.newbie=0;b.m=0}return b};
 let S=fresh();
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.v===1)S=Object.assign(oldBase(d),d)}catch(e){}}
-function save(){const w=()=>localStorage.setItem(KEY,JSON.stringify(S));
+// 存檔：不要每個動作都存一次（手機上很卡），停下來 0.9 秒後才真的寫
+var NOSAVE=0,SVT=0;function save(){clearTimeout(SVT);SVT=setTimeout(saveNow,900)}
+addEventListener('pagehide',()=>saveNow());document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
+function saveNow(){clearTimeout(SVT);if(NOSAVE)return;const w=()=>localStorage.setItem(KEY,JSON.stringify(S));
   try{w();saveFail=0;accQueue()}catch(e){const steps=[()=>{S.photos=S.photos.slice(-Math.ceil(S.photos.length/2))},()=>{const keep=Math.ceil(S.posts.length/2);S.posts=S.posts.filter((p,i)=>pinned(p.id)||i>=S.posts.length-keep)},()=>{S.stk=(S.stk||[]).slice(0,6)},()=>{for(const id in (S.dm||{}))S.dm[id].forEach(m=>{m.ph=''})},()=>{for(const k in (S.cal||{}))S.cal[k].forEach(x=>{x.ph=''})},()=>{S.photos=[];S.posts=S.posts.filter(p=>pinned(p.id))}];
     for(const f of steps){try{f();w();toast('儲存空間快滿了，自動清掉一些舊照片');saveFail=0;return}catch(_){}}if(!saveFail)toast('⚠️ 進度存不進去了，記得到設定「匯出存檔」備份');saveFail=1}}
 let saveFail=0;
@@ -1256,7 +1259,7 @@ let saveFail=0;
 function exportSave(){const blob=new Blob([JSON.stringify(S)],{type:'application/json'}),fn='像素小窩存檔-'+today()+'.json';
   (async()=>{const dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;if(dl){try{await dl.save({filename:fn,data:blob});toast('存檔匯出好了')}catch(err){if(err&&err.code!=='declined')toast('這裡沒辦法匯出')}return}
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();a.remove();toast('存檔匯出好了，檔案在下載資料夾')})()}
-function importSave(file){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||d.v!==1||!d.items)throw 0;localStorage.setItem(KEY,JSON.stringify(d));toast('匯入成功，重新載入中…');setTimeout(()=>location.reload(),800)}catch(_){toast('這不是像素小窩的存檔')}};r.readAsText(file)}
+function importSave(file){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||d.v!==1||!d.items)throw 0;localStorage.setItem(KEY,JSON.stringify(d));NOSAVE=1;toast('匯入成功，重新載入中…');setTimeout(()=>location.reload(),800)}catch(_){toast('這不是像素小窩的存檔')}};r.readAsText(file)}
 function nearFree(t,r,x0,y0){let best=null,bd=1e9;for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){if(!canPlace(t,x,y,r))continue;const d=Math.abs(x-x0)+Math.abs(y-y0)*1.1;if(d<bd){bd=d;best={x,y}}}return best||{x:Math.max(0,Math.min(COLS-1,x0)),y:Math.max(0,Math.min(ROWS-1,y0))}}
 function yardFixed(){const it=[{id:S.nid++,t:'bigpond',x:1,y:5}];for(let y=5;y<=6;y++)for(let x=11;x<=14;x++)it.push({id:S.nid++,t:'planter',x,y,fixedPlot:1});for(let x=11;x<=14;x++)it.push({id:S.nid++,t:'fence',x,y:4,r:0});[[2,1,'tree'],[14,1,'tree'],[6,8,'flowerbed'],[7,8,'flowerbed'],[10,7,'scarecrow']].forEach(([x,y,t])=>it.push({id:S.nid++,t,x,y}));return it}
 function defaultYard(){return{items:yardFixed(),cols:16,rows:10}}
@@ -1504,7 +1507,7 @@ function netListen(){const on=(p,ev,f)=>{const r=p.ref?p:netRef(p);r.on(ev,f,e=>
   on(netRef('ev').orderByChild('to').equalTo(NET.uid),'child_added',s=>{const m=s.val();s.ref.remove().catch(()=>{});if(!m||m.ts<NET.t0-30000)return;const q=NET.q[m.u],nm=(NET.mem[m.u]||{}).n||'朋友';
     if(m.k==='wave'){if(q){q.emote='note';q.et=2;q.dir=me.fx>q.fx?1:-1;peerSay(q,'嗨～👋')}toast('👋 '+nm+'跟你打招呼')}
     else if(m.k==='heart'){if(q){q.emote='heart';q.et=2}me.emote='heart';me.et=2;SFX.pet();toast('💗 '+nm+'對你比了愛心');S.frd=S.frd||{};S.frd[m.u]=(S.frd[m.u]||0)+1;saveSoon()}});
-  on('shared/g','value',s=>ngOn(s.val()));on(netRef('shared/dg').limitToLast(40),'value',s=>dgOn(s.val()));
+  on('shared/g','value',s=>ngOn(s.val()));on(netRef('shared/posts').limitToLast(40),'value',s=>netPostsOn(s.val()));on(netRef('shared/dg').limitToLast(40),'value',s=>dgOn(s.val()));
   ['home','yard'].forEach(k=>on('shared/sc/'+k,'value',s=>{const v=s.val();if(typeof v!=='string')return;NET.scRemote[k]=v;netApplyScene(k,v)}))}
 // 把其他玩家變成畫面上的人物
 function netPeers(){if(!NET.on)return;const sc=S.scene||'home',want=[],best={},old=Date.now()-14*864e5;
@@ -1529,7 +1532,7 @@ function netUpd(q,dt){if(q.et>0)q.et-=dt;if(q.sayT>0)q.sayT-=dt;if(q.shake>0)q.s
 function netTick(dt){if(!NET.on)return;const now=Date.now(),p=netPres(),js=JSON.stringify(p);
   if((js!==NET.lastP&&now-NET.lastPT>140)||now-NET.lastPT>20000){NET.lastP=js;NET.lastPT=now;p.t=firebase.database.ServerValue.TIMESTAMP;netRef('pres/'+NET.uid).set(p).catch(()=>{})}
   const avk=JSON.stringify(S.av)+S.name;if(now-NET.lastM>15000||avk!==NET.avk){NET.avk=avk;NET.lastM=now;netRef('members/'+NET.uid).set(netMe()).catch(()=>{})}
-  ngTick(dt);if((NET.scT-=dt)<=0){NET.scT=1.2;if(!editing&&!hold)netPushScene(S.scene||'home')}}
+  ngTick(dt);if((NET.scT-=dt)<=0){NET.scT=1.2;netPostsPush();if(!editing&&!hold)netPushScene(S.scene||'home')}}
 function netSceneData(k){const cur=(S.scene||'home')===k,d=cur?{items:S.items,cols:S.cols,rows:S.rows}:(S.scenes||{})[k];if(!d)return null;return JSON.stringify({items:d.items,cols:d.cols,rows:d.rows})}
 function netPushScene(k){const v=netSceneData(k);if(!v||v===NET.scRemote[k]||v===NET.scLocal[k])return;NET.scLocal[k]=v;NET.scRemote[k]=v;netRef('shared/sc/'+k).set(v).catch(()=>{})}
 function netPushAll(){const ps=['home','yard'].map(k=>{const v=netSceneData(k);return v?netRef('shared/sc/'+k).set(v):0});return Promise.all(ps)}
@@ -1560,7 +1563,7 @@ const ngArr=v=>Array.isArray(v)?v:v&&typeof v==='object'?Object.values(v):[];
 function ngNorm(gm){if(gm){['order','alive','seats'].forEach(k=>{if(gm[k]!=null)gm[k]=ngArr(gm[k])})}return gm}
 function ngTx(fn){if(!NET.on)return Promise.resolve({committed:false});return ngR().transaction(cur=>{const r=fn(ngNorm(cur));return r===undefined?undefined:r}).catch(e=>{netErr(e);return{committed:false}})}
 // 開一場新的
-function ngCreate(k){if(!NET.on)return toast('先到小窩管理按「上線」，才能和朋友一起玩');const cur=NG.gm;if(ngAlive(cur)&&!(cur.st==='wait'&&cur.host===NET.uid))return toast('大家正在玩'+NGK[cur.k][1]+'，等這場結束');
+function ngCreate(k){if(!NET.on)return toast('先到小窩管理按「上線」，才能和朋友一起玩');const cur=NG.gm;if(ngAlive(cur)&&cur.st==='wait'){if(ngIn(cur)){tab='ngame';return render()}toast('加入'+(cur.hn||'朋友')+'開的'+NGK[cur.k][1]);return ngJoin()}if(ngAlive(cur))return toast('大家正在玩'+NGK[cur.k][1]+'，等這場結束');
   if(k==='chair'&&S.items.filter(i=>F[i.t].seat).length<1)return toast('房間裡至少要有一個能坐的家具');
   const bet=NG.bet|0;if(S.coins<bet)return toast('金幣不夠，賭注要 '+bet+' 金幣');const gm={id:Date.now()+''+rnd(1000),k,bet,host:NET.uid,hn:S.name||'我',st:'wait',ts:Date.now(),sc:S.scene||'home',pl:{[NET.uid]:{n:S.name||'我',sc:0}}};
   ngR().set(gm).then(()=>{NG.seen=gm.id;tab='ngame';render();toast(NGK[k][0]+' 已經邀請大家，等人加入')}).catch(netErr)}
@@ -1784,11 +1787,11 @@ function accLogged(u){if(!(S.acc&&S.acc.uid===u.uid))toast('☁️ 已登入：'
     else{ACX.pick=m;tab='accpick'}
     if(S.net&&NET.on&&NET.uid!==u.uid)netStart(S.net.code,S.net.own?'create':'join');render()}).catch(e=>{console.warn(e);render()})}
 function accLoadCloud(auto){const u=ACX.user;if(!u)return;firebase.database().ref('users/'+u.uid+'/save').once('value').then(s=>{const v=s.val();if(!v)return;let d;try{d=JSON.parse(v)}catch(_){return}if(!d||d.v!==1)return;
-    d.acc={uid:u.uid,t:Date.now()};try{localStorage.setItem(KEY,JSON.stringify(d))}catch(_){}toast(auto?'☁️ 換成另一台的最新進度…':'☁️ 讀取雲端進度…');setTimeout(()=>location.reload(),700)})}
+    d.acc={uid:u.uid,t:Date.now()};NOSAVE=1;try{localStorage.setItem(KEY,JSON.stringify(d))}catch(_){}toast(auto?'☁️ 換成另一台的最新進度…':'☁️ 讀取雲端進度…');setTimeout(()=>location.reload(),700)})}
 function accUseLocal(){const u=ACX.user;if(!u)return;S.acc={uid:u.uid,t:Date.now()};ACX.pick=null;tab=null;accPushNow().then(()=>toast('☁️ 已經用這台的進度蓋過雲端'));render()}
 // 存檔：本機每次都存，雲端最多 8 秒存一次
-function accQueue(){if(!ACX.user||!S.acc||S.acc.uid!==ACX.user.uid)return;clearTimeout(ACX.pushT);ACX.pushT=setTimeout(accPushNow,Math.max(1500,8000-(Date.now()-ACX.lastPush)))}
-function accPushNow(){const u=ACX.user;if(!u||!S.acc||S.acc.uid!==u.uid||!NET.db&&!ACX.sdk)return Promise.resolve();clearTimeout(ACX.pushT);const js=JSON.stringify(S);if(js.length>9e6){toast('⚠️ 存檔太大，雲端存不下，清掉一些照片看看');return Promise.resolve()}
+function accQueue(){if(!ACX.user||!S.acc||S.acc.uid!==ACX.user.uid)return;clearTimeout(ACX.pushT);ACX.pushT=setTimeout(accPushNow,Math.max(5000,30000-(Date.now()-ACX.lastPush)))}
+function accPushNow(){const u=ACX.user;if(!u||!S.acc||S.acc.uid!==u.uid||!NET.db&&!ACX.sdk)return Promise.resolve();clearTimeout(ACX.pushT);const js=JSON.stringify(S);if(js===ACX.lastJs)return Promise.resolve();ACX.lastJs=js;if(js.length>9e6){toast('⚠️ 存檔太大，雲端存不下，清掉一些照片看看');return Promise.resolve()}
   const t=Date.now(),meta={t,n:S.name||'我',lv:level(),coins:S.coins|0,size:js.length};ACX.lastPush=t;
   return firebase.database().ref('users/'+u.uid).set({save:js,meta}).then(()=>{ACX.cloud=meta;S.acc.t=t;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}if(tab==='set')render()}).catch(e=>console.warn('cloud',e))}
 addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')accPushNow()});
@@ -1817,6 +1820,34 @@ function appInstall(){if(!/^https:$/.test(location.protocol)&&location.hostname!
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   if(/android/i.test(navigator.userAgent)){toast('📱 下載 Android App 中…下載完點開安裝');location.href='https://ooproviceoo.github.io/downloads/pixel-nest.apk';return}
   toast(ios?'iPhone：用 Safari 打開，按下面的「分享」⬆️，再選「加入主畫面」':'按瀏覽器右上角「⋮」，選「安裝應用程式」或「加到主畫面」')}
+// ===== 照片放在自己的伺服器：存檔只留網址，手機就不會越存越卡 =====
+const PH_BASE='https://piaoyang.platy-powan.ts.net/pn-api';
+var PH={busy:false,fail:0,next:0};
+const phBig=v=>typeof v==='string'&&v.length>3000&&v.startsWith('data:image');
+const phIsUrl=v=>typeof v==='string'&&v.startsWith(PH_BASE);
+function phWalk(o,f,d=0){if(!o||typeof o!=='object'||d>8)return;for(const k in o){const v=o[k];if(typeof v==='string')f(o,k,v);else if(v&&typeof v==='object')phWalk(v,f,d+1)}}
+async function phUser(){if(!window.firebase||!firebase.apps||!firebase.apps.length)return null;const a=firebase.auth();if(a.currentUser)return a.currentUser;try{return (await a.signInAnonymously()).user}catch(_){return null}}
+async function phUpload(du){const u=await phUser();if(!u)throw new Error('noauth');const tk=await u.getIdToken(),blob=await (await fetch(du)).blob();
+  const r=await fetch(PH_BASE+'/upload',{method:'POST',headers:{Authorization:'Bearer '+tk,'Content-Type':blob.type||'image/jpeg'},body:blob});if(!r.ok)throw new Error('http '+r.status);const j=await r.json();return PH_BASE+'/p/'+j.name}
+// 每隔幾秒找一張還沒上傳的照片傳上去，成功就把存檔裡所有同一張換成網址
+async function phTick(){if(PH.busy||Date.now()<PH.next||document.hidden||!/^https:$/.test(location.protocol))return;let du=null;phWalk(S,(o,k,v)=>{if(!du&&phBig(v)&&k!=='cf')du=v});if(!du)return;
+  PH.busy=true;try{const url=await phUpload(du);phWalk(S,(o,k,v)=>{if(v===du)o[k]=url});PH.fail=0;PH.next=Date.now()+800;save()}catch(e){PH.fail++;PH.next=Date.now()+Math.min(300000,5000*2**Math.min(6,PH.fail))}PH.busy=false}
+setInterval(phTick,3000);
+// 動態跟房間裡的朋友同步
+function netPostsPush(){if(!NET.on)return;const old=Date.now()-3*864e5;S.posts.forEach(p=>{if(p.by!=='me'||p.nk||!phIsUrl(p.d)||(p.ts||0)<old)return;const ref=netRef('shared/posts').push();p.nk=ref.key;
+  ref.set({u:NET.uid,n:S.name||'我',av:S.av,img:p.d,cap:p.cap||'',day:p.day,ts:p.ts||Date.now()}).catch(()=>{p.nk=null});saveSoon()})}
+function netPostsOn(v){v=v||{};const keys=Object.keys(v),minTs=keys.length>=40?Math.min(...keys.map(k=>v[k].ts||0)):0;let fresh=0,changed=false;
+  keys.forEach(k=>{const d=v[k];if(!d)return;let p=S.posts.find(x=>x.nk===k);
+    if(!p){if(d.u===NET.uid)return;p={id:S.nid++,nk:k,ts:d.ts||Date.now(),by:d.u,name:d.n||'朋友',av:d.av,day:d.day||today(),d:d.img,cap:d.cap||'',tags:[],re:{},cm:[],remote:1};S.posts.push(p);S.posts.sort((a,b)=>(a.ts||0)-(b.ts||0));changed=true;if((d.ts||0)>NET.t0)fresh=p}
+    const re={};for(const e in (d.re||{}))re[e]=Object.keys(d.re[e]||{}).map(u=>u===NET.uid?'me':u);
+    const cm=Object.values(d.cm||{}).sort((a,b)=>(a.ts||0)-(b.ts||0)).map(c=>({by:c.u===NET.uid?'me':c.u,name:c.n,t:c.t}));
+    if(JSON.stringify(re)!==JSON.stringify(p.re)||JSON.stringify(cm)!==JSON.stringify(p.cm)){p.re=re;p.cm=cm;changed=true}
+    if(d.u!==NET.uid&&d.av)p.av=d.av});
+  const before=S.posts.length;S.posts=S.posts.filter(p=>!(p.remote&&p.nk&&!v[p.nk]&&(p.ts||0)>=minTs));if(S.posts.length!==before)changed=true;
+  if(fresh)toast('📸 '+fresh.name+'發了新動態');if(changed){trimPosts();saveSoon();if(['feed','pinwall'].includes(tab))render();if(!tab)render()}}
+function netPostReact(po,e){if(!NET.on||!po||!po.nk)return;const on=(po.re[e]||[]).includes('me'),r=netRef('shared/posts/'+po.nk+'/re/'+e+'/'+NET.uid);(on?r.set(true):r.remove()).catch(()=>{})}
+function netPostComment(po,t){if(!NET.on||!po||!po.nk)return;netRef('shared/posts/'+po.nk+'/cm').push({u:NET.uid,n:S.name||'我',t,ts:Date.now()}).catch(()=>{})}
+
 let duoFx={t:0};
 function drawDuo(oy){if(!(duoFx.t>0)||!duoFx.a)return;const q=duoFx.a,k=1-duoFx.t/2.4,x=Math.round((me.fx+q.fx)/2+8),y=Math.round(Math.min(me.fy,q.fy)+oy-10-k*14),H=['.##.##.','#######','#######','.#####.','..###..','...#...'];
   H.forEach((r,j)=>[...r].forEach((c,i)=>{if(c==='#')R(j<2&&i%5===1?'#fbd3dc':'#e9708a',x-7+i*2,y+j*2,2,2)}))}
@@ -1851,12 +1882,12 @@ function act(type,p={}){dtBump('a:'+type);if(editing&&EDIT_T.includes(type))undo
     S.posts.push({id:S.nid++,ts:Date.now(),by:'me',name:S.name,day:d,d:p.data,cap:(p.cap||'').trim().slice(0,200),tags:p.tags||[],re:{},cm:[]});trimPosts();
     (p.tags||[]).forEach(t=>{const q=peers.find(z=>z.id===t.id);if(q&&!q.net)setTimeout(()=>{const po=S.posts.find(x=>x.id===pid);if(po)po.cm.push({by:q.id,name:q.name,t:['被你標記了～','哈哈這張好好笑','我也在！'][rnd(3)]});peerSay(q,'謝謝你標記我！','heart');saveSoon()},1800)});
     S.coins+=gain(pay);SFX.coin();draft={d:'',cap:''};toast(pay?`已發布，+${pay} 金幣`:'已發布（今天的發文獎勵領完了）');break}
-  case'react':{const po=S.posts.find(x=>x.id===p.id);if(!po)return;const a=po.re[p.e]=po.re[p.e]||[],i=a.indexOf('me');if(i<0)a.push('me');else a.splice(i,1);break}
-  case'emo_sv':{const po=S.posts.find(x=>x.id===p.id);if(!po)return;const a=po.re[p.e]=po.re[p.e]||[],i=a.indexOf('me');if(i<0){a.push('me');SFX.pet()}else a.splice(i,1);save();return}
+  case'react':{const po=S.posts.find(x=>x.id===p.id);if(!po)return;const a=po.re[p.e]=po.re[p.e]||[],i=a.indexOf('me');if(i<0)a.push('me');else a.splice(i,1);netPostReact(po,p.e);break}
+  case'emo_sv':{const po=S.posts.find(x=>x.id===p.id);if(!po)return;const a=po.re[p.e]=po.re[p.e]||[],i=a.indexOf('me');if(i<0){a.push('me');SFX.pet()}else a.splice(i,1);netPostReact(po,p.e);save();return}
   case'pin':{S.pins=S.pins||[];const i=S.pins.indexOf(p.id);if(i>=0){S.pins.splice(i,1);toast('從照片牆拿下來了')}else{if(S.pins.length>=PIN_MAX)return toast('照片牆最多釘 '+PIN_MAX+' 張，先拿下一張');S.pins.push(p.id);SFX.place();toast('釘到照片牆了，不會被新動態擠掉')}break}
-  case'dm':{const t=(p.t||'').trim().slice(0,200);if(!t&&!p.ph&&!p.st)return;if(NET.on&&NET.q[p.to]){netSend('dm',{to:p.to,t,ph:p.ph||'',st:p.st||''});SFX.say();return}S.dm=S.dm||{};(S.dm[p.to]=S.dm[p.to]||[]).push({from:'me',t,ph:p.ph||'',st:p.st||'',ts:Date.now()});SFX.say();const q=peers.find(z=>z.id===p.to);if(q)dmReply(q,{t,ph:p.ph});save();render();dmScroll();return}
-  case'comment':{const po=S.posts.find(x=>x.id===p.id),t=(p.t||'').trim().slice(0,120);if(!po||!t)return;po.cm.push({by:'me',name:S.name,t});break}
-  case'delpost':{S.posts=S.posts.filter(x=>x.id!==p.id);delAsk=0;break}
+  case'dm':{const t=(p.t||'').trim().slice(0,200);if(!t&&!p.ph&&!p.st)return;if(NET.on&&NET.q[p.to]){const go=ph=>netSend('dm',{to:p.to,t,ph:ph||'',st:p.st||''});if(phBig(p.ph))phUpload(p.ph).then(go,()=>go(p.ph));else go(p.ph);SFX.say();return}S.dm=S.dm||{};(S.dm[p.to]=S.dm[p.to]||[]).push({from:'me',t,ph:p.ph||'',st:p.st||'',ts:Date.now()});SFX.say();const q=peers.find(z=>z.id===p.to);if(q)dmReply(q,{t,ph:p.ph});save();render();dmScroll();return}
+  case'comment':{const po=S.posts.find(x=>x.id===p.id),t=(p.t||'').trim().slice(0,120);if(!po||!t)return;po.cm.push({by:'me',name:S.name,t});netPostComment(po,t);break}
+  case'delpost':{const po=S.posts.find(x=>x.id===p.id);if(po&&po.nk&&po.by==='me'&&NET.on)netRef('shared/posts/'+po.nk).remove().catch(()=>{});S.posts=S.posts.filter(x=>x.id!==p.id);delAsk=0;break}
   case'gacha':{const n=p.n,cost=n===10?GACHA10:GACHA1;if(p.free){if(!(S.ball>0))return;S.ball--}else{if(S.coins<cost)return toast('金幣不夠');S.coins-=cost}stat('pull',n);pulls=[];
     for(let k=0;k<n;k++){let r=Math.random()<.1?3:Math.random()<.34?2:1;if(n===10&&k===9&&r===1&&!pulls.some(x=>x.r>1))r=2;
       const c=POOL.filter(x=>x.r===r),it=c[rnd(c.length)],key=it.l+':'+it.i;S.cos[key]=(S.cos[key]|0)+1;const dup=S.cos[key]>1;pulls.push({...it,dup,open:false})}dropNow=true;for(let k=0;k<n;k++)SFX.drop(k);break}
@@ -1995,7 +2026,7 @@ function sky(){const n=nightAmt();
   if(n<.25){R('#fbe9b0',80,6,32,17);R('#f6c96a',100,8,6,6);R('#a9cf8a',80,18,32,5)}
   else if(n<.75){R('#f6c28a',80,6,32,17);R('#f2a58c',80,6,32,5);R('#e8894a',98,13,7,6);R('#8aa86a',80,18,32,5)}
   else{R('#2f2d45',80,6,32,17);R('#fff3b8',101,8,5,5);R('#2f2d45',103,8,3,3);R('#fff3b8',84,9,1,1);R('#fff3b8',90,13,1,1);R('#fff3b8',108,15,1,1);R('#4a5a3e',80,18,32,5)}}
-const PIC={};function wallPic(p){let c=PIC[p.id];if(!c){c=PIC[p.id]={cv:mkc(12,10),ok:false};const im=new Image();im.onload=()=>{const k=Math.max(12/im.width,10/im.height),w=im.width*k,h=im.height*k;c.cv.getContext('2d').drawImage(im,(12-w)/2,(10-h)/2,w,h);c.ok=true};im.src=p.d}return c.ok?c.cv:null}
+const PIC={};function wallPic(p){let c=PIC[p.id];if(!c){c=PIC[p.id]={cv:mkc(12,10),ok:false};const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{const k=Math.max(12/im.width,10/im.height),w=im.width*k,h=im.height*k;c.cv.getContext('2d').drawImage(im,(12-w)/2,(10-h)/2,w,h);c.ok=true};im.src=p.d}return c.ok?c.cv:null}
 let DK=null; // 晚上的暗幕：整間蓋一層深色，再在開著的燈和電視周圍挖出亮的圓
 function drawNight(){const n=nightAmt();if(n<=.02)return;if(!DK||DK.width!==W+10||DK.height!==H+22)DK=mkc(W+10,H+22);const d=DK.getContext('2d');d.globalCompositeOperation='source-over';d.clearRect(0,0,DK.width,DK.height);d.fillStyle=`rgba(28,26,48,${((S.scene==='yard'?.5:S.light===0?.6:.14)*n).toFixed(3)})`;d.fillRect(0,0,DK.width,DK.height);
   d.globalCompositeOperation='destination-out';const hole=(cx,cy,r)=>{const gr=d.createRadialGradient(cx,cy,3,cx,cy,r);gr.addColorStop(0,'rgba(0,0,0,.95)');gr.addColorStop(1,'rgba(0,0,0,0)');d.fillStyle=gr;d.fillRect(cx-r,cy-r,r*2,r*2)};
@@ -2627,7 +2658,7 @@ set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="but
   ${row('📂','匯入存檔','讀回之前匯出的檔案','','importsave')}
   ${askReset?`<div class="srow"><span class="sic">⚠️</span><span class="stx"><b>確定清掉所有進度？</b></span><button class="btn small" style="background:var(--bad);box-shadow:none!important" data-a="reset" type="button">清掉</button><button class="btn soft small" data-a="noreset" type="button">取消</button></div>`:row('🔄','重新開始','進度自動存在這個瀏覽器','','askreset')}
   </div></div>
-  <p class="lead" style="text-align:center">像素小窩 v0.65</p>`},
+  <p class="lead" style="text-align:center">像素小窩 v0.66</p>`},
 feed(){const left=Math.max(0,POST_MAX-(S.pd.day===today()?S.pd.n:0)),mt=thumb(20,34,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}));
   return `<div><h2>動態</h2><p class="lead">上方頭像列只放 24 小時內的動態，過了還是留在這裡。按「📌 釘到照片牆」的照片會一直掛在照片牆上，不會被新動態擠掉（最多 9 張，走到照片牆旁邊按「看照片牆」就能一張一張看）。拍一張照片、寫一句話就能發布。每篇得 ${POST_PAY} 金幣，今天還能領 ${left} 次。</p></div>
   <div class="post"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${draft.d?`<img class="draft" src="${draft.d}" alt="要發布的照片">`:''}<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><input class="field wide" id="cap" placeholder="寫點什麼…" maxlength="200" value="${esc(draft.cap)}"><div class="row"><button class="btn soft small" data-a="pick" type="button">${draft.d?'重拍':'拍照'}</button><button class="btn small" data-a="post" type="button" ${draft.d?'':'disabled'}>發布</button></div></div></div></div>
