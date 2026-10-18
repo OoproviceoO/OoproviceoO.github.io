@@ -1806,6 +1806,13 @@ function accView(){const up=ACX.mode==='up',rs=ACX.mode==='reset';
 function accPickView(){const m=ACX.pick||{},here={n:S.name,lv:level(),coins:S.coins|0,t:Date.now()};const card=(x,a,ttl,sub)=>`<button class="accpick" data-a="${a}" type="button"><b>${ttl}</b><span>${esc(x.n||'我')}・Lv.${x.lv||1}・🪙 ${(x.coins|0).toLocaleString('en-US')}</span><small>${sub}・${accAgo(x.t)}</small></button>`;
   return `<h2>要用哪一份進度？</h2><p class="lead">這個帳號在雲端已經有存檔了。選一份繼續玩，另一份會被蓋掉。</p>${card(m,'acccloud','☁️ 雲端的進度','上次存檔')}${card(here,'acclocal','📱 這台的進度','現在')}`}
 
+// 安裝成 App（PWA）
+let instEv=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEv=e});addEventListener('appinstalled',()=>{instEv=null;toast('📱 安裝好了！之後從主畫面打開');if(tab==='set')render()});
+const isApp=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+function appInstall(){if(!/^https:$/.test(location.protocol)&&location.hostname!=='localhost')return toast('要用網址 ooproviceoo.github.io/pixel-nest 打開才能安裝');
+  if(instEv){instEv.prompt();instEv.userChoice.finally(()=>{instEv=null});return}
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  toast(ios?'iPhone：用 Safari 打開，按下面的「分享」⬆️，再選「加入主畫面」':'按瀏覽器右上角「⋮」，選「安裝應用程式」或「加到主畫面」')}
 let duoFx={t:0};
 function drawDuo(oy){if(!(duoFx.t>0)||!duoFx.a)return;const q=duoFx.a,k=1-duoFx.t/2.4,x=Math.round((me.fx+q.fx)/2+8),y=Math.round(Math.min(me.fy,q.fy)+oy-10-k*14),H=['.##.##.','#######','#######','.#####.','..###..','...#...'];
   H.forEach((r,j)=>[...r].forEach((c,i)=>{if(c==='#')R(j<2&&i%5===1?'#fbd3dc':'#e9708a',x-7+i*2,y+j*2,2,2)}))}
@@ -2608,11 +2615,12 @@ set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="but
   ${row('🎵','音樂','開著音響時會放',tg('bgm',!!S.bgm))}
   </div></div>
   <div class="sec"><h3>其他</h3><div class="sgroup">
+  ${isApp()?'':row('📱','安裝成 App','放到手機主畫面，打開就是全螢幕','','install')}
   ${row('💾','匯出存檔','存成一個檔案，換手機或換新版都能帶著走','','exportsave')}
   ${row('📂','匯入存檔','讀回之前匯出的檔案','','importsave')}
   ${askReset?`<div class="srow"><span class="sic">⚠️</span><span class="stx"><b>確定清掉所有進度？</b></span><button class="btn small" style="background:var(--bad);box-shadow:none!important" data-a="reset" type="button">清掉</button><button class="btn soft small" data-a="noreset" type="button">取消</button></div>`:row('🔄','重新開始','進度自動存在這個瀏覽器','','askreset')}
   </div></div>
-  <p class="lead" style="text-align:center">像素小窩 v0.61</p>`},
+  <p class="lead" style="text-align:center">像素小窩 v0.62</p>`},
 feed(){const left=Math.max(0,POST_MAX-(S.pd.day===today()?S.pd.n:0)),mt=thumb(20,34,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}));
   return `<div><h2>動態</h2><p class="lead">上方頭像列只放 24 小時內的動態，過了還是留在這裡。按「📌 釘到照片牆」的照片會一直掛在照片牆上，不會被新動態擠掉（最多 9 張，走到照片牆旁邊按「看照片牆」就能一張一張看）。拍一張照片、寫一句話就能發布。每篇得 ${POST_PAY} 金幣，今天還能領 ${left} 次。</p></div>
   <div class="post"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${draft.d?`<img class="draft" src="${draft.d}" alt="要發布的照片">`:''}<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><input class="field wide" id="cap" placeholder="寫點什麼…" maxlength="200" value="${esc(draft.cap)}"><div class="row"><button class="btn soft small" data-a="pick" type="button">${draft.d?'重拍':'拍照'}</button><button class="btn small" data-a="post" type="button" ${draft.d?'':'disabled'}>發布</button></div></div></div></div>
@@ -2737,7 +2745,7 @@ $('panel').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(
   pick(){openComposer('cam')},post(){act('post',{data:draft.d,cap:draft.cap})},emo(){act('react',{id:+d.id,e:d.e})},
   cmt(){act('comment',{id:+d.id,t:$('cm-'+d.id).value})},askdel(){delAsk=+d.id;render()},del(){act('delpost',{id:+d.id})},pull(){act('gacha',{n:+d.n})},open(){const k=+d.k;if(pulls[k]){SFX.open(pulls[k].r);pulls[k].open=true;justOpen=[k];render()}},openall(){SFX.open(3);justOpen=pulls.map((x,k)=>x.open?-1:k).filter(k=>k>=0);pulls.forEach(x=>x.open=true);render()},
   zoom1(){S.zoom=1;fit();save();render()},zoom0(){S.zoom=0;fit();save();render()},tod(){S.tod=+d.v;save();render()},snd(){S.snd=S.snd===0?1:0;save();render();SFX.ui()},
-  bgm(){S.bgm=S.bgm?0:1;S.items.forEach(i=>{if(i.t==='speaker')i.sw=S.bgm});bgmSync();save();render()},cheat(){act('settle',{delta:1000});toast('測試金幣 +1000')},phat(){act('phat',{id:+d.id,v:+d.v})},expand(){act('expand',{dir:d.dir})},
+  install(){appInstall()},bgm(){S.bgm=S.bgm?0:1;S.items.forEach(i=>{if(i.t==='speaker')i.sw=S.bgm});bgmSync();save();render()},cheat(){act('settle',{delta:1000});toast('測試金幣 +1000')},phat(){act('phat',{id:+d.id,v:+d.v})},expand(){act('expand',{dir:d.dir})},
   plant(){act('plant',{k:d.k})},sellcrop(){act('sellcrop',{k:d.k})},cook(){act('cook',{k:d.k})},selldish(){act('selldish',{k:d.k})},eat(){act('eat',{k:d.k})},hand(){act('hand',{k:d.k})},poke(){act('poke',{to:peerSel,k:d.k})},gok(){act('gift',{ok:1})},gno(){act('gift',{ok:0})},bots(){act('bots')},feeddish(){act('feeddish',{id:+d.id,k:d.k})},sbuy(){act('sbuy',{k:d.k,q:d.q})},ssell(){act('ssell',{k:d.k,q:d.q})},
   calsel(){calV.sel=d.k;const dt=new Date(d.k+'T12:00');calV.y=dt.getFullYear();calV.m=dt.getMonth();calDel=0;render();const el=document.querySelector('.dayv');if(el)el.scrollIntoView({block:'start'})},
   calmv(){calV.m+=+d.d;if(calV.m<0){calV.m=11;calV.y--}if(calV.m>11){calV.m=0;calV.y++}render()},caltoday(){calV={...calV,y:new Date().getFullYear(),m:new Date().getMonth(),sel:today()};render()},
