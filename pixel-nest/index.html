@@ -735,7 +735,7 @@ select.field{appearance:auto}
 .tab{border-radius:999px;padding:9px 16px}.tab[aria-selected="true"]{background:var(--surface-2);box-shadow:none}
 .pondv{border:0}.fbar{border:0}
 .gmbase{background:var(--accent)}
-#panel{flex:1}#panel .chat{flex:1 0 auto}
+#panel{flex:1;overscroll-behavior:contain;contain:layout paint}#panel .chat{flex:1 0 auto}
 .hud{padding-right:76px}
 .chathead b{display:none}
 .ngbar{position:absolute;left:50%;transform:translateX(-50%);top:calc(64px + env(safe-area-inset-top,0px));z-index:5;display:flex;align-items:center;gap:8px;background:var(--surface);color:var(--ink);border-radius:99px;padding:6px 8px 6px 16px;font-weight:700;font-size:14px;box-shadow:0 6px 18px rgba(60,50,80,.18);white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden}
@@ -814,8 +814,15 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let SKIP=false; // 畫描邊用的剪影時，跳過半透明的陰影和光暈
 const R=(c,x,y,w,h)=>{if(SKIP&&c[0]==='r')return;g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),w,h)};
-const mkc=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c},OC=mkc(56,84),SIL=mkc(56,84),OUT='#4a3828';
+const mkc=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c},OC=mkc(56,84),SIL=mkc(56,84),OUT='#4a3828';OC.getContext('2d',{willReadFrequently:true});SIL.getContext('2d',{willReadFrequently:true});
 // 把一個物件先畫到小畫布，四周多描一圈深色邊再貼到畫面上
+// 家具畫一次就記起來（手機上每格都重畫外框很慢）；會動的家具才每格畫
+const SPR=new Map(),SPRDYN={};
+function sprDyn(t){if(!(t in SPRDYN)){const src=String(F[t].d)+String(F[t].use||'');SPRDYN[t]=/\btime\b|Date|DOORA|nightAmt|S\.|\bme\.|peers|petRT|rnd\(|Math\.random/.test(src)}return SPRDYN[t]}
+function sprOutlined(i,x,y){const oc=i.up?'#c9961a':0,hue=i.col||i.hue|0;if(sprDyn(i.t))return outlined(x,y,(a,b)=>F[i.t].d(a,b,i),oc,hue);
+  const k=JSON.stringify(i,(kk,v)=>kk==='x'||kk==='y'||kk==='id'?undefined:v);let c=SPR.get(k);
+  if(!c){if(SPR.size>400)SPR.clear();c=mkc(56,84);const o=g;g=c.getContext('2d');outlined(16,40,(a,b)=>F[i.t].d(a,b,i),oc,hue);g=o;SPR.set(k,c)}
+  g.drawImage(c,Math.round(x)-16,Math.round(y)-40)}
 function outlined(x,y,fn,oc,hue){x=Math.round(x);y=Math.round(y);const a=OC.getContext('2d'),b=SIL.getContext('2d'),o=g;a.clearRect(0,0,56,84);b.globalCompositeOperation='source-over';b.clearRect(0,0,56,84);
   g=a;fn(16,40);g=b;SKIP=true;fn(16,40);SKIP=false;g=o;b.globalCompositeOperation='source-in';b.fillStyle=oc||OUT;b.fillRect(0,0,56,84);
   if(typeof hue==='string'&&hue[0]==='#'){a.save();a.globalAlpha=.88;a.globalCompositeOperation='color';a.fillStyle=hue;a.fillRect(0,0,56,84);a.globalAlpha=1;a.globalCompositeOperation='destination-in';a.drawImage(SIL,0,0);a.restore();hue=0}
@@ -1563,7 +1570,7 @@ const ngArr=v=>Array.isArray(v)?v:v&&typeof v==='object'?Object.values(v):[];
 function ngNorm(gm){if(gm){['order','alive','seats'].forEach(k=>{if(gm[k]!=null)gm[k]=ngArr(gm[k])})}return gm}
 function ngTx(fn){if(!NET.on)return Promise.resolve({committed:false});return ngR().transaction(cur=>{const r=fn(ngNorm(cur));return r===undefined?undefined:r}).catch(e=>{netErr(e);return{committed:false}})}
 // 開一場新的
-function ngCreate(k){if(!NET.on)return toast('先到小窩管理按「上線」，才能和朋友一起玩');const cur=NG.gm;if(ngAlive(cur)&&cur.st==='wait'){if(ngIn(cur)){tab='ngame';return render()}toast('加入'+(cur.hn||'朋友')+'開的'+NGK[cur.k][1]);return ngJoin()}if(ngAlive(cur))return toast('大家正在玩'+NGK[cur.k][1]+'，等這場結束');
+function ngCreate(k){if(!NET.on)return toast('先到小窩管理按「上線」，才能和朋友一起玩');const cur=NG.gm;if(ngAlive(cur)&&cur.st==='wait'&&!(cur.host===NET.uid&&cur.k!==k)){if(ngIn(cur)){tab='ngame';return render()}if(cur.k===k){toast('加入'+(cur.hn||'朋友')+'開的'+NGK[cur.k][1]);return ngJoin()}toast((cur.hn||'朋友')+'正在等人玩'+NGK[cur.k][1]+'，可以先加入那場');tab='ngame';return render()}if(ngAlive(cur)&&!(cur.st==='wait'&&cur.host===NET.uid))return toast('大家正在玩'+NGK[cur.k][1]+'，等這場結束');
   if(k==='chair'&&S.items.filter(i=>F[i.t].seat).length<1)return toast('房間裡至少要有一個能坐的家具');
   const bet=NG.bet|0;if(S.coins<bet)return toast('金幣不夠，賭注要 '+bet+' 金幣');const gm={id:Date.now()+''+rnd(1000),k,bet,host:NET.uid,hn:S.name||'我',st:'wait',ts:Date.now(),sc:S.scene||'home',pl:{[NET.uid]:{n:S.name||'我',sc:0}}};
   ngR().set(gm).then(()=>{NG.seen=gm.id;tab='ngame';render();toast(NGK[k][0]+' 已經邀請大家，等人加入')}).catch(netErr)}
@@ -2145,7 +2152,7 @@ const poseNow=()=>{if(me.moving||!me.seat)return'stand';const s=seatAt(S.pos.x,S
 function draw(){g.setTransform(RK,0,0,RK,0,0);g.clearRect(0,0,VW,VH);camera();g.translate(OX,OY);drawOutside();drawRoom();const oy=WALL*T;
   S.items.filter(i=>F[i.t].flat).forEach(i=>F[i.t].d(i.x*T,i.y*T+oy,i));drawPicks();
   if(editing){g.fillStyle='rgba(36,48,32,.12)';for(let x=1;x<COLS;x++)g.fillRect(x*T,oy,1,ROWS*T);for(let y=1;y<ROWS;y++)g.fillRect(0,y*T+oy,W,1)}
-  const list=S.items.filter(i=>!F[i.t].flat).map(i=>({z:(i.y+fh(i))*T,f:()=>{if(F[i.t].raw)return F[i.t].d(i.x*T,i.y*T+oy,i);outlined(i.x*T,i.y*T+oy,(x,y)=>F[i.t].d(x,y,i),i.up?'#c9961a':0,i.col||i.hue|0);if(i.up)sparkle(i,oy)}}));
+  const list=S.items.filter(i=>!F[i.t].flat).map(i=>({z:(i.y+fh(i))*T,f:()=>{if(F[i.t].raw)return F[i.t].d(i.x*T,i.y*T+oy,i);sprOutlined(i,i.x*T,i.y*T+oy);if(i.up)sparkle(i,oy)}}));
   const pose=poseNow(),seat=seatAt(S.pos.x,S.pos.y);
   list.push({z:pose!=='stand'&&seat?(seat.y+fh(seat))*T+.5:me.fy+T+.5,f:()=>{let lx=snp(me.fx),ly=snp(me.fy)+oy;if(pose==='lie'){const q=lieXY(seat,S.pos.x,S.pos.y);lx=q[0];ly=q[1]+oy}if(me.shake>0)lx+=Math.round(Math.sin(time*70)*1.5);outlined(lx,ly,(ax,ay)=>drawAvatar(ax,ay,S.av,{party:fxToday().party.has('me'),hand:me.eatT>0?me.eatK:S.hand,rot:seat?seat.r|0:0,pose,dir:me.dir,t:time,moving:me.moving,dance:me.dance,emote:me.et>0?me.emote:(me.dance?'note':null)}))}});
   peers.forEach(q=>list.push(peerEntry(q,oy)));
@@ -2228,7 +2235,7 @@ function doAct(){const n=near;if(!n||tab||editing)return;
 function placeSay(dt){const el=$('say');if(el.hidden)return;if((sayT-=dt)<=0){el.hidden=true;return}
   if(!CR)cacheRects();const r=CR,k=r.width/VW,a=AR;el.style.left=((OX+me.fx+8)*k+r.left-a.left)+'px';el.style.top=((OY+me.fy+WALL*T-18)*k+r.top-a.top)+'px'}
 function petFind(p,r){const d=today(),lv=plv(p);if(lv<2||p.happy<60)return;if(!S.pk||S.pk.day!==d)S.pk={day:d,n:0};if(S.pk.n>=15)return;S.pk.n++;const c=gain(3*lv*(bOn('petcoin')?2:1));S.coins+=c;r.et=2;SFX.coin();toast(`${p.name}撿到 ${c} 金幣`);save();if(!tab)render()}
-let last=0;function frame(now){const dt=Math.min(.05,(now-last)/1000||0);last=now;update(dt);trackNear();draw();placeSay(dt);placeTags();svTick(dt);if(tab==='fishing'&&fz.st==='bite'){fz.p+=fz.dir*fz.v*dt;if(fz.p>1){fz.p=1;fz.dir=-1}if(fz.p<0){fz.p=0;fz.dir=1}const fm=$('fmark');if(fm)fm.style.left=(fz.p*100)+'%'}requestAnimationFrame(frame)}
+let last=0;function frame(now){const dt=Math.min(.05,(now-last)/1000||0);last=now;update(dt);trackNear();if(!tab||editing||!frame.drawn){draw();placeSay(dt);placeTags();frame.drawn=!!tab}else if(!tab)frame.drawn=false;if(!tab)frame.drawn=false;svTick(dt);if(tab==='fishing'&&fz.st==='bite'){fz.p+=fz.dir*fz.v*dt;if(fz.p>1){fz.p=1;fz.dir=-1}if(fz.p<0){fz.p=0;fz.dir=1}const fm=$('fmark');if(fm)fm.style.left=(fz.p*100)+'%'}requestAnimationFrame(frame)}
 
 /* ========== 畫面輸入 ========== */
 function tileOf(e){const r=cv.getBoundingClientRect(),k=VW/r.width;const x=Math.floor(((e.clientX-r.left)*k-OX)/T),y=Math.floor(((e.clientY-r.top)*k-OY)/T)-WALL;
@@ -2659,7 +2666,7 @@ set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="but
   ${row('📂','匯入存檔','讀回之前匯出的檔案','','importsave')}
   ${askReset?`<div class="srow"><span class="sic">⚠️</span><span class="stx"><b>確定清掉所有進度？</b></span><button class="btn small" style="background:var(--bad);box-shadow:none!important" data-a="reset" type="button">清掉</button><button class="btn soft small" data-a="noreset" type="button">取消</button></div>`:row('🔄','重新開始','進度自動存在這個瀏覽器','','askreset')}
   </div></div>
-  <p class="lead" style="text-align:center">像素小窩 v0.67</p>`},
+  <p class="lead" style="text-align:center">像素小窩 v0.68</p>`},
 feed(){const left=Math.max(0,POST_MAX-(S.pd.day===today()?S.pd.n:0)),mt=thumb(20,34,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}));
   return `<div><h2>動態</h2><p class="lead">上方頭像列只放 24 小時內的動態，過了還是留在這裡。按「📌 釘到照片牆」的照片會一直掛在照片牆上，不會被新動態擠掉（最多 9 張，走到照片牆旁邊按「看照片牆」就能一張一張看）。拍一張照片、寫一句話就能發布。每篇得 ${POST_PAY} 金幣，今天還能領 ${left} 次。</p></div>
   <div class="post"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${draft.d?`<img class="draft" src="${draft.d}" alt="要發布的照片">`:''}<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><input class="field wide" id="cap" placeholder="寫點什麼…" maxlength="200" value="${esc(draft.cap)}"><div class="row"><button class="btn soft small" data-a="pick" type="button">${draft.d?'重拍':'拍照'}</button><button class="btn small" data-a="post" type="button" ${draft.d?'':'disabled'}>發布</button></div></div></div></div>
