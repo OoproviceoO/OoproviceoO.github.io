@@ -1812,6 +1812,7 @@ const isApp=()=>matchMedia('(display-mode: standalone)').matches||navigator.stan
 function appInstall(){if(!/^https:$/.test(location.protocol)&&location.hostname!=='localhost')return toast('要用網址 ooproviceoo.github.io/pixel-nest 打開才能安裝');
   if(instEv){instEv.prompt();instEv.userChoice.finally(()=>{instEv=null});return}
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(/android/i.test(navigator.userAgent)){toast('📱 下載 Android App 中…下載完點開安裝');location.href='https://ooproviceoo.github.io/downloads/pixel-nest.apk';return}
   toast(ios?'iPhone：用 Safari 打開，按下面的「分享」⬆️，再選「加入主畫面」':'按瀏覽器右上角「⋮」，選「安裝應用程式」或「加到主畫面」')}
 let duoFx={t:0};
 function drawDuo(oy){if(!(duoFx.t>0)||!duoFx.a)return;const q=duoFx.a,k=1-duoFx.t/2.4,x=Math.round((me.fx+q.fx)/2+8),y=Math.round(Math.min(me.fy,q.fy)+oy-10-k*14),H=['.##.##.','#######','#######','.#####.','..###..','...#...'];
@@ -2620,7 +2621,7 @@ set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="but
   ${row('📂','匯入存檔','讀回之前匯出的檔案','','importsave')}
   ${askReset?`<div class="srow"><span class="sic">⚠️</span><span class="stx"><b>確定清掉所有進度？</b></span><button class="btn small" style="background:var(--bad);box-shadow:none!important" data-a="reset" type="button">清掉</button><button class="btn soft small" data-a="noreset" type="button">取消</button></div>`:row('🔄','重新開始','進度自動存在這個瀏覽器','','askreset')}
   </div></div>
-  <p class="lead" style="text-align:center">像素小窩 v0.62</p>`},
+  <p class="lead" style="text-align:center">像素小窩 v0.63</p>`},
 feed(){const left=Math.max(0,POST_MAX-(S.pd.day===today()?S.pd.n:0)),mt=thumb(20,34,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}));
   return `<div><h2>動態</h2><p class="lead">上方頭像列只放 24 小時內的動態，過了還是留在這裡。按「📌 釘到照片牆」的照片會一直掛在照片牆上，不會被新動態擠掉（最多 9 張，走到照片牆旁邊按「看照片牆」就能一張一張看）。拍一張照片、寫一句話就能發布。每篇得 ${POST_PAY} 金幣，今天還能領 ${left} 次。</p></div>
   <div class="post"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${draft.d?`<img class="draft" src="${draft.d}" alt="要發布的照片">`:''}<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><input class="field wide" id="cap" placeholder="寫點什麼…" maxlength="200" value="${esc(draft.cap)}"><div class="row"><button class="btn soft small" data-a="pick" type="button">${draft.d?'重拍':'拍照'}</button><button class="btn small" data-a="post" type="button" ${draft.d?'':'disabled'}>發布</button></div></div></div></div>

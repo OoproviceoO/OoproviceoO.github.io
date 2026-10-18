@@ -1,8 +1,26 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "io.github.ooproviceoo.twa",
-        "sha256_cert_fingerprints": ["5A:20:09:1C:DB:5F:63:D6:AC:A5:00:A7:1F:85:FF:88:A7:B8:AE:0B:E2:B5:7B:BF:A5:ED:0E:A1:DD:22:3A:F8"]
-      }
-    }]
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.ooproviceoo.twa",
+      "sha256_cert_fingerprints": [
+        "5A:20:09:1C:DB:5F:63:D6:AC:A5:00:A7:1F:85:FF:88:A7:B8:AE:0B:E2:B5:7B:BF:A5:ED:0E:A1:DD:22:3A:F8"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.ooproviceoo.pixelnest",
+      "sha256_cert_fingerprints": [
+        "A8:95:8F:21:72:5A:37:60:99:C1:6A:3E:A6:29:51:BC:41:2E:6E:8F:DD:97:F0:3B:1D:3A:3B:68:69:CA:58:FC"
+      ]
+    }
+  }
+]
