@@ -731,6 +731,15 @@ select.field{appearance:auto}
 #panel{flex:1}#panel .chat{flex:1 0 auto}
 .hud{padding-right:76px}
 .chathead b{display:none}
+.ngbar{position:absolute;left:50%;transform:translateX(-50%);top:calc(64px + env(safe-area-inset-top,0px));z-index:5;display:flex;align-items:center;gap:8px;background:var(--surface);color:var(--ink);border-radius:99px;padding:6px 8px 6px 16px;font-weight:700;font-size:14px;box-shadow:0 6px 18px rgba(60,50,80,.18);white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden}
+.ngbar[hidden]{display:none}
+.ngpl{display:flex;flex-wrap:wrap;gap:8px}.ngchip{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border-radius:99px;padding:4px 12px 4px 4px;font-weight:700;font-size:14px}.ngchip img{width:26px;height:26px;border-radius:50%;background:var(--surface)}.ngchip.me{background:var(--lav)}.ngchip b{color:var(--accent-edge,#4f8a3c)}
+.ngend{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px;background:var(--sun);border-radius:20px}.ngend .emo{font-size:46px}.ngend b{font-size:20px}
+.ngcv{width:100%;max-width:320px;aspect-ratio:1;align-self:center;border-radius:18px;background:#fffdf6;box-shadow:inset 0 0 0 2px var(--outline,#e4e0cc);touch-action:none;display:flex;align-items:center;justify-content:center;overflow:hidden}.ngcv img{width:100%;height:100%;object-fit:contain}
+.ngtools{justify-content:center;gap:6px}.ngcol{width:30px;height:30px;border-radius:50%;border:3px solid transparent;font-size:14px;background:var(--bg);padding:0}.ngcol.on{border-color:var(--ink)}
+.nggl{display:flex;flex-direction:column;gap:4px;font-size:14px}.nggl span{background:var(--bg);border-radius:12px;padding:4px 10px}.nggl .ok{background:var(--pink,#fbe0e8);font-weight:700}.ngword{background:var(--sun);padding:2px 10px;border-radius:8px}
+.gmk button.last i{box-shadow:0 0 0 2px #f08aa8}
+.ttt button{background:var(--surface)}.ttt button:disabled{opacity:1;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -760,6 +769,7 @@ select.field{appearance:auto}
   <div class="veil" id="veil" hidden><div class="modal" role="dialog" aria-modal="true"><div class="mhead"><button class="x" id="close" type="button" aria-label="關閉">✕</button><h2 class="mtitle" id="mtitle"></h2><button class="x help" id="help" type="button" aria-label="教學">?</button></div><div id="panel"></div></div></div>
   <div class="tut" id="tut" hidden></div>
   <div class="invite" id="invite" hidden></div>
+  <div class="ngbar" id="ngbar" hidden></div>
   <div id="toast" class="toast" role="status" hidden></div>
   <input type="file" id="photo" accept="image/*" hidden>
   <input type="file" id="savein" accept=".json,application/json" hidden>
@@ -1124,9 +1134,9 @@ function hideInvite(){inv=null;$('invite').hidden=true;clearTimeout(invT)}
 function joinInvite(v){menuOpen=false;if(v.k==='race'){tab='fishing';startRace(v.from);return}tab='game';startGame(v.k);mg.duo=1;render()}
 // 室友不定時邀請大家一起玩
 setInterval(()=>{const q=peers.find(z=>z.online!==false&&!z.net);if(!q||!S.setup||tab||editing||SV||CP||!$('shotv').hidden||inv||race)return;if(Date.now()-lastInv<150000||Math.random()>.3)return;lastInv=Date.now();showInvite(q,['race','race','rps','ttt','gmk'][rnd(5)])},20000);
-function raceInvite(){const q=peers.find(z=>z.online!==false&&!z.net);if(!q)return toast('現在沒有人在線上');if(race)return;toast('已經邀請大家…');setTimeout(()=>{peerSay(q,'我來了！','note');startRace(q)},1500)}
+function raceInvite(){if(NET.on)return ngCreate('race');const q=peers.find(z=>z.online!==false&&!z.net);if(!q)return toast('現在沒有人在線上');if(race)return;toast('已經邀請大家…');setTimeout(()=>{peerSay(q,'我來了！','note');startRace(q)},1500)}
 function startRace(q){race={end:Date.now()+60000,me:0,op:q,them:0,tm:setInterval(()=>{if(!race)return;if(Math.random()<.085){race.them++;if(tab==='fishing')render()}if(Date.now()>=race.end)endRace();else{const el=$('racet');if(el)el.textContent=Math.ceil((race.end-Date.now())/1000)}},1000)};fz.st='idle';fz.msg='';toast('🎣 比賽開始！一分鐘內釣最多的贏');render()}
-function endRace(){const r=race;if(!r)return;clearInterval(r.tm);race=null;const q=r.op,win=r.me>r.them,tie=r.me===r.them,prize=win?150:tie?60:30;S.coins+=gain(prize);const f=frAdd(q,'race',2);
+function endRace(){const r=race;if(!r)return;if(r.net){clearInterval(r.tm);race=null;if(tab==='fishing')render();return}clearInterval(r.tm);race=null;const q=r.op,win=r.me>r.them,tie=r.me===r.them,prize=win?150:tie?60:30;S.coins+=gain(prize);const f=frAdd(q,'race',2);
   peerSay(q,win?'你好厲害！下次我要贏回來':tie?'平手耶！':'哈哈我贏了～',win?'heart':'note');toast(`比賽結束 ${r.me}：${r.them}　${win?'你贏了！':tie?'平手':'輸了一點點'}拿到 ${gain(prize)} 金幣${f?'，好感度 +2':''}`);save();render()}
 let gpot=[],gg=null,ggLast=0;
 const STN={blend:{n:'果汁機',max:3,go:'開始打！',idle:'最多放 3 樣，按住按鈕攪拌'},oven:{n:'烤箱',max:4,go:'放進烤箱',idle:'最多放 4 樣，看準時機'}};
@@ -1287,7 +1297,7 @@ function canPlace(t,x,y,r){if(t==='__exit')return exitOk(x);const f=F[t],w=r&1?f
 const FOODC={grill:'#c98f5e',soup:'#e8604a',salad:'#7fbd69',cornsoup:'#f6d860',curry:'#d99a4a',cake:'#f2a5b5',pie:'#e8a04a'};
 // 其他玩家：現在先放一個「測試室友」，之後連線時這裡換成真的朋友，互動都走同樣的 act() 動作
 const frLv=v=>v>=45?3:v>=25?2:v>=10?1:0;
-const FRCAP={wave:3,pat:3,hug:3,five:3,heart2:3,race:2,table:3};
+const FRCAP={wave:3,pat:3,hug:3,five:3,heart2:3,race:2,table:3,game:3};
 // 每種互動每天只有前幾次會加好感度
 function frAdd(q,k,n){S.frd=S.frd||{};const d=today();if(!S.frdD||S.frdD.d!==d)S.frdD={d,c:{}};const key=q.id+':'+k,c=S.frdD.c[key]|0,cap=FRCAP[k];if(cap&&c>=cap)return false;S.frdD.c[key]=c+1;S.frd[q.id]=(S.frd[q.id]||0)+n;return true}
 const frLeft=(q,k)=>{const d=today(),c=S.frdD&&S.frdD.d===d?S.frdD.c[q.id+':'+k]|0:0;return Math.max(0,(FRCAP[k]||99)-c)};
@@ -1296,7 +1306,7 @@ function duoPhoto(q){if(Math.hypot(q.fx-me.fx,q.fy-me.fy)>40)return toast('先�
 let fz={st:'idle',p:0,dir:1,v:1,z:[0,0],k:null,msg:''};
 function fishCast(){clearTimeout(fz.tm);
   if(fz.st==='wait'){fz.st='idle';fz.msg='太早拉了，魚被嚇跑了';return render()}
-  if(fz.st==='bite'){const ok=fz.p>=fz.z[0]&&fz.p<=fz.z[1];if(ok){const k=fz.k;if(race&&k!=='boot')race.me++;S.crop['f_'+k]=(S.crop['f_'+k]||0)+1;S.fdex=S.fdex||{};const nw=!S.fdex[k];S.fdex[k]=1;stat('fish');fz.msg=`釣到 ${FISH[k].e} ${FISH[k].n}！${nw?'圖鑑新增一種':''}`;SFX.open(FISH[k].w<10?3:2);achCheck();save()}else{fz.msg='差一點，魚跑掉了';SFX.ui()}fz.st='idle';fz.z=[0,0];return render()}
+  if(fz.st==='bite'){const ok=fz.p>=fz.z[0]&&fz.p<=fz.z[1];if(ok){const k=fz.k;if(race&&k!=='boot'){race.me++;if(race.net&&NET.on)ngR('pl/'+NET.uid+'/sc').set(race.me).catch(()=>{})}S.crop['f_'+k]=(S.crop['f_'+k]||0)+1;S.fdex=S.fdex||{};const nw=!S.fdex[k];S.fdex[k]=1;stat('fish');fz.msg=`釣到 ${FISH[k].e} ${FISH[k].n}！${nw?'圖鑑新增一種':''}`;SFX.open(FISH[k].w<10?3:2);achCheck();save()}else{fz.msg='差一點，魚跑掉了';SFX.ui()}fz.st='idle';fz.z=[0,0];return render()}
   {const d=today();if(!S.fz||S.fz.day!==d)S.fz={day:d,n:0};if(race){}else if(S.fz.n>=FISH_FREE){if(S.coins<BAIT)return toast('魚餌要 '+BAIT+' 金幣，金幣不夠');S.coins-=BAIT}if(!race)S.fz.n++}fz.st='wait';fz.msg='';SFX.ui();render();
   fz.tm=setTimeout(()=>{const bag=[];for(const k in FISH)for(let i=0;i<FISH[k].w;i++)bag.push(k);const k=bag[rnd(bag.length)],w=Math.min(.6,FISH[k].z*(bOn('fishing')?1.5:1)),a=Math.random()*(1-w);
     Object.assign(fz,{st:'bite',k,z:[a,a+w],p:0,dir:1,v:.8+Math.random()*.7});SFX.pet();render();fz.tm=setTimeout(()=>{if(fz.st==='bite'){fz.st='idle';fz.z=[0,0];fz.msg='魚咬了一下就跑了';render()}},4500)},1200+Math.random()*2500)}
@@ -1472,6 +1482,7 @@ function netListen(){const on=(p,ev,f)=>{const r=p.ref?p:netRef(p);r.on(ev,f,e=>
   on(netRef('ev').orderByChild('to').equalTo(NET.uid),'child_added',s=>{const m=s.val();s.ref.remove().catch(()=>{});if(!m||m.ts<NET.t0-30000)return;const q=NET.q[m.u],nm=(NET.mem[m.u]||{}).n||'朋友';
     if(m.k==='wave'){if(q){q.emote='note';q.et=2;q.dir=me.fx>q.fx?1:-1;peerSay(q,'嗨～👋')}toast('👋 '+nm+'跟你打招呼')}
     else if(m.k==='heart'){if(q){q.emote='heart';q.et=2}me.emote='heart';me.et=2;SFX.pet();toast('💗 '+nm+'對你比了愛心');S.frd=S.frd||{};S.frd[m.u]=(S.frd[m.u]||0)+1;saveSoon()}});
+  on('shared/g','value',s=>ngOn(s.val()));
   ['home','yard'].forEach(k=>on('shared/sc/'+k,'value',s=>{const v=s.val();if(typeof v!=='string')return;NET.scRemote[k]=v;netApplyScene(k,v)}))}
 // 把其他玩家變成畫面上的人物
 function netPeers(){if(!NET.on)return;const sc=S.scene||'home',want=[];
@@ -1493,7 +1504,7 @@ function netUpd(q,dt){if(q.et>0)q.et-=dt;if(q.sayT>0)q.sayT-=dt;if(q.shake>0)q.s
 function netTick(dt){if(!NET.on)return;const now=Date.now(),p=netPres(),js=JSON.stringify(p);
   if((js!==NET.lastP&&now-NET.lastPT>140)||now-NET.lastPT>20000){NET.lastP=js;NET.lastPT=now;p.t=firebase.database.ServerValue.TIMESTAMP;netRef('pres/'+NET.uid).set(p).catch(()=>{})}
   const avk=JSON.stringify(S.av)+S.name;if(now-NET.lastM>15000||avk!==NET.avk){NET.avk=avk;NET.lastM=now;netRef('members/'+NET.uid).set(netMe()).catch(()=>{})}
-  if((NET.scT-=dt)<=0){NET.scT=1.2;if(!editing&&!hold)netPushScene(S.scene||'home')}}
+  ngTick(dt);if((NET.scT-=dt)<=0){NET.scT=1.2;if(!editing&&!hold)netPushScene(S.scene||'home')}}
 function netSceneData(k){const cur=(S.scene||'home')===k,d=cur?{items:S.items,cols:S.cols,rows:S.rows}:(S.scenes||{})[k];if(!d)return null;return JSON.stringify({items:d.items,cols:d.cols,rows:d.rows})}
 function netPushScene(k){const v=netSceneData(k);if(!v||v===NET.scRemote[k]||v===NET.scLocal[k])return;NET.scLocal[k]=v;NET.scRemote[k]=v;netRef('shared/sc/'+k).set(v).catch(()=>{})}
 function netPushAll(){const ps=['home','yard'].map(k=>{const v=netSceneData(k);return v?netRef('shared/sc/'+k).set(v):0});return Promise.all(ps)}
@@ -1510,6 +1521,132 @@ function netSection(){const r=roomInfo(),on=NET.on,st=NET.st,own=S.net&&S.net.ow
   <div class="row" style="flex-wrap:nowrap;margin-top:10px"><input class="field wide" id="netcode" maxlength="8" placeholder="輸入朋友的小窩代碼" autocomplete="off" style="text-transform:uppercase"><button class="btn sun" data-a="netjoin" type="button">加入</button></div>
   ${S.homeBak?'<p class="meta">加入別人的小窩時，你自己的家會先收好，離開後就換回來。</p>':''}</div>`}
 function netPeerView(q){const fr=(S.frd||{})[q.id]||0;return V.peerBase()+`<p class="meta">${q.online?'🟢 在線上':'離線中'}・好感度 ${fr}</p><div class="row"><button class="btn" data-a="dmto" type="button">💬 私訊</button>${q.online?`<button class="btn soft" data-a="netev" data-k="wave" type="button">👋 打招呼</button><button class="btn pink" data-a="netev" data-k="heart" type="button">💗 比愛心</button>`:''}</div>`}
+
+// ===== 線上小遊戲：同一時間房間裡只有一場，大家都能加入 =====
+var NG={gm:null,seen:null,done:null,inv:null,invT:null,dirty:false,lastImg:0,col:'#3a4a32',pen:4,strokes:[],tk:0,claimT:0};
+const NGK={race:['🎣','釣魚比賽','一分鐘內誰釣最多誰贏',2,8],rps:['✊','剪刀石頭布','兩個人猜拳',2,2],ttt:['⭕','井字棋','兩個人輪流下',2,2],gmk:['⚫','五子棋','先連成五顆的贏',2,2],draw:['🎨','你畫我猜','輪流畫，其他人猜',2,8],chair:['🪑','搶椅子','音樂停了就快去坐下！',2,8]};
+const NGWORDS=['蘋果','香蕉','西瓜','草莓','貓咪','狗狗','兔子','烏龜','魚','房子','太陽','月亮','星星','雲','雨傘','樹','花','蛋糕','冰淇淋','披薩','漢堡','眼鏡','帽子','鞋子','電話','電視','時鐘','椅子','床','腳踏車','汽車','火車','飛機','船','氣球','禮物','愛心','雪人','聖誕樹','南瓜','香菇','蝴蝶','蜜蜂','鯨魚','章魚','螃蟹','企鵝','恐龍','城堡','彩虹','火山','鑰匙','書','鉛筆','吉他','相機','杯子','牙刷','風箏','皇冠'];
+const ngR=p=>netRef('shared/g'+(p?'/'+p:''));
+const ngIn=gm=>!!(gm&&gm.pl&&NET.uid&&gm.pl[NET.uid]);
+const ngAlive=gm=>!!(gm&&gm.st!=='end'&&NET.pres[gm.host]&&Date.now()-(gm.ts||0)<20*60000);
+const ngName=uid=>uid===NET.uid?'你':((NET.mem[uid]||{}).n||(gm=>gm&&gm.pl&&gm.pl[uid]&&gm.pl[uid].n)(NG.gm)||'朋友');
+const ngPl=gm=>Object.keys((gm&&gm.pl)||{});
+const ngArr=v=>Array.isArray(v)?v:v&&typeof v==='object'?Object.values(v):[];
+function ngNorm(gm){if(gm){['order','alive','seats'].forEach(k=>{if(gm[k]!=null)gm[k]=ngArr(gm[k])})}return gm}
+function ngTx(fn){if(!NET.on)return Promise.resolve({committed:false});return ngR().transaction(cur=>{const r=fn(ngNorm(cur));return r===undefined?undefined:r}).catch(e=>{netErr(e);return{committed:false}})}
+// 開一場新的
+function ngCreate(k){if(!NET.on)return toast('先到小窩管理按「上線」，才能和朋友一起玩');const cur=NG.gm;if(ngAlive(cur)&&!(cur.st==='wait'&&cur.host===NET.uid))return toast('大家正在玩'+NGK[cur.k][1]+'，等這場結束');
+  if(k==='chair'&&S.items.filter(i=>F[i.t].seat).length<1)return toast('房間裡至少要有一個能坐的家具');
+  const gm={id:Date.now()+''+rnd(1000),k,host:NET.uid,hn:S.name||'我',st:'wait',ts:Date.now(),sc:S.scene||'home',pl:{[NET.uid]:{n:S.name||'我',sc:0}}};
+  ngR().set(gm).then(()=>{NG.seen=gm.id;tab='ngame';render();toast(NGK[k][0]+' 已經邀請大家，等人加入')}).catch(netErr)}
+function ngJoin(){const id=NG.gm&&NG.gm.id;ngTx(gm=>{if(!gm||gm.id!==id||gm.st!=='wait')return;const n=ngPl(gm).length;if(n>=NGK[gm.k][4]&&!gm.pl[NET.uid])return;gm.pl=gm.pl||{};gm.pl[NET.uid]={n:S.name||'我',sc:0};
+    if(NGK[gm.k][4]===2&&ngPl(gm).length===2)ngInit(gm);return gm})
+  .then(r=>{if(!r.committed)return toast('來不及了，這場已經開始或滿了');menuOpen=false;tab='ngame';render()})}
+// 開始時的初始狀態
+function ngInit(gm){const ps=ngPl(gm),now=Date.now();gm.st='play';gm.ts=now;
+  if(gm.k==='ttt'){gm.b='000000000';gm.order=[gm.host].concat(ps.filter(u=>u!==gm.host));gm.turn=gm.host}
+  if(gm.k==='gmk'){gm.b='0'.repeat(121);gm.order=[gm.host].concat(ps.filter(u=>u!==gm.host));gm.turn=gm.host}
+  if(gm.k==='race'){gm.t0=now+3000;gm.end=now+63000}
+  if(gm.k==='draw'){gm.order=ps.slice().sort(()=>Math.random()-.5);gm.r=0;ngDrawRound(gm)}
+  if(gm.k==='chair'){gm.alive=ps.slice();gm.round=1;ngChairRound(gm)}}
+function ngDrawRound(gm){gm.word=NGWORDS[rnd(NGWORDS.length)];gm.rEnd=Date.now()+75000;gm.gs={};gm.img='';gm.drawer=gm.order[gm.r]}
+function ngChairRound(gm){const seats=S.items.filter(i=>F[i.t].seat).map(i=>i.id).sort(()=>Math.random()-.5),n=Math.max(1,Math.min(seats.length,gm.alive.length-1));gm.seats=seats.slice(0,n);gm.claim={};gm.ph='music';gm.phU=Date.now()+6000+rnd(7000)}
+function ngStart(){ngTx(gm=>{if(!gm||gm.host!==NET.uid||gm.st!=='wait')return;if(ngPl(gm).length<NGK[gm.k][3])return;ngInit(gm);return gm}).then(r=>{if(!r.committed)toast('人數還不夠喔')})}
+function ngLeave(){const gm=NG.gm;tab=null;render();if(!gm||!ngIn(gm))return;
+  if(gm.st==='end'){return}
+  ngTx(c=>{if(!c||c.id!==gm.id)return;if(c.host===NET.uid&&c.st==='wait')return null;delete c.pl[NET.uid];const left=ngPl(c);
+    if(c.st==='play'&&(NGK[c.k][4]===2||left.length<2)){c.st='end';c.win=left[0]||'draw';c.why='left'}
+    if(c.alive)c.alive=c.alive.filter(u=>u!==NET.uid);if(c.order&&c.k==='draw'){const i=c.order.indexOf(NET.uid);if(i>=0){c.order.splice(i,1);if(c.drawer===NET.uid&&c.st==='play'){c.r=Math.min(c.r,c.order.length-1);if(c.r<0){c.st='end'}else ngDrawRound(c)}}}
+    if(c.host===NET.uid&&c.st!=='end'){c.host=left[0]}return c})}
+// 每一次資料庫有變化
+function ngOn(gm){ngNorm(gm);const prev=NG.gm,tab0=tab;NG.gm=gm;
+  if(gm&&gm.st==='wait'&&!ngIn(gm)&&gm.host!==NET.uid&&NG.seen!==gm.id&&ngAlive(gm)){NG.seen=gm.id;ngInvite(gm)}
+  if(NG.inv&&(!gm||gm.id!==NG.inv||gm.st!=='wait'))ngHideInv();
+  if(ngIn(gm)){
+    if(gm.k==='race'&&gm.st==='play'&&!(race&&race.net===gm.id))ngRaceStart(gm);
+    if(gm.k==='chair'&&prev&&prev.ph==='music'&&gm.ph==='grab'){SFX.open(2);toast('🛑 音樂停了！快去坐亮起來的位子！')}
+    if(gm.k==='chair'&&prev&&prev.round!==gm.round&&gm.st==='play'){const out=(prev.alive||[]).filter(u=>!(gm.alive||[]).includes(u));if(out.includes(NET.uid))toast('😵 沒搶到位子，出局了…在旁邊看大家比');else if(out.length)toast('🎵 '+out.map(ngName).join('、')+' 出局！下一輪');}
+    if(gm.k==='draw'&&prev&&prev.drawer!==gm.drawer&&gm.st==='play'){NG.strokes=[];NG.dirty=false;if(gm.drawer===NET.uid){tab='ngame';toast('🎨 輪到你畫了！題目是「'+gm.word+'」')}else toast('🎨 輪到'+ngName(gm.drawer)+'畫')}
+    if(gm.st==='end'&&NG.done!==gm.id){NG.done=gm.id;ngReward(gm)}
+    if(prev&&prev.st==='wait'&&gm.st==='play'){menuOpen=false;if(gm.k==='race'){tab='fishing'}else if(gm.k==='chair'){tab=null;toast('🪑 搶椅子開始！跟著音樂走走，聽到停就去坐亮起來的位子')}else tab='ngame';if(gm.k==='draw'&&gm.drawer===NET.uid)toast('🎨 你先畫！題目是「'+gm.word+'」')}}
+  else if(prev&&ngIn(prev)&&tab==='ngame'&&(!gm||gm.id!==prev.id)){toast('這場遊戲結束了');tab=null}
+  if(race&&race.net&&(!gm||gm.id!==race.net||gm.st==='end'))endRace();
+  if(tab!==tab0||tab==='ngame'||tab==='fishing'||tab==='game')ngRender();ngBar()}
+function ngRender(){const a=document.activeElement,id=a&&a.id,v=a&&a.value;render();if(id&&$(id)&&'value'in $(id)){$(id).value=v;try{$(id).focus()}catch(_){}}ngCanvas()}
+function ngInvite(gm){if(tab==='ngame')return;const el=$('invite'),K=NGK[gm.k];NG.inv=gm.id;el.hidden=false;
+  el.innerHTML=`<div class="invbox"><span class="invemo">${K[0]}</span><div class="stx"><b>${esc(gm.hn)}邀請大家玩${K[1]}</b><small>${K[2]}</small></div><button class="btn small" id="invok" type="button">加入</button><button class="btn soft small" id="invno" type="button">不要</button><i class="invbar"></i></div>`;
+  $('invok').onclick=()=>{ngHideInv();ngJoin()};$('invno').onclick=()=>ngHideInv();clearTimeout(NG.invT);NG.invT=setTimeout(ngHideInv,20000)}
+function ngHideInv(){if(!NG.inv)return;NG.inv=null;$('invite').hidden=true;clearTimeout(NG.invT)}
+// 結束：贏的人 +50，有參加的人 +15，和一起玩的人加好感
+function ngRank(gm){const ps=ngPl(gm);if(gm.win)return gm.win==='draw'?[]:[gm.win];const top=Math.max(0,...ps.map(u=>gm.pl[u].sc|0));return top>0?ps.filter(u=>(gm.pl[u].sc|0)===top):[]}
+function ngReward(gm){const w=ngRank(gm),me1=w.includes(NET.uid),draw=gm.win==='draw'||(!w.length),prize=me1?50:draw?25:15;S.coins+=gain(prize);let fr=0;ngPl(gm).forEach(u=>{const q=NET.q[u];if(q&&u!==NET.uid&&frAdd(q,'game',1))fr++});
+  SFX.open(me1?3:1);if(me1){me.emote='heart';me.et=2.5}toast(`${NGK[gm.k][0]} ${gm.why==='left'&&me1?'對方離開了，':''}${me1?'你贏了！':draw?'平手！':(w.map(ngName).join('、')+'贏了')}　+${gain(prize)} 金幣${fr?'・好感度 +1':''}`);save()}
+// 主持人負責推進時間（對方斷線時也會接手）
+function ngTick(dt){if(!NET.on)return;const gm=NG.gm;if((NG.tk-=dt)>0)return;NG.tk=.3;ngBar();if(!gm||gm.st!=='play')return;const now=Date.now(),boss=gm.host===NET.uid||(!NET.pres[gm.host]&&ngPl(gm).sort()[0]===NET.uid);
+  if(gm.k==='draw'&&gm.drawer===NET.uid&&NG.dirty&&now-NG.lastImg>700){NG.lastImg=now;NG.dirty=false;const c=$('ngcv');if(c)ngR('img').set(c.toDataURL('image/jpeg',.6)).catch(()=>{})}
+  if(gm.k==='draw'){const el=$('ngt');if(el)el.textContent=Math.max(0,Math.ceil((gm.rEnd-now)/1000))}
+  if(gm.k==='chair'&&gm.ph==='grab'&&(gm.alive||[]).includes(NET.uid)&&!Object.values(gm.claim||{}).includes(NET.uid)&&me.seat&&!me.moving&&now-NG.claimT>400){const s=seatAt(S.pos.x,S.pos.y);if(s&&gm.seats.includes(s.id)&&!(gm.claim||{})[s.id]){NG.claimT=now;ngTx(c=>{if(!c||c.ph!=='grab'||(c.claim||{})[s.id]||Object.values(c.claim||{}).includes(NET.uid))return;c.claim=c.claim||{};c.claim[s.id]=NET.uid;return c}).then(r=>{if(r.committed){SFX.open(2);toast('✅ 搶到位子了！')}})}}
+  if(!boss)return;
+  if(gm.k==='race'&&now>gm.end+1500)ngTx(c=>{if(!c||c.id!==gm.id||c.st!=='play')return;c.st='end';return c});
+  if(gm.k==='draw'){const others=gm.order.filter(u=>u!==gm.drawer),allGot=others.length&&others.every(u=>(gm.gs||{})[u]);if(now>gm.rEnd||allGot)ngTx(c=>{if(!c||c.id!==gm.id||c.st!=='play'||c.drawer!==gm.drawer)return;c.r++;if(c.r>=c.order.length){c.st='end'}else ngDrawRound(c);return c})}
+  if(gm.k==='chair'){if(gm.ph==='music'&&now>gm.phU)ngTx(c=>{if(!c||c.id!==gm.id||c.ph!=='music')return;c.ph='grab';c.phU=Date.now()+9000;c.claim={};return c});
+    else if(gm.ph==='grab'&&(now>gm.phU||Object.keys(gm.claim||{}).length>=gm.seats.length))ngTx(c=>{if(!c||c.id!==gm.id||c.ph!=='grab')return;const got=Object.values(c.claim||{});c.alive=c.alive.filter(u=>got.includes(u));c.round++;if(c.alive.length<=1){c.st='end';c.win=c.alive[0]||'draw'}else ngChairRound(c);return c})}}
+// 畫面上方的小提示條（關掉面板時也看得到）
+function ngBar(){const el=$('ngbar');if(!el)return;const gm=NG.gm;let h='';
+  if(ngIn(gm)&&gm.st==='play'){const now=Date.now();
+    if(gm.k==='chair'){const alive=(gm.alive||[]).includes(NET.uid);h=gm.ph==='music'?`🎵 音樂中…第 ${gm.round} 輪・剩 ${gm.alive.length} 人・${gm.seats.length} 個位子`:`🛑 快坐下！ ${Math.max(0,Math.ceil((gm.phU-now)/1000))}・${alive?(Object.values(gm.claim||{}).includes(NET.uid)?'你搶到了 ✅':'找亮起來的位子'):'你出局了，看大家比'}`}
+    else if(gm.k==='draw'&&tab!=='ngame')h=`🎨 ${gm.drawer===NET.uid?'輪到你畫：'+esc(gm.word):'猜猜'+esc(ngName(gm.drawer))+'在畫什麼'} <button class="btn small" data-ngopen type="button">打開</button>`;
+    else if(gm.k!=='race'&&gm.k!=='draw'&&tab!=='ngame')h=`${NGK[gm.k][0]} ${NGK[gm.k][1]}進行中 <button class="btn small" data-ngopen type="button">回去</button>`}
+  else if(ngIn(gm)&&gm.st==='wait'&&tab!=='ngame')h=`${NGK[gm.k][0]} 等大家加入 ${ngPl(gm).length} 人 <button class="btn small" data-ngopen type="button">看看</button>`;
+  if(el._h!==h){el._h=h;el.innerHTML=h;el.hidden=!h}}
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-ngopen]')){tab='ngame';ngRender()}});
+// 搶椅子：亮起來的位子
+function ngDrawMarks(oy){const gm=NG.gm;if(!ngIn(gm)||gm.k!=='chair'||gm.st!=='play'||(S.scene||'home')!==(gm.sc||'home'))return;const b=Math.floor(time*4)%2;
+  (gm.seats||[]).forEach(id=>{const i=S.items.find(x=>x.id===id);if(!i)return;const who=(gm.claim||{})[id],x=i.x*T+fw(i)*T/2-3,y=i.y*T+oy-26+(gm.ph==='grab'&&!who?b:0);bits(BIT.arrow,x,y+1,'#243020');bits(BIT.arrow,x,y,who?'#9ccf86':gm.ph==='grab'?'#f08aa8':'#f6c94a')})}
+// 釣魚比賽：用原本的釣魚畫面，分數同步
+function ngRaceStart(gm){if(race&&!race.net)return;menuOpen=false;tab='fishing';race={net:gm.id,end:gm.end,me:0,op:{name:''},them:0,tm:setInterval(()=>{if(!race)return;const el=$('racet');if(el)el.textContent=Math.max(0,Math.ceil((race.end-Date.now())/1000));if(Date.now()>=race.end)endRace()},500)};fz.st='idle';fz.msg='';toast('🎣 比賽開始！一分鐘內釣最多的贏');render()}
+function ngRaceChips(){const gm=NG.gm;if(!gm||!gm.pl)return'';return ngPl(gm).filter(u=>u!==NET.uid).map(u=>`<span class="rs">${esc(ngName(u))} <b>${gm.pl[u].sc|0}</b></span>`).join('')}
+// 動作
+function ngRps(k){const id=NG.gm&&NG.gm.id;ngTx(c=>{if(!c||c.id!==id||c.st!=='play'||!c.pl[NET.uid]||c.pl[NET.uid].mv)return;c.pl[NET.uid].mv=k;const ps=ngPl(c);if(ps.every(u=>c.pl[u].mv)){const [a,b]=ps,x=c.pl[a].mv,y=c.pl[b].mv,beat={rock:'scissors',scissors:'paper',paper:'rock'};c.st='end';c.win=x===y?'draw':beat[x]===y?a:b}return c})}
+function ngBoard(i){const id=NG.gm&&NG.gm.id;ngTx(c=>{if(!c||c.id!==id||c.st!=='play'||c.turn!==NET.uid||c.b[i]!=='0')return;const p=c.order.indexOf(NET.uid)+1,b=c.b.split('');b[i]=String(p);c.b=b.join('');
+  let won=false;if(c.k==='ttt'){const bb=b.map(Number);won=tttWin(bb,p)}else{const N=11,x=i%N,y=Math.floor(i/N),at=(xx,yy)=>xx>=0&&yy>=0&&xx<N&&yy<N?b[yy*N+xx]:'';for(const[dx,dy]of D4){let n=1;for(const sg of[1,-1]){let k=1;while(at(x+dx*k*sg,y+dy*k*sg)===String(p)){n++;k++}}if(n>=5)won=true}}
+  if(won){c.st='end';c.win=NET.uid}else if(!c.b.includes('0')){c.st='end';c.win='draw'}else c.turn=c.order[p%2];c.last=i;return c})}
+function ngGuess(){const el=$('nggs'),t=(el&&el.value||'').trim().slice(0,20);if(!t)return;el.value='';const gm=NG.gm;if(!gm||gm.st!=='play'||gm.drawer===NET.uid||(gm.gs||{})[NET.uid])return;
+  const norm=s=>s.replace(/\s/g,'');if(norm(t)===norm(gm.word)){ngTx(c=>{if(!c||c.id!==gm.id||c.drawer!==gm.drawer||(c.gs||{})[NET.uid])return;c.gs=c.gs||{};const n=Object.keys(c.gs).length;c.gs[NET.uid]=n+1;c.pl[NET.uid].sc=(c.pl[NET.uid].sc|0)+Math.max(1,3-n);if(c.pl[c.drawer])c.pl[c.drawer].sc=(c.pl[c.drawer].sc|0)+1;return c}).then(r=>{if(r.committed){SFX.open(2);toast('🎉 猜對了！')}})}
+  else{ngR('gl').push({u:NET.uid,n:S.name||'我',t,ts:Date.now()}).catch(()=>{});SFX.ui()}}
+// 你畫我猜的畫布
+function ngCanvas(){const c=$('ngcv');if(!c||c._on)return;c._on=1;const x=c.getContext('2d');x.fillStyle='#fffdf6';x.fillRect(0,0,c.width,c.height);x.lineCap='round';x.lineJoin='round';NG.strokes.forEach(s=>ngStroke(x,s));
+  let cur=null;const pt=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)/r.width*c.width,(e.clientY-r.top)/r.height*c.height]};
+  c.onpointerdown=e=>{if(!NG.gm||NG.gm.drawer!==NET.uid)return;e.preventDefault();c.setPointerCapture(e.pointerId);cur={c:NG.col,w:NG.pen,p:[pt(e)]};NG.strokes.push(cur);ngStroke(x,cur);NG.dirty=true};
+  c.onpointermove=e=>{if(!cur)return;e.preventDefault();cur.p.push(pt(e));ngStroke(x,{c:cur.c,w:cur.w,p:cur.p.slice(-2)});NG.dirty=true};
+  c.onpointerup=c.onpointercancel=()=>{cur=null}}
+function ngStroke(x,s){x.strokeStyle=s.c;x.lineWidth=s.w;x.beginPath();s.p.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));if(s.p.length===1)x.lineTo(s.p[0][0]+.1,s.p[0][1]);x.stroke()}
+// 遊戲列表裡的「線上一起玩」
+function ngCards(){const card=(k)=>{const K=NGK[k];return `<button class="gcard gc-${{race:'rps',draw:'quiz',chair:'idiom',rps:'rps',ttt:'ttt',gmk:'gmk'}[k]}" data-a="ngnew" data-k="${k}" type="button"><i>${K[0]}</i><b>${K[1]}</b><small>${K[2]}</small></button>`};
+  if(!NET.on)return `<div class="sec"><h3 class="ctr">和朋友線上玩</h3><button class="grow-chat" data-a="ngoff" type="button"><span class="gicon">🌐</span><span class="stx"><b>先讓小窩上線</b><small>在小窩管理按「上線」，朋友加入後就能一起玩</small></span></button></div>`;
+  const gm=NG.gm,busy=ngAlive(gm)?`<button class="grow-chat" data-ngopen type="button"><span class="gicon">${NGK[gm.k][0]}</span><span class="stx"><b>${esc(gm.hn)}開的${NGK[gm.k][1]}</b><small>${gm.st==='wait'?'等人加入中・'+ngPl(gm).length+' 人':'進行中'}</small></span></button>`:'';
+  return `<div class="sec"><h3 class="ctr">和朋友線上玩</h3>${busy}<div class="gcards">${['race','draw','chair','rps','ttt','gmk'].map(card).join('')}</div><p class="lead" style="text-align:center">發起後大家會收到邀請・贏的人 +50 金幣，有參加 +15</p></div>`}
+// 遊戲面板
+function ngView(){return ngView0()+ngView0.leave}
+function ngView0(){ngView0.leave='';const gm=NG.gm;if(!gm||!NET.on)return `<h2>線上遊戲</h2><p class="empty">現在沒有進行中的遊戲。</p>`;const K=NGK[gm.k],ps=ngPl(gm),mine=ngIn(gm),host=gm.host===NET.uid;
+  const head=`<h2>${K[0]} ${K[1]}</h2>`;ngView0.leave=mine&&gm.st!=='end'?`<button class="btn soft small" data-a="ngleave" type="button" style="align-self:center;margin-top:6px">離開這場</button>`:'';
+  const chips=(f)=>`<div class="ngpl">${ps.map(u=>`<span class="ngchip ${u===NET.uid?'me':''}"><img class="pix hd" src="${headThumb((NET.q[u]||{}).av||S.av)}" alt="">${esc(ngName(u))}${f?f(u):''}</span>`).join('')}</div>`;
+  if(gm.st==='wait')return head+`<p class="lead">${esc(gm.hn)}發起的・${K[2]}</p>${chips()}<p class="meta">${ps.length} / ${K[4]} 人${ps.length<K[3]?'・至少要 '+K[3]+' 人':''}</p>`+(mine?(host?`<button class="btn big" data-a="ngstart" type="button" ${ps.length<K[3]?'disabled':''}>開始！</button>`:'<p class="lead">等'+esc(gm.hn)+'按開始…</p>'):`<button class="btn big" data-a="ngjoin" type="button">加入</button>`);
+  const score=u=>` <b>${gm.pl[u].sc|0}</b>`;
+  if(gm.st==='end'){const w=ngRank(gm);return head+`<div class="ngend"><span class="emo">${w.includes(NET.uid)?'🏆':w.length?'👏':'🤝'}</span><b>${w.length?w.map(ngName).join('、')+' 贏了！':'平手！'}</b>${gm.why==='left'?'<small>有人離開了</small>':''}</div>${['race','draw'].includes(gm.k)?chips(score):''}${gm.k==='rps'?`<p class="result" style="text-align:center">${ps.map(u=>esc(ngName(u))+' 出 '+(RPS[gm.pl[u].mv]||['？'])[0]).join('　')}</p>`:''}${['ttt','gmk'].includes(gm.k)?ngBoardHtml(gm,true):''}<div class="row" style="justify-content:center"><button class="btn" data-a="ngnew" data-k="${gm.k}" type="button">再來一場</button><button class="btn soft" data-a="ngclose" type="button">關閉</button></div>`}
+  if(!mine)return head+`<p class="lead">這場已經開始了，下一場再一起玩吧！</p>${chips()}`;
+  if(gm.k==='rps'){const my=gm.pl[NET.uid].mv;return head+chips(u=>gm.pl[u].mv?' ✅':' …')+`<p class="lead">${my?'等對方出拳…':'選一個出拳！'}</p><div class="pokes" style="grid-template-columns:repeat(3,minmax(0,1fr))">${Object.keys(RPS).map(k=>`<button class="lk" data-a="ngrps" data-k="${k}" type="button" ${my?'disabled':''} aria-pressed="${my===k}"><span class="emo" style="font-size:34px">${RPS[k][0]}</span><span>${RPS[k][1]}</span></button>`).join('')}</div>`}
+  if(gm.k==='ttt'||gm.k==='gmk'){const my=gm.turn===NET.uid,p=gm.order.indexOf(NET.uid)+1;return head+`<p class="lead">你是 ${gm.k==='ttt'?(p===1?'○':'✕'):(p===1?'黑子':'白子')}・${my?'<b>輪到你了</b>':'等'+esc(ngName(gm.turn))+'下…'}</p>`+ngBoardHtml(gm,!my)}
+  if(gm.k==='race')return head+chips(score)+`<p class="lead">比賽在釣魚池進行</p><button class="btn" data-a="ngfish" type="button">🎣 去釣魚池</button>`;
+  if(gm.k==='chair')return head+chips(u=>(gm.alive||[]).includes(u)?((gm.claim||{})&&Object.values(gm.claim||{}).includes(u)?' ✅':''):' 😵')+`<p class="lead">${gm.ph==='music'?'🎵 音樂中…跟大家在房間裡走走，音樂一停就去坐亮起來的位子！':'🛑 快坐下！'}</p><p class="meta">位子 ${gm.seats.length} 個・剩 ${gm.alive.length} 人・第 ${gm.round} 輪</p><button class="btn" data-a="ngclose" type="button">回房間</button>`;
+  if(gm.k==='draw'){const dr=gm.drawer===NET.uid,got=(gm.gs||{})[NET.uid],left=Math.max(0,Math.ceil((gm.rEnd-Date.now())/1000)),gl=Object.values(gm.gl||{}).filter(m=>m.ts>gm.rEnd-76000).slice(-5);
+    const top=`<p class="lead">第 ${gm.r+1}/${gm.order.length} 回・⏱ <b id="ngt">${left}</b> 秒・${dr?`題目：<b class="ngword">${esc(gm.word)}</b>`:got?'你猜對了！等其他人':esc(ngName(gm.drawer))+'在畫，猜猜看'}</p>`;
+    const pad=dr?`<canvas id="ngcv" class="ngcv" width="240" height="240"></canvas><div class="row ngtools">${['#3a4a32','#e8604a','#f6b04a','#7cc06a','#b48ad8','#f08aa8','#8a6240'].map(c=>`<button class="ngcol ${NG.col===c?'on':''}" data-a="ngcol" data-k="${c}" style="background:${c}" type="button" aria-label="顏色"></button>`).join('')}<button class="ngcol ${NG.col==='#fffdf6'?'on':''}" data-a="ngcol" data-k="#fffdf6" type="button" aria-label="橡皮擦">🧽</button><button class="btn soft small" data-a="ngclr" type="button">清空</button></div>`:`<div class="ngcv">${gm.img?`<img src="${gm.img}" alt="畫作">`:'<span class="meta">還沒開始畫…</span>'}</div>`;
+    const gs=`<div class="nggl">${gl.map(m=>`<span><b>${esc(m.n)}</b> ${esc(m.t)}</span>`).join('')}${Object.keys(gm.gs||{}).map(u=>`<span class="ok">🎉 ${esc(ngName(u))} 猜對了</span>`).join('')}</div>`;
+    return head+top+pad+gs+(dr||got?'':`<form class="row" style="flex-wrap:nowrap" onsubmit="event.preventDefault();ngGuess()"><input class="field wide" id="nggs" maxlength="20" placeholder="輸入答案…" autocomplete="off"><button class="btn" data-send type="submit">猜</button></form>`)+chips(score)}
+  return head}
+function ngBoardHtml(gm,lock){const N=gm.k==='ttt'?3:11,b=gm.b||'';if(gm.k==='ttt')return `<div class="ttt">${b.split('').map((v,i)=>`<button data-a="ngb" data-i="${i}" type="button" ${lock||v!=='0'?'disabled':''} aria-label="第 ${i+1} 格">${v==='1'?'○':v==='2'?'✕':''}</button>`).join('')}</div>`;
+  return `<div class="gmk">${b.split('').map((v,i)=>`<button class="${v!=='0'?'p'+v:''} ${gm.last===i?'last':''}" data-a="ngb" data-i="${i}" type="button" ${lock?'disabled':''} aria-label="${i%N+1},${Math.floor(i/N)+1}">${v!=='0'?'<i></i>':''}</button>`).join('')}</div>`}
 
 let duoFx={t:0};
 function drawDuo(oy){if(!(duoFx.t>0)||!duoFx.a)return;const q=duoFx.a,k=1-duoFx.t/2.4,x=Math.round((me.fx+q.fx)/2+8),y=Math.round(Math.min(me.fy,q.fy)+oy-10-k*14),H=['.##.##.','#######','#######','.#####.','..###..','...#...'];
@@ -1812,7 +1949,7 @@ function draw(){g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,cv.width,cv.height);
   list.push({z:pose!=='stand'&&seat?(seat.y+fh(seat))*T+.5:me.fy+T+.5,f:()=>{let lx=me.fx,ly=me.fy+oy;if(pose==='lie'){const q=lieXY(seat,S.pos.x,S.pos.y);lx=q[0];ly=q[1]+oy}if(me.shake>0)lx+=Math.round(Math.sin(time*70)*1.5);outlined(lx,ly,(ax,ay)=>drawAvatar(ax,ay,S.av,{party:fxToday().party.has('me'),hand:me.eatT>0?me.eatK:S.hand,rot:seat?seat.r|0:0,pose,dir:me.dir,t:time,moving:me.moving,dance:me.dance,emote:me.et>0?me.emote:(me.dance?'note':null)}))}});
   peers.forEach(q=>list.push(peerEntry(q,oy)));
   (S.scene==='yard'?[]:S.pets).forEach(p=>{const r=petRT[p.id];if(r)list.push({z:r.fy+T+.2,f:()=>outlined(r.fx,r.fy+oy,(x,y)=>drawPet(x,y,p.k,time+p.id,r.moving,r.et>0,p.hat))})});
-  list.sort((a,b)=>a.z-b.z).forEach(o=>o.f());drawFrontWalls();drawNight();drawFx();drawDuo(oy);
+  list.sort((a,b)=>a.z-b.z).forEach(o=>o.f());drawFrontWalls();drawNight();drawFx();drawDuo(oy);ngDrawMarks(oy);
   if(near&&!tab){const b=Math.floor(time*3)%2;let mx=null,my;if(near.pet){const r=petRT[near.pet.id];if(r){mx=r.fx+5;my=r.fy+oy-12}}else if(near.item){const i=near.item;mx=i.x*T+fw(i)*T/2-3;my=i.y*T+oy-30}else{mx=(near.fix==='exit'?156:139)+exOff();my=3}
     if(mx!==null){bits(BIT.arrow,mx,my+b+1,'#243020');bits(BIT.arrow,mx,my+b,'#f6c94a')}}
   if(editing&&hold&&ghost&&hold.t==='__exit'){const ok=exitOk(ghost.x),gx=150+(ghost.x-9)*16,c=ok?'#467a36':'#a8492a',pulse=.35+.15*Math.sin(time*6);R(ok?`rgba(95,158,76,${pulse})`:`rgba(217,96,74,${pulse})`,gx-2,1,22,30);R(c,gx-2,1,22,1);R(c,gx-2,30,22,1);R(c,gx-2,1,1,30);R(c,gx+19,1,1,30);R(ok?'rgba(95,158,76,.25)':'rgba(217,96,74,.3)',ghost.x*T,WALL*T,T,ROWS*T)}
@@ -2146,11 +2283,12 @@ pet(){S.pets.forEach(p=>{if(!p.born)p.born=Date.now()});const foods=Object.keys(
   <div class="sec"><h3>食物（每個 ${FOOD_PRICE} 金幣）</h3><div class="row">${foods.map(f=>`<button class="btn soft small" data-a="food" data-f="${f}" type="button">${FOODS[f][1]} ${FOODS[f][0]} ×${S.food[f]||0}</button>`).join('')}</div></div>
   <div class="sec"><h3>神秘蛋</h3><div class="row"><button class="btn sun" data-a="egg" type="button">孵一顆蛋　${coin(EGG_PRICE)}</button><span class="meta">房間等級越高能養越多隻</span></div></div>
   <div class="sec"><h3>圖鑑 ${Object.keys(S.dex).length}/${Object.keys(PETS).length}</h3><div class="row">${Object.keys(PETS).map(k=>`<span class="card" style="padding:8px 10px;${S.dex[k]?'':'opacity:.35'}"><img src="${PTHUMB[k]}" alt="" style="height:36px;${S.dex[k]?'':'filter:brightness(0)'}"><span class="meta">${S.dex[k]?PETS[k].n:'？？'}</span></span>`).join('')}</div></div>`},
+ngame(){return ngView()},
 game(){const qd=S.qz&&S.qz.d===today()&&S.qz.over,id=S.idm&&S.idm.d===today()&&S.idm.over,card=(a,k,e,n,d,dis)=>`<button class="gcard gc-${k}" data-a="${a}" ${a==='play'?'data-id':'data-k'}="${k}" type="button" ${dis?'disabled':''}><i>${e}</i><b>${n}</b><small>${d}</small></button>`;
   if(!mg.id)return `<h2>遊戲</h2>
   <div class="sec"><h3 class="ctr">每日挑戰</h3><div class="gcards">${card('opengame','quiz','🧠','每日知識王',qd?'今天答對 '+S.qz.score+' 題':'你能答對幾題？')}${card('opengame','idiom','📜','猜成語',id?(S.idm.win?'今天猜中了！':'明天再來'):'六次內猜出四字成語')}</div></div>
   <div class="sec"><h3 class="ctr">隨時玩・賭注</h3><div class="seg">${[10,30,50].map(b=>`<button class="${mg.bet===b?'on':''}" data-a="bet" data-b="${b}" type="button">${b} 金幣</button>`).join('')}</div><div class="gcards">${card('play','react','⚡','反應測試','變綠後 0.4 秒內點',S.coins<mg.bet)}${card('play','tap','👆','連點挑戰','5 秒內點滿 28 下',S.coins<mg.bet)}</div></div>
-  <div class="sec"><h3 class="ctr">一起玩</h3><div class="gcards">${card('play','ttt','⭕','井字棋','三個連成一線',S.coins<mg.bet)}${card('play','gmk','⚫','五子棋','先連成五顆的贏',S.coins<mg.bet)}${card('play','rps','✊','剪刀石頭布','跟室友猜拳',S.coins<mg.bet)}</div><p class="lead" style="text-align:center">贏了拿到賭注一樣多的金幣，輸了扣掉</p></div>`;
+  <div class="sec"><h3 class="ctr">一起玩</h3><div class="gcards">${card('play','ttt','⭕','井字棋','三個連成一線',S.coins<mg.bet)}${card('play','gmk','⚫','五子棋','先連成五顆的贏',S.coins<mg.bet)}${card('play','rps','✊','剪刀石頭布','跟室友猜拳',S.coins<mg.bet)}</div><p class="lead" style="text-align:center">贏了拿到賭注一樣多的金幣，輸了扣掉</p></div>${ngCards()}`;
   const head=`<div class="row" style="justify-content:space-between"><h2>${{ttt:'井字棋',gmk:'五子棋',react:'反應測試',tap:'連點挑戰',rps:'剪刀石頭布'}[mg.id]}</h2><button class="btn soft small" data-a="quit" type="button">回列表</button></div>`;
   const res=mg.over?`<div class="row"><span class="result">${mg.msg}</span><button class="btn small" data-a="play" data-id="${mg.id}" type="button" ${S.coins<mg.bet?'disabled':''}>再一局</button></div>`:`<p class="lead">賭注 ${mg.bet} 金幣</p>`;
   let body='';
@@ -2235,7 +2373,7 @@ notes(){const ns=(S.notes||[]).slice().reverse();return `<div><h2>留言板</h2>
   ${ns.length?`<div class="notes">${ns.map((n,i)=>{if(n.type==='rcp'){kInit();const r=RECIPES.find(x=>x.k===n.k);if(!r)return'';const kn=S.known.includes(r.k);return `<div class="note rnote"><b>📜 ${esc(n.name)}的食譜</b><p class="rbig">${DI(r)} ${r.n}</p><small>用${STL[r.st||'pot']}</small><small>${r.need}</small><button class="btn small ${kn?'soft':''}" data-a="rlearn" data-k="${r.k}" type="button" ${kn?'disabled':''}>${kn?'已學會':'學習'}</button></div>`}return `<div class="note n${i%3}"><b>${esc(n.name)}</b><p>${esc(n.t)}</p><span class="meta">${esc(n.d)}</span></div>`}).join('')}</div>`:'<p class="empty">還沒有留言。</p>'}`},
 fishing(){const caught=Object.keys(FISH).filter(k=>(S.fdex||{})[k]).length;
   return `<div><h2>釣魚池</h2><p class="lead">按「拋竿」等魚上鉤。浮標開始抖動後，紅色指針跑進綠色區塊時按「拉！」。越稀有的魚綠色越窄。</p><p class="news" style="margin:0">${(S.fz&&S.fz.day===today()?S.fz.n:0)<FISH_FREE?`今天還能免費釣 ${FISH_FREE-(S.fz&&S.fz.day===today()?S.fz.n:0)} 次`:`今天的免費次數用完了，之後每次魚餌 ${BAIT} 金幣`}</p></div>
-  ${race?`<div class="racebar"><span>⏱ <b id="racet">${Math.ceil((race.end-Date.now())/1000)}</b> 秒</span><span class="rs me">你 <b>${race.me}</b></span><span class="rs">${esc(race.op.name)} <b>${race.them}</b></span></div>`:`<button class="btn sun" data-a="raceinv" type="button" style="align-self:center">🎣 邀請大家來比賽</button>`}
+  ${race?`<div class="racebar"><span>⏱ <b id="racet">${Math.ceil((race.end-Date.now())/1000)}</b> 秒</span><span class="rs me">你 <b>${race.me}</b></span>${race.net?ngRaceChips():`<span class="rs">${esc(race.op.name)} <b>${race.them}</b></span>`}</div>`:`<button class="btn sun" data-a="raceinv" type="button" style="align-self:center">🎣 邀請大家來比賽</button>`}
   <div class="pondv ${fz.st}"><span class="bobber"></span>${fz.st==='bite'?'<span class="splash">！</span>':''}</div>
   <div class="fbar ${fz.st==='bite'?'':'idle'}"><i class="fzone" style="left:${fz.z[0]*100}%;width:${(fz.z[1]-fz.z[0])*100}%"></i><b id="fmark" style="left:${fz.p*100}%"></b></div>
   <button class="btn bigbtn" data-a="cast" type="button">${fz.st==='idle'?((S.fz&&S.fz.day===today()?S.fz.n:0)>=FISH_FREE?'拋竿（魚餌 '+BAIT+'）':'拋竿'):fz.st==='wait'?'等魚上鉤…':'拉！'}</button>${fz.msg?`<p class="result" style="text-align:center">${fz.msg}</p>`:''}
@@ -2318,7 +2456,7 @@ set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="but
   ${row('🪙','測試金幣','直接拿 1000 金幣','','cheat')}
   ${askReset?`<div class="srow"><span class="sic">⚠️</span><span class="stx"><b>確定清掉所有進度？</b></span><button class="btn small" style="background:var(--bad);box-shadow:none!important" data-a="reset" type="button">清掉</button><button class="btn soft small" data-a="noreset" type="button">取消</button></div>`:row('🔄','重新開始','進度自動存在這個瀏覽器','','askreset')}
   </div></div>
-  <p class="lead" style="text-align:center">像素小窩 v0.53</p>`},
+  <p class="lead" style="text-align:center">像素小窩 v0.54</p>`},
 feed(){const left=Math.max(0,POST_MAX-(S.pd.day===today()?S.pd.n:0)),mt=thumb(20,34,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}));
   return `<div><h2>動態</h2><p class="lead">上方頭像列只放 24 小時內的動態，過了還是留在這裡。按「📌 釘到照片牆」的照片會一直掛在照片牆上，不會被新動態擠掉（最多 9 張，走到照片牆旁邊按「看照片牆」就能一張一張看）。拍一張照片、寫一句話就能發布。每篇得 ${POST_PAY} 金幣，今天還能領 ${left} 次。</p></div>
   <div class="post"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${draft.d?`<img class="draft" src="${draft.d}" alt="要發布的照片">`:''}<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><input class="field wide" id="cap" placeholder="寫點什麼…" maxlength="200" value="${esc(draft.cap)}"><div class="row"><button class="btn soft small" data-a="pick" type="button">${draft.d?'重拍':'拍照'}</button><button class="btn small" data-a="post" type="button" ${draft.d?'':'disabled'}>發布</button></div></div></div></div>
@@ -2455,7 +2593,7 @@ $('panel').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(
   dmopen(){dmWith=d.k;render();dmScroll()},dmback(){dmWith=null;render()},dmph(){pendingQuest='dm';$('photo').click()},dmto(){dmWith=peerSel;tab='dm';render();dmScroll()},
   ntopen(){const n=(S.notif||[]).find(x=>x.id===+d.id);if(n&&n.ref){const p=S.posts.find(x=>x.id===n.ref);if(p&&fresh24(p)){tab=null;render();SVP=storyPeople().filter(x=>x.posts.length);const pi=SVP.findIndex(x=>x.id===p.by);if(pi>=0){SV={pi,i:Math.max(0,SVP[pi].posts.findIndex(x=>x.id===p.id)),t:0,pause:false};return renderStory()}}tab='feed';render();const el=$('post-'+n.ref);if(el)el.scrollIntoView()}},
   botonline(){const q=bot0();if(q){setOnline(q,q.online===false);tab='set';render()}},
-  ttt(){tttMove(+d.i)},gmk(){gmkMove(+d.x,+d.y)},react(){reactTap()},tap(){tapTap()}
+  ttt(){tttMove(+d.i)},gmk(){gmkMove(+d.x,+d.y)},ngnew(){ngCreate(d.k)},ngoff(){tab='room';render()},ngstart(){ngStart()},ngjoin(){ngJoin()},ngleave(){ngLeave()},ngclose(){tab=null;render()},ngrps(){ngRps(d.k)},ngb(){ngBoard(+d.i)},ngfish(){tab='fishing';render()},ngcol(){NG.col=d.k;NG.pen=d.k==='#fffdf6'?14:4;ngRender()},ngclr(){NG.strokes=[];NG.dirty=true;ngRender()},react(){reactTap()},tap(){tapTap()}
 }[d.a]||(()=>{}))()});
 
 /* ========== 小遊戲 ========== */
