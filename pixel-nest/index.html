@@ -740,6 +740,11 @@ select.field{appearance:auto}
 .nggl{display:flex;flex-direction:column;gap:4px;font-size:14px}.nggl span{background:var(--bg);border-radius:12px;padding:4px 10px}.nggl .ok{background:var(--pink,#fbe0e8);font-weight:700}.ngword{background:var(--sun);padding:2px 10px;border-radius:8px}
 .gmk button.last i{box-shadow:0 0 0 2px #f08aa8}
 .ttt button{background:var(--surface)}.ttt button:disabled{opacity:1;color:var(--ink)}
+.dgtop{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:18px;padding:10px 12px}.dgtop>span:first-child:not(.stx){font-weight:700;color:var(--muted,#7a8070)}.dgtop .stx{flex:1}.dgtop .ngword{font-size:20px;flex:1}
+.dggrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dgcard{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;border:0;background:var(--surface);border-radius:18px;padding:8px 8px 10px;text-align:left;box-shadow:0 2px 0 var(--outline,#e4e0cc)}.dgcard .dgimg{width:100%;aspect-ratio:1;border-radius:12px;background:#fffdf6;overflow:hidden;margin-bottom:4px}.dgcard .dgimg img{width:100%;height:100%;object-fit:cover}.dgcard b{font-size:14px}.dgcard small{font-size:12px;color:var(--muted,#7a8070)}.dgcard.done{opacity:.72}.dgcard .dglv{position:absolute;top:12px;left:12px}
+.dglv{display:inline-block;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700;background:#e3f2d6}.dglv.l1{background:var(--sun)}.dglv.l2{background:var(--pink,#fbe0e8)}
+.dgbox{display:flex;justify-content:center;gap:6px}.dgbox i{width:30px;height:34px;border-radius:8px;background:var(--surface);box-shadow:inset 0 -3px 0 var(--outline,#e4e0cc)}
+.dghint{background:var(--lav);border-radius:14px;padding:10px 12px;font-weight:700;text-align:center}
 </style>
 </head>
 <body>
@@ -1482,7 +1487,7 @@ function netListen(){const on=(p,ev,f)=>{const r=p.ref?p:netRef(p);r.on(ev,f,e=>
   on(netRef('ev').orderByChild('to').equalTo(NET.uid),'child_added',s=>{const m=s.val();s.ref.remove().catch(()=>{});if(!m||m.ts<NET.t0-30000)return;const q=NET.q[m.u],nm=(NET.mem[m.u]||{}).n||'朋友';
     if(m.k==='wave'){if(q){q.emote='note';q.et=2;q.dir=me.fx>q.fx?1:-1;peerSay(q,'嗨～👋')}toast('👋 '+nm+'跟你打招呼')}
     else if(m.k==='heart'){if(q){q.emote='heart';q.et=2}me.emote='heart';me.et=2;SFX.pet();toast('💗 '+nm+'對你比了愛心');S.frd=S.frd||{};S.frd[m.u]=(S.frd[m.u]||0)+1;saveSoon()}});
-  on('shared/g','value',s=>ngOn(s.val()));
+  on('shared/g','value',s=>ngOn(s.val()));on(netRef('shared/dg').limitToLast(40),'value',s=>dgOn(s.val()));
   ['home','yard'].forEach(k=>on('shared/sc/'+k,'value',s=>{const v=s.val();if(typeof v!=='string')return;NET.scRemote[k]=v;netApplyScene(k,v)}))}
 // 把其他玩家變成畫面上的人物
 function netPeers(){if(!NET.on)return;const sc=S.scene||'home',want=[];
@@ -1625,7 +1630,8 @@ function ngStroke(x,s){x.strokeStyle=s.c;x.lineWidth=s.w;x.beginPath();s.p.forEa
 function ngCards(){const card=(k)=>{const K=NGK[k];return `<button class="gcard gc-${{race:'rps',draw:'quiz',chair:'idiom',rps:'rps',ttt:'ttt',gmk:'gmk'}[k]}" data-a="ngnew" data-k="${k}" type="button"><i>${K[0]}</i><b>${K[1]}</b><small>${K[2]}</small></button>`};
   if(!NET.on)return `<div class="sec"><h3 class="ctr">和朋友線上玩</h3><button class="grow-chat" data-a="ngoff" type="button"><span class="gicon">🌐</span><span class="stx"><b>先讓小窩上線</b><small>在小窩管理按「上線」，朋友加入後就能一起玩</small></span></button></div>`;
   const gm=NG.gm,busy=ngAlive(gm)?`<button class="grow-chat" data-ngopen type="button"><span class="gicon">${NGK[gm.k][0]}</span><span class="stx"><b>${esc(gm.hn)}開的${NGK[gm.k][1]}</b><small>${gm.st==='wait'?'等人加入中・'+ngPl(gm).length+' 人':'進行中'}</small></span></button>`:'';
-  return `<div class="sec"><h3 class="ctr">和朋友線上玩</h3>${busy}<div class="gcards">${['race','draw','chair','rps','ttt','gmk'].map(card).join('')}</div><p class="lead" style="text-align:center">發起後大家會收到邀請・贏的人 +50 金幣，有參加 +15</p></div>`}
+  const nNew=Object.keys(DG.list).filter(k=>{const d=DG.list[k];return d&&d.u!==NET.uid&&!(d.got||{})[NET.uid]&&((S.dgT||{})[k]|0)<DG_TRY}).length;
+  return `<div class="sec"><h3 class="ctr">和朋友線上玩</h3><button class="grow-chat" data-a="dgwall" type="button"><span class="gicon">🎨</span><span class="stx"><b>你畫我猜・畫畫牆</b><small>隨時畫一張，朋友有空再猜・猜中和被猜中都有金幣</small></span>${nNew?`<span class="dot">${nNew}</span>`:''}</button>${busy}<div class="gcards">${['race','chair','rps','ttt','gmk'].map(card).join('')}</div><p class="lead" style="text-align:center">發起後大家會收到邀請・贏的人 +50 金幣，有參加 +15</p></div>`}
 // 遊戲面板
 function ngView(){return ngView0()+ngView0.leave}
 function ngView0(){ngView0.leave='';const gm=NG.gm;if(!gm||!NET.on)return `<h2>線上遊戲</h2><p class="empty">現在沒有進行中的遊戲。</p>`;const K=NGK[gm.k],ps=ngPl(gm),mine=ngIn(gm),host=gm.host===NET.uid;
@@ -1647,6 +1653,77 @@ function ngView0(){ngView0.leave='';const gm=NG.gm;if(!gm||!NET.on)return `<h2>�
   return head}
 function ngBoardHtml(gm,lock){const N=gm.k==='ttt'?3:11,b=gm.b||'';if(gm.k==='ttt')return `<div class="ttt">${b.split('').map((v,i)=>`<button data-a="ngb" data-i="${i}" type="button" ${lock||v!=='0'?'disabled':''} aria-label="第 ${i+1} 格">${v==='1'?'○':v==='2'?'✕':''}</button>`).join('')}</div>`;
   return `<div class="gmk">${b.split('').map((v,i)=>`<button class="${v!=='0'?'p'+v:''} ${gm.last===i?'last':''}" data-a="ngb" data-i="${i}" type="button" ${lock?'disabled':''} aria-label="${i%N+1},${Math.floor(i/N)+1}">${v!=='0'?'<i></i>':''}</button>`).join('')}</div>`}
+
+// ===== 你畫我猜（畫畫牆）：誰都能畫，大家有空上線再猜 =====
+const DGW=[
+ ['蘋果','香蕉','西瓜','草莓','葡萄','貓咪','狗狗','兔子','魚','小鳥','太陽','月亮','星星','雲','雨傘','樹','花','房子','汽車','球','蛋糕','冰淇淋','眼鏡','帽子','鞋子','杯子','書','鉛筆','時鐘','椅子','床','氣球','愛心','雪人','蝴蝶','蛇','香菇','彩虹','船','鑰匙'],
+ ['披薩','漢堡','薯條','壽司','珍珠奶茶','電話','電視','電腦','相機','吉他','腳踏車','火車','飛機','公車','消防車','企鵝','烏龜','章魚','螃蟹','鯨魚','恐龍','長頸鹿','大象','獅子','熊貓','城堡','燈塔','帳篷','風箏','禮物','聖誕樹','南瓜燈','牙刷','雨衣','皇冠','機器人','火山','沙灘','摩天輪','蠟燭'],
+ ['刷牙','睡過頭','塞車','下雨天','放煙火','自拍','搬家','打噴嚏','生日派對','釣魚','跳繩','溜滑梯','外星人','美人魚','吸血鬼','魔術師','太空人','忍者','殭屍','海盜','時光機','鬼屋','便利商店','夜市','捷運','颱風','地震','彈鋼琴','洗澡','下棋','吃火鍋','打電動','減肥','失眠','擁抱','便當','雲霄飛車','萬聖節','過年','中秋節']];
+const DGL=[['簡單','🌱',20,10],['普通','🌼',35,15],['困難','🔥',50,25]]; // 名稱、圖示、猜中拿、畫的人每次拿
+const DG_DAY=3,DG_TOP=3,DG_TRY=5,DG_RR=5,DG_MAX=30;
+var DG={list:{},img:{},cur:null,sel:null,hint:'',strokes:[],col:'#3a4a32',pen:5,seen:null};
+const dgEnc=w=>btoa(unescape(encodeURIComponent(w))).split('').reverse().join(''),dgDec=e=>{try{return decodeURIComponent(escape(atob((e||'').split('').reverse().join(''))))}catch(_){return''}};
+const dgNorm=t=>(t||'').replace(/[\s，。！？!?,.、]/g,'').toLowerCase();
+function dgLev(a,b){a=[...a];b=[...b];const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+const dgToday=()=>{const t=today();if(!S.dgDay||S.dgDay.d!==t)S.dgDay={d:t,n:0};return S.dgDay};
+const dgPick=lv=>{const L=DGW[lv],cur=DG.cur&&DG.cur.w;let w;do w=L[rnd(L.length)];while(w===cur&&L.length>1);return w};
+// 資料庫有變化：新圖通知、畫的人領獎勵
+function dgOn(v){const prev=DG.list;DG.list=v||{};S.dgPaid=S.dgPaid||{};
+  for(const id in DG.list){const d=DG.list[id];if(!d)continue;
+    if(d.u!==NET.uid&&!prev[id]&&DG.seen&&d.ts>NET.t0)toast('🎨 '+(d.n||'朋友')+'畫了一張新的圖，來猜猜看！');
+    if(d.u===NET.uid)Object.entries(d.got||{}).forEach(([g,x])=>{const k=id+':'+g;if(x.r<=DG_TOP&&!S.dgPaid[k]){S.dgPaid[k]=1;const c=gain(DGL[d.lv|0][3]);S.coins+=c;SFX.open(2);toast('🎉 '+x.n+'猜中你畫的圖！+'+c+' 金幣');saveSoon()}})}
+  for(const k in S.dgPaid)if(!DG.list[k.split(':')[0]])delete S.dgPaid[k];
+  DG.seen=1;if(tab==='dg'&&!DG.cur)dgRender()}
+function dgRender(){const a=document.activeElement,id=a&&a.id,v=a&&a.value;render();if(id&&$(id)&&'value'in $(id)){$(id).value=v;try{$(id).focus()}catch(_){}}dgCanvas()}
+function dgImg(id){if(DG.img[id]||!NET.on)return;DG.img[id]='…';netRef('shared/dgi/'+id).once('value').then(s=>{DG.img[id]=s.val()||'';if(tab==='dg'&&!DG.cur)dgRender()}).catch(()=>{DG.img[id]=''})}
+// 動作
+function dgNew(){if(!NET.on)return toast('先到小窩管理按「上線」，朋友才看得到你的畫');if(dgToday().n>=DG_DAY)return toast('今天已經畫 '+DG_DAY+' 張了，明天再來畫！');DG.cur={lv:0,w:'',rr:DG_RR};DG.cur.w=dgPick(0);DG.strokes=[];DG.sel=null;DG.col='#3a4a32';DG.pen=5;tab='dg';dgRender()}
+function dgLv(lv){if(!DG.cur)return;DG.cur.lv=lv;DG.cur.w=dgPick(lv);dgRender()}
+function dgReroll(){if(!DG.cur)return;if(DG.cur.rr<=0)return toast('換題次數用完了，就畫這個吧！');DG.cur.rr--;DG.cur.w=dgPick(DG.cur.lv);SFX.ui();dgRender()}
+function dgPost(){const c=$('dgcv');if(!DG.cur||!c)return;if(!DG.strokes.length)return toast('先畫一點東西吧');if(dgToday().n>=DG_DAY)return toast('今天已經畫滿了');
+  const img=c.toDataURL('image/jpeg',.62),w=DG.cur.w,lv=DG.cur.lv,ref=netRef('shared/dg').push();
+  netRef('shared/dgi/'+ref.key).set(img).then(()=>ref.set({u:NET.uid,n:S.name||'我',w:dgEnc(w),len:[...w].length,lv,ts:Date.now()})).then(()=>{
+    dgToday().n++;DG.img[ref.key]=img;DG.cur=null;DG.strokes=[];save();SFX.open(3);toast('🖼️ 發布到畫畫牆了！有人猜中你也會拿到金幣');dgRender();
+    const ids=Object.keys(DG.list).sort((a,b)=>(DG.list[a].ts||0)-(DG.list[b].ts||0));while(ids.length>=DG_MAX){const old=ids.shift();netRef('shared/dg/'+old).remove().catch(()=>{});netRef('shared/dgi/'+old).remove().catch(()=>{})}
+  }).catch(netErr)}
+function dgDel(id){const d=DG.list[id];if(!d||d.u!==NET.uid)return;netRef('shared/dg/'+id).remove().then(()=>netRef('shared/dgi/'+id).remove()).catch(netErr);DG.sel=null;toast('刪掉了');dgRender()}
+function dgGuess(){const el=$('dggs'),raw=(el&&el.value||'').trim().slice(0,20),id=DG.sel,d=DG.list[id];if(!raw||!d)return;if(d.u===NET.uid||(d.got||{})[NET.uid])return;
+  S.dgT=S.dgT||{};const used=S.dgT[id]|0;if(used>=DG_TRY)return;const t=dgNorm(raw),w=dgNorm(dgDec(d.w));el.value='';
+  if(t===w){netRef('shared/dg/'+id+'/got').transaction(cur=>{cur=cur||{};if(cur[NET.uid])return;cur[NET.uid]={n:S.name||'我',ts:Date.now(),r:Object.keys(cur).length+1};return cur}).then(r=>{if(!r.committed)return;const me1=(r.snapshot.val()||{})[NET.uid]||{},lv=DGL[d.lv|0];
+      if(me1.r<=DG_TOP){const c=gain(lv[2]);S.coins+=c;DG.hint='🎉 猜對了！你是第 '+me1.r+' 個猜中的，+'+c+' 金幣';const q=NET.q[d.u];if(q)frAdd(q,'game',1)}else DG.hint='🎉 猜對了！不過前 '+DG_TOP+' 名的獎勵已經被領走了';
+      SFX.open(3);me.emote='heart';me.et=2;save();dgRender()}).catch(netErr);return}
+  const dist=dgLev(t,w),L=[...w].length;
+  if(dist===1&&L>=2){DG.hint='🤏 差一點點！好像有一個字打錯或少打了，檢查看看（這次不算次數）';SFX.ui();return dgRender()}
+  S.dgT[id]=used+1;const left=DG_TRY-used-1;
+  DG.hint=left<=0?'😢 次數用完了，答案是「'+dgDec(d.w)+'」':[...t].length!==L?'❌ 不是喔，答案是 '+L+' 個字・還可以猜 '+left+' 次':dist<=2&&L>=3?'👀 有點接近了！還可以猜 '+left+' 次':'❌ 不是這個，再想想・還可以猜 '+left+' 次';
+  saveSoon();dgRender()}
+// 畫布
+function dgCanvas(){const c=$('dgcv');if(!c||c._on)return;c._on=1;const x=c.getContext('2d');x.fillStyle='#fffdf6';x.fillRect(0,0,c.width,c.height);x.lineCap='round';x.lineJoin='round';DG.strokes.forEach(s=>ngStroke(x,s));
+  let cur=null;const pt=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)/r.width*c.width,(e.clientY-r.top)/r.height*c.height]};
+  c.onpointerdown=e=>{e.preventDefault();c.setPointerCapture(e.pointerId);cur={c:DG.col,w:DG.pen,p:[pt(e)]};DG.strokes.push(cur);ngStroke(x,cur)};
+  c.onpointermove=e=>{if(!cur)return;e.preventDefault();cur.p.push(pt(e));ngStroke(x,{c:cur.c,w:cur.w,p:cur.p.slice(-2)})};
+  c.onpointerup=c.onpointercancel=()=>{cur=null}}
+// 畫面
+function dgView(){if(!NET.on)return `<h2>你畫我猜</h2><p class="empty">先到小窩管理按「上線」，才能和朋友一起玩。</p>`;
+  if(DG.cur){const c=DG.cur;return `<h2>畫一張</h2><div class="seg">${DGL.map((l,i)=>`<button class="${c.lv===i?'on':''}" data-a="dglv" data-k="${i}" type="button">${l[1]} ${l[0]}</button>`).join('')}</div>
+    <div class="dgtop"><span>題目</span><b class="ngword">${esc(c.w)}</b><button class="btn soft small" data-a="dgre" type="button" ${c.rr?'':'disabled'}>🔄 換一題（${c.rr}）</button></div>
+    <p class="meta">猜中的人 +${DGL[c.lv][2]}，每有一人猜中你 +${DGL[c.lv][3]}（前 ${DG_TOP} 位）・不要寫字喔！</p>
+    <canvas id="dgcv" class="ngcv" width="240" height="240"></canvas>
+    <div class="row ngtools">${['#3a4a32','#e8604a','#f6b04a','#7cc06a','#b48ad8','#f08aa8','#8a6240'].map(k=>`<button class="ngcol ${DG.col===k?'on':''}" data-a="dgcol" data-k="${k}" style="background:${k}" type="button" aria-label="顏色"></button>`).join('')}<button class="ngcol ${DG.col==='#fffdf6'?'on':''}" data-a="dgcol" data-k="#fffdf6" type="button" aria-label="橡皮擦">🧽</button><button class="btn soft small" data-a="dgundo" type="button">↩️</button><button class="btn soft small" data-a="dgclr" type="button">清空</button></div>
+    <div class="row" style="justify-content:center"><button class="btn big" data-a="dgpost" type="button">發布到畫畫牆</button><button class="btn soft" data-a="dgcancel" type="button">不畫了</button></div>`}
+  if(DG.sel){const id=DG.sel,d=DG.list[id];if(!d){DG.sel=null;return dgView()}dgImg(id);const lv=DGL[d.lv|0],mine=d.u===NET.uid,got=d.got||{},ranks=Object.values(got).sort((a,b)=>a.r-b.r),me1=got[NET.uid],used=(S.dgT||{})[id]|0,out=used>=DG_TRY,w=dgDec(d.w),img=DG.img[id];
+    return `<h2>${esc(d.n)}的畫</h2><div class="row" style="justify-content:space-between"><span class="dglv l${d.lv|0}">${lv[1]} ${lv[0]}</span><span class="meta">${new Date(d.ts).toLocaleDateString('zh-TW',{month:'numeric',day:'numeric'})}・${ranks.length} 人猜中</span></div>
+    <div class="ngcv">${img&&img!=='…'?`<img src="${img}" alt="${esc(d.n)}的畫">`:'<span class="meta">載入中…</span>'}</div>
+    ${mine||me1||out?`<p class="result" style="text-align:center">答案是「${esc(w)}」</p>`:`<div class="dgbox">${'<i></i>'.repeat(d.len||2)}</div><p class="meta" style="text-align:center">${d.len} 個字・還可以猜 ${DG_TRY-used} 次・${ranks.length<DG_TOP?'前 '+DG_TOP+' 位猜中有 '+lv[2]+' 金幣（剩 '+(DG_TOP-ranks.length)+' 位）':'獎勵已經被領完了，還是可以猜好玩的'}</p>`}
+    ${DG.hint?`<p class="dghint">${esc(DG.hint)}</p>`:''}
+    ${mine||me1||out?'':`<form class="row" style="flex-wrap:nowrap" onsubmit="event.preventDefault();dgGuess()"><input class="field wide" id="dggs" maxlength="20" placeholder="你覺得是什麼？" autocomplete="off"><button class="btn" data-send type="submit">猜</button></form><p class="meta" style="text-align:center">只有你看得到自己猜了什麼和提示</p>`}
+    ${ranks.length?`<div class="sec"><h3>猜中的人</h3><div class="ngpl">${ranks.map(x=>`<span class="ngchip">${x.r<=DG_TOP?['🥇','🥈','🥉'][x.r-1]:'✅'} ${esc(x.n)}</span>`).join('')}</div></div>`:''}
+    <div class="row" style="justify-content:center"><button class="btn soft" data-a="dgback" type="button">回畫畫牆</button>${mine?`<button class="btn soft" data-a="dgdel" data-id="${id}" type="button">刪除這張</button>`:''}</div>`}
+  const ids=Object.keys(DG.list).filter(k=>DG.list[k]).sort((a,b)=>DG.list[b].ts-DG.list[a].ts),left=DG_DAY-dgToday().n;ids.slice(0,12).forEach(dgImg);
+  return `<h2>你畫我猜</h2><div class="dgtop"><span class="stx"><b>畫畫牆</b><small>隨時畫一張，朋友有空上線再猜・今天還能畫 ${Math.max(0,left)} 張</small></span><button class="btn" data-a="dgnew" type="button" ${left>0?'':'disabled'}>🎨 畫一張</button></div>
+  ${ids.length?`<div class="dggrid">${ids.map(id=>{const d=DG.list[id],got=d.got||{},mine=d.u===NET.uid,me1=got[NET.uid],out=((S.dgT||{})[id]|0)>=DG_TRY,n=Object.keys(got).length,img=DG.img[id],lv=DGL[d.lv|0];
+    const tag=mine?'✏️ 你畫的':me1?'✅ 猜中了':out?'😢 沒猜到':n<DG_TOP?'🪙 '+lv[2]+' 金幣':'🎈 可以猜';
+    return `<button class="dgcard ${mine||me1||out?'done':''}" data-a="dgopen" data-id="${id}" type="button"><span class="dgimg">${img&&img!=='…'?`<img src="${img}" alt="">`:''}</span><span class="dglv l${d.lv|0}">${lv[1]}</span><b>${esc(d.n)}</b><small>${tag}</small></button>`}).join('')}</div>`:'<p class="empty">畫畫牆還是空的，畫第一張吧！</p>'}`}
 
 let duoFx={t:0};
 function drawDuo(oy){if(!(duoFx.t>0)||!duoFx.a)return;const q=duoFx.a,k=1-duoFx.t/2.4,x=Math.round((me.fx+q.fx)/2+8),y=Math.round(Math.min(me.fy,q.fy)+oy-10-k*14),H=['.##.##.','#######','#######','.#####.','..###..','...#...'];
@@ -2284,6 +2361,7 @@ pet(){S.pets.forEach(p=>{if(!p.born)p.born=Date.now()});const foods=Object.keys(
   <div class="sec"><h3>神秘蛋</h3><div class="row"><button class="btn sun" data-a="egg" type="button">孵一顆蛋　${coin(EGG_PRICE)}</button><span class="meta">房間等級越高能養越多隻</span></div></div>
   <div class="sec"><h3>圖鑑 ${Object.keys(S.dex).length}/${Object.keys(PETS).length}</h3><div class="row">${Object.keys(PETS).map(k=>`<span class="card" style="padding:8px 10px;${S.dex[k]?'':'opacity:.35'}"><img src="${PTHUMB[k]}" alt="" style="height:36px;${S.dex[k]?'':'filter:brightness(0)'}"><span class="meta">${S.dex[k]?PETS[k].n:'？？'}</span></span>`).join('')}</div></div>`},
 ngame(){return ngView()},
+dg(){return dgView()},
 game(){const qd=S.qz&&S.qz.d===today()&&S.qz.over,id=S.idm&&S.idm.d===today()&&S.idm.over,card=(a,k,e,n,d,dis)=>`<button class="gcard gc-${k}" data-a="${a}" ${a==='play'?'data-id':'data-k'}="${k}" type="button" ${dis?'disabled':''}><i>${e}</i><b>${n}</b><small>${d}</small></button>`;
   if(!mg.id)return `<h2>遊戲</h2>
   <div class="sec"><h3 class="ctr">每日挑戰</h3><div class="gcards">${card('opengame','quiz','🧠','每日知識王',qd?'今天答對 '+S.qz.score+' 題':'你能答對幾題？')}${card('opengame','idiom','📜','猜成語',id?(S.idm.win?'今天猜中了！':'明天再來'):'六次內猜出四字成語')}</div></div>
@@ -2456,7 +2534,7 @@ set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="but
   ${row('🪙','測試金幣','直接拿 1000 金幣','','cheat')}
   ${askReset?`<div class="srow"><span class="sic">⚠️</span><span class="stx"><b>確定清掉所有進度？</b></span><button class="btn small" style="background:var(--bad);box-shadow:none!important" data-a="reset" type="button">清掉</button><button class="btn soft small" data-a="noreset" type="button">取消</button></div>`:row('🔄','重新開始','進度自動存在這個瀏覽器','','askreset')}
   </div></div>
-  <p class="lead" style="text-align:center">像素小窩 v0.54</p>`},
+  <p class="lead" style="text-align:center">像素小窩 v0.55</p>`},
 feed(){const left=Math.max(0,POST_MAX-(S.pd.day===today()?S.pd.n:0)),mt=thumb(20,34,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}));
   return `<div><h2>動態</h2><p class="lead">上方頭像列只放 24 小時內的動態，過了還是留在這裡。按「📌 釘到照片牆」的照片會一直掛在照片牆上，不會被新動態擠掉（最多 9 張，走到照片牆旁邊按「看照片牆」就能一張一張看）。拍一張照片、寫一句話就能發布。每篇得 ${POST_PAY} 金幣，今天還能領 ${left} 次。</p></div>
   <div class="post"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${draft.d?`<img class="draft" src="${draft.d}" alt="要發布的照片">`:''}<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><input class="field wide" id="cap" placeholder="寫點什麼…" maxlength="200" value="${esc(draft.cap)}"><div class="row"><button class="btn soft small" data-a="pick" type="button">${draft.d?'重拍':'拍照'}</button><button class="btn small" data-a="post" type="button" ${draft.d?'':'disabled'}>發布</button></div></div></div></div>
@@ -2484,7 +2562,7 @@ function render(){applyTheme();requestAnimationFrame(measureHud);
   if(S.hand&&!(S.dish[S.hand]>0))S.hand=null;{const hc=$('handchip'),r=S.hand&&RECIPES.find(x=>x.k===S.hand);hc.hidden=!r||editing;if(r)hc.innerHTML=`<span>手上 ${DI(r)} ${r.n}</span><button data-h="eat" type="button">吃掉</button><button data-h="put" type="button">放下</button>`}
   $('chatbtn').hidden=editing;$('hudr').hidden=editing;{const d=dmUnread(),n=(S.notif||[]).filter(x=>!x.read).length;$('dmbadge').hidden=!d;$('dmbadge').textContent=d;$('ntbadge').hidden=!n;$('ntbadge').textContent=n}if(editing)$('chatbar').hidden=true;
   $('dockw').className='dock'+(editing?'':' pop');$('dockw').hidden=!editing&&!menuOpen;const mb=$('menu');mb.hidden=editing;mb.textContent=menuOpen?'✕':'選單';mb.setAttribute('aria-expanded',menuOpen);$('veil').hidden=!tab;$('close').hidden=tab==='setup';
-  if(tab){$('panel').innerHTML=V[tab]();{const h=$('panel').querySelector('h2');if(tab==='draw')drawEditor();{const h=$('panel').querySelector('h2'),nx=h&&h.nextElementSibling;if(nx&&nx.matches('p.lead')&&!['setup','remind','gift','login','idiom','peer'].includes(tab))nx.remove()}
+  if(tab){$('panel').innerHTML=V[tab]();{const h=$('panel').querySelector('h2');if(tab==='draw')drawEditor();if(tab==='dg')dgCanvas();if(tab==='ngame')ngCanvas();{const h=$('panel').querySelector('h2'),nx=h&&h.nextElementSibling;if(nx&&nx.matches('p.lead')&&!['setup','remind','gift','login','idiom','peer'].includes(tab))nx.remove()}
     $('help').hidden=!TUT[tab];if(TUT[tab]&&!(S.tut||{})[tab]&&!tutK&&S.setup)setTimeout(()=>{if(tab&&TUT[tab]&&!(S.tut||{})[tab]&&!tutK)showTut(tab)},250);
     $('mtitle').innerHTML=h?h.innerHTML:tab==='dm'&&dmWith?esc((peerById(dmWith)||{}).name||''):'';if(h)h.remove()}const pv=$('pv');if(pv){const c=pv.getContext('2d');c.clearRect(0,0,20,34);withCtx(c,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}))}}
   syncRT()}
@@ -2593,7 +2671,7 @@ $('panel').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(
   dmopen(){dmWith=d.k;render();dmScroll()},dmback(){dmWith=null;render()},dmph(){pendingQuest='dm';$('photo').click()},dmto(){dmWith=peerSel;tab='dm';render();dmScroll()},
   ntopen(){const n=(S.notif||[]).find(x=>x.id===+d.id);if(n&&n.ref){const p=S.posts.find(x=>x.id===n.ref);if(p&&fresh24(p)){tab=null;render();SVP=storyPeople().filter(x=>x.posts.length);const pi=SVP.findIndex(x=>x.id===p.by);if(pi>=0){SV={pi,i:Math.max(0,SVP[pi].posts.findIndex(x=>x.id===p.id)),t:0,pause:false};return renderStory()}}tab='feed';render();const el=$('post-'+n.ref);if(el)el.scrollIntoView()}},
   botonline(){const q=bot0();if(q){setOnline(q,q.online===false);tab='set';render()}},
-  ttt(){tttMove(+d.i)},gmk(){gmkMove(+d.x,+d.y)},ngnew(){ngCreate(d.k)},ngoff(){tab='room';render()},ngstart(){ngStart()},ngjoin(){ngJoin()},ngleave(){ngLeave()},ngclose(){tab=null;render()},ngrps(){ngRps(d.k)},ngb(){ngBoard(+d.i)},ngfish(){tab='fishing';render()},ngcol(){NG.col=d.k;NG.pen=d.k==='#fffdf6'?14:4;ngRender()},ngclr(){NG.strokes=[];NG.dirty=true;ngRender()},react(){reactTap()},tap(){tapTap()}
+  ttt(){tttMove(+d.i)},gmk(){gmkMove(+d.x,+d.y)},ngnew(){ngCreate(d.k)},dgwall(){DG.cur=null;DG.sel=null;tab='dg';dgRender()},dgnew(){dgNew()},dglv(){dgLv(+d.k)},dgre(){dgReroll()},dgcol(){DG.col=d.k;DG.pen=d.k==='#fffdf6'?16:5;dgRender()},dgundo(){DG.strokes.pop();dgRender()},dgclr(){DG.strokes=[];dgRender()},dgpost(){dgPost()},dgcancel(){DG.cur=null;dgRender()},dgopen(){DG.sel=d.id;DG.hint='';dgRender()},dgback(){DG.sel=null;DG.hint='';dgRender()},dgdel(){dgDel(d.id)},ngoff(){tab='room';render()},ngstart(){ngStart()},ngjoin(){ngJoin()},ngleave(){ngLeave()},ngclose(){tab=null;render()},ngrps(){ngRps(d.k)},ngb(){ngBoard(+d.i)},ngfish(){tab='fishing';render()},ngcol(){NG.col=d.k;NG.pen=d.k==='#fffdf6'?14:4;ngRender()},ngclr(){NG.strokes=[];NG.dirty=true;ngRender()},react(){reactTap()},tap(){tapTap()}
 }[d.a]||(()=>{}))()});
 
 /* ========== 小遊戲 ========== */
