@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube 自動略過廣告
 // @namespace    https://github.com/OoproviceoO
-// @version      1.2
+// @version      1.3
 // @description  出現「略過廣告」就自動點；不能略過的廣告自動靜音＋加速；關閉橫幅廣告
 // @match        https://www.youtube.com/*
 // @match        https://m.youtube.com/*
@@ -36,6 +36,24 @@
     '.ytp-ad-overlay-close-container',
   ];
 
+  const style = document.createElement('style');
+  style.textContent = `
+    .ad-showing video { opacity: 0 !important; }
+    .ad-showing .ytp-ad-player-overlay-layout > :not([class*="skip-or-preview"]),
+    .ad-showing .ytp-ad-player-overlay,
+    .ad-showing .ytp-ad-action-interstitial,
+    .ad-showing .ytp-ad-image-overlay,
+    .ad-showing .ytp-ad-overlay-container,
+    .ad-showing .ytp-ad-text,
+    .ad-showing .ytp-ad-visit-advertiser-button { display: none !important; }
+    .ad-showing::after {
+      content: "廣告略過中…"; position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%); color: #ccc; font-size: 18px;
+      pointer-events: none; z-index: 10;
+    }
+  `;
+  (document.head || document.documentElement).appendChild(style);
+
   let inAd = false;
   let savedRate = 1;
   let savedMuted = false;
@@ -44,6 +62,12 @@
     for (const sel of selectors) {
       const btn = document.querySelector(sel);
       if (btn && btn.offsetParent !== null) {
+        const r = btn.getBoundingClientRect();
+        const opt = { bubbles: true, cancelable: true, view: window,
+                      clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 };
+        for (const t of ['pointerdown', 'mousedown', 'pointerup', 'mouseup']) {
+          btn.dispatchEvent(t.startsWith('pointer') ? new PointerEvent(t, opt) : new MouseEvent(t, opt));
+        }
         btn.click();
         return true;
       }
