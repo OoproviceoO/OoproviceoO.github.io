@@ -1658,7 +1658,7 @@ function ngBoardHtml(gm,lock){const N=gm.k==='ttt'?3:11,b=gm.b||'';if(gm.k==='tt
 const DGW=[
  ['蘋果','香蕉','西瓜','草莓','葡萄','貓咪','狗狗','兔子','魚','小鳥','太陽','月亮','星星','雲','雨傘','樹','花','房子','汽車','球','蛋糕','冰淇淋','眼鏡','帽子','鞋子','杯子','書','鉛筆','時鐘','椅子','床','氣球','愛心','雪人','蝴蝶','蛇','香菇','彩虹','船','鑰匙'],
  ['披薩','漢堡','薯條','壽司','珍珠奶茶','電話','電視','電腦','相機','吉他','腳踏車','火車','飛機','公車','消防車','企鵝','烏龜','章魚','螃蟹','鯨魚','恐龍','長頸鹿','大象','獅子','熊貓','城堡','燈塔','帳篷','風箏','禮物','聖誕樹','南瓜燈','牙刷','雨衣','皇冠','機器人','火山','沙灘','摩天輪','蠟燭'],
- ['刷牙','睡過頭','塞車','下雨天','放煙火','自拍','搬家','打噴嚏','生日派對','釣魚','跳繩','溜滑梯','外星人','美人魚','吸血鬼','魔術師','太空人','忍者','殭屍','海盜','時光機','鬼屋','便利商店','夜市','捷運','颱風','地震','彈鋼琴','洗澡','下棋','吃火鍋','打電動','減肥','失眠','擁抱','便當','雲霄飛車','萬聖節','過年','中秋節']];
+ ['外星人','美人魚','吸血鬼','魔術師','太空人','忍者','殭屍','海盜','時光機','鬼屋','便利商店','夜市','捷運','仙人掌','鋼琴','便當','雲霄飛車','火鍋','紅綠燈','吸塵器','洗衣機','望遠鏡','降落傘','潛水艇','金字塔','自由女神','長城','101大樓','獨角獸','噴泉','稻草人','熱氣球','滑板','溜滑梯','鞦韆','鬧鐘','吹風機','指南針','放大鏡','刺蝟']];
 const DGL=[['簡單','🌱',20,10],['普通','🌼',35,15],['困難','🔥',50,25]]; // 名稱、圖示、猜中拿、畫的人每次拿
 const DG_DAY=3,DG_TOP=3,DG_TRY=5,DG_RR=5,DG_MAX=30;
 var DG={list:{},img:{},cur:null,sel:null,hint:'',strokes:[],col:'#3a4a32',pen:5,seen:null};
@@ -2534,7 +2534,7 @@ set(){const tg=(a,on)=>`<button class="tg ${on?'on':''}" data-a="${a}" type="but
   ${row('🪙','測試金幣','直接拿 1000 金幣','','cheat')}
   ${askReset?`<div class="srow"><span class="sic">⚠️</span><span class="stx"><b>確定清掉所有進度？</b></span><button class="btn small" style="background:var(--bad);box-shadow:none!important" data-a="reset" type="button">清掉</button><button class="btn soft small" data-a="noreset" type="button">取消</button></div>`:row('🔄','重新開始','進度自動存在這個瀏覽器','','askreset')}
   </div></div>
-  <p class="lead" style="text-align:center">像素小窩 v0.55</p>`},
+  <p class="lead" style="text-align:center">像素小窩 v0.56</p>`},
 feed(){const left=Math.max(0,POST_MAX-(S.pd.day===today()?S.pd.n:0)),mt=thumb(20,34,()=>drawAvatar(2,15,S.av,{pose:'stand',dir:0,t:0}));
   return `<div><h2>動態</h2><p class="lead">上方頭像列只放 24 小時內的動態，過了還是留在這裡。按「📌 釘到照片牆」的照片會一直掛在照片牆上，不會被新動態擠掉（最多 9 張，走到照片牆旁邊按「看照片牆」就能一張一張看）。拍一張照片、寫一句話就能發布。每篇得 ${POST_PAY} 金幣，今天還能領 ${left} 次。</p></div>
   <div class="post"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${draft.d?`<img class="draft" src="${draft.d}" alt="要發布的照片">`:''}<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><input class="field wide" id="cap" placeholder="寫點什麼…" maxlength="200" value="${esc(draft.cap)}"><div class="row"><button class="btn soft small" data-a="pick" type="button">${draft.d?'重拍':'拍照'}</button><button class="btn small" data-a="post" type="button" ${draft.d?'':'disabled'}>發布</button></div></div></div></div>
