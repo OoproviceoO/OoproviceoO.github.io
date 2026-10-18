@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube 自動略過廣告
 // @namespace    https://github.com/OoproviceoO
-// @version      1.1
+// @version      1.2
 // @description  出現「略過廣告」就自動點；不能略過的廣告自動靜音＋加速；關閉橫幅廣告
 // @match        https://www.youtube.com/*
 // @match        https://m.youtube.com/*
@@ -73,6 +73,11 @@
         savedMuted = video.muted;
       }
       if (MUTE_ADS) video.muted = true;
+      // YouTube 會忽略程式送出的點擊，所以直接把廣告跳到結尾（等同按略過）
+      const d = video.duration;
+      if (isFinite(d) && d > 0 && video.currentTime < d - 0.3) {
+        video.currentTime = d - 0.1;
+      }
       if (SPEED_UP_ADS && video.playbackRate !== AD_SPEED) {
         video.playbackRate = AD_SPEED;
       }
