@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>像素小窩 App 登入</title>
+<style>
+:root{--bg:#edf5e4;--surface:#fbfdf5;--ink:#243020;--muted:#5d6e52;--accent:#5f9e4c;--outline:#5a4632;--sun:#f7eaa6}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;padding:16px;box-sizing:border-box}
+.box{background:var(--surface);border:3px solid var(--outline);box-shadow:0 6px 0 var(--outline);border-radius:18px;padding:24px 22px;max-width:360px;width:100%;text-align:center}
+h1{font-size:20px;margin:0 0 8px}p{margin:8px 0;color:var(--muted)}
+.btn{display:inline-block;border:2px solid var(--outline);box-shadow:0 3px 0 var(--outline);border-radius:12px;background:var(--accent);color:#fff;font-weight:700;font-size:16px;padding:10px 18px;margin-top:12px;text-decoration:none;cursor:pointer}
+.ok{background:var(--sun);color:#5b4a06;border-radius:10px;padding:10px;font-weight:700}
+</style></head><body><div class="box">
+<h1>🏠 像素小窩 App 登入</h1>
+<p id="msg">正在準備 Google 登入…</p>
+<div id="act"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-database-compat.js"></script>
+<script>
+// App 打開這頁（網址帶 ?k=一組亂碼），在這裡用 Google 登入，
+// 登入後把這次登入的憑證暫存到 applogin/亂碼，App 會自己來拿，拿完就刪掉。
+const K=new URLSearchParams(location.search).get('k')||'';
+const msg=t=>document.getElementById('msg').textContent=t;
+const act=h=>document.getElementById('act').innerHTML=h;
+firebase.initializeApp({apiKey:"AIzaSyDSgWux9uBshrQUQWK5igtm3oIQotY0ewc",authDomain:"pixel-nest-bf969.firebaseapp.com",databaseURL:"https://pixel-nest-bf969-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"pixel-nest-bf969",appId:"1:265465570592:web:272bc88d00d47a51582345"});
+const auth=firebase.auth();auth.languageCode='zh-TW';
+const prov=new firebase.auth.GoogleAuthProvider();prov.setCustomParameters({prompt:'select_account'});
+async function hand(u){
+  msg('登入成功：'+(u.email||u.displayName||'')+'，正在交給 App…');
+  try{
+    await firebase.database().ref('applogin/'+K).set({rt:u.refreshToken,uid:u.uid,email:u.email||'',name:u.displayName||'',t:firebase.database.ServerValue.TIMESTAMP});
+    msg('✅ 好了！回到像素小窩 App 就會自動登入。');
+    act('<a class="btn" href="intent://#Intent;package=io.github.ooproviceoo.pixelnest.app;end">回到 App</a>');
+  }catch(e){msg('⚠️ 交給 App 失敗：'+(e.message||e));}
+}
+function start(){act('<button class="btn" id="go">用 Google 登入</button>');document.getElementById('go').onclick=()=>{
+  auth.signInWithPopup(prov).then(r=>hand(r.user)).catch(e=>{if(/popup/.test(e.code||''))return auth.signInWithRedirect(prov);msg('⚠️ '+(e.message||e))})}}
+if(K.length<24){msg('這個頁面要從像素小窩 App 打開。');}
+else auth.getRedirectResult().then(r=>{if(r&&r.user)return hand(r.user);msg('按下面的按鈕，用 Google 帳號登入。');start()}).catch(e=>{msg('⚠️ '+(e.message||e));start()});
+</script></body></html>
