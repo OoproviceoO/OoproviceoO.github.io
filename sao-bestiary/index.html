@@ -296,16 +296,17 @@ function renderList() {
 // kind: game = 遊戲地圖上原本就有的地名；sure = 比較確定；guess = 推測
 const MAPS = {
   1: {img: 'map-f1.jpg', pins: [
-    {x: 34.7, y: 81.5, name: '起始之鎮', kind: 'game', regions: ['起始之鎮', '野豬區'], note: '出生城鎮。城外是野豬區，腐化野豬和 Boss Pumba 都在這附近。'},
-    {x: 30.5, y: 65.5, name: '哈娜卡', kind: 'game', regions: ['Hanaka'], note: '名字和位置都很像動畫裡的「霍倫卡村」（桐人接任務、刷豬籠草換劍的村子）。'},
-    {x: 58.8, y: 70.8, name: '水成', kind: 'game', regions: ['Mizunari 原野'], note: '應該就是 Mizunari 原野，會主動攻擊的豬籠草在這裡，0.5% 掉豬籠草之花。'},
-    {x: 79.1, y: 71.9, name: '蓋爾多拉克礦坑', kind: 'game', regions: ['Geldorak 礦坑', 'Geldorak 礦坑地城'], note: 'Geldorak 礦坑和礦坑地城。'},
-    {x: 86.1, y: 48.1, name: '商人公會', kind: 'game', regions: [], note: '圓形城牆城鎮。圖鑑裡還沒有對應的怪物。'},
-    {x: 10.9, y: 43.0, name: '巨人花園', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
-    {x: 44.5, y: 61.6, name: '吆區', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
-    {x: 63.3, y: 29.8, name: '托爾巴納', kind: 'game', regions: ['托爾巴納山脈'], note: '最靠近迷宮塔的城鎮，跟動畫一樣。有鐵匠 Emy、皇家鍛造所，支線 NPC Sentinel Kael、Hunter Lysa 也在這裡。周圍的托爾巴納山脈有山中雄鹿。'},
-    {x: 65.5, y: 17.7, name: '迷宮塔', kind: 'sure', regions: ['狗頭人之塔'], note: '第 1 層的迷宮塔，塔頂是樓層 Boss「狗頭人領主 Illfang」，跟動畫一樣。'},
-    {x: 54.6, y: 19.2, name: '山鹿雪地', kind: 'guess', regions: ['托爾巴納西北方的雪地區域'], note: '推測：照 wiki「托爾巴納西北方」、假設地圖上方是北標在這裡。如果找不到，托爾巴納右下方那片灰白色山地也可能是雪地。山鹿會主動攻擊，75% 掉山鹿皮。'}
+    {x: 35.8, y: 82.7, name: '起始之鎮', kind: 'game', regions: ['起始之鎮', '野豬區'], note: '出生城鎮。城外是野豬區，腐化野豬和 Boss Pumba 都在這附近。'},
+    {x: 31.5, y: 66.7, name: '哈娜卡', kind: 'game', regions: ['Hanaka'], note: '名字和位置都很像動畫裡的「霍倫卡村」（桐人接任務、刷豬籠草換劍的村子）。'},
+    {x: 60.7, y: 72.0, name: '水成', kind: 'game', regions: ['Mizunari 原野'], note: '應該就是 Mizunari 原野，會主動攻擊的豬籠草在這裡，0.5% 掉豬籠草之花。'},
+    {x: 81.6, y: 73.0, name: '蓋爾多拉克礦坑', kind: 'game', regions: ['Geldorak 礦坑', 'Geldorak 礦坑地城'], note: 'Geldorak 礦坑和礦坑地城。'},
+    {x: 88.9, y: 49.5, name: '商人公會', kind: 'game', regions: [], note: '圓形城牆城鎮。圖鑑裡還沒有對應的怪物。'},
+    {x: 11.3, y: 44.4, name: '巨人花園', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 46.0, y: 62.9, name: '吆區', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 34.1, y: 40.8, name: '維勒倫', kind: 'game', regions: ['Virelune 湖'], note: '湖邊的城鎮，應該就是圖鑑裡的「Virelune 湖」。'},
+    {x: 42.4, y: 18.4, name: '坎德莉亞', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 65.4, y: 31.5, name: '托爾巴納', kind: 'game', regions: ['托爾巴納山脈', '托爾巴納西北方的雪地區域'], note: '最靠近狗頭人之塔的城鎮，跟動畫一樣。有鐵匠 Emy、皇家鍛造所，支線 NPC Sentinel Kael、Hunter Lysa 也在這裡。附近的山區有山中雄鹿，西北方雪地有山鹿。'},
+    {x: 67.8, y: 19.5, name: '狗頭人之塔', kind: 'sure', regions: ['狗頭人之塔'], note: '第 1 層的迷宮塔，塔頂是樓層 Boss「狗頭人領主 Illfang」。'}
   ]}
 };
 
@@ -317,7 +318,7 @@ function renderMap() {
   const cls = p => p.kind === 'guess' ? 'guess' : p.kind === 'game' ? 'game' : '';
   let h = seg + `<div class="mapbox"><img src="${mp.img}" alt="第 ${state.mapFloor} 層地圖">${mp.pins.map(p =>
     `<button class="pin ${cls(p)} ${sel === p ? 'on' : ''}" style="left:${p.x}%;top:${p.y}%" data-place="${esc(p.name)}" aria-label="${esc(p.name)}"><i>${p.kind === 'guess' ? '?' : ''}</i>${p.kind !== 'game' ? `<b>${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</b>` : ''}</button>`).join('')}</div>
-    <div class="legend"><span><i class="dot"></i>比較確定</span><span><i class="dot q"></i>推測（依動畫和 wiki 描述）</span><span>遊戲原本的地名也可以點</span></div>
+    <div class="legend"><span><i class="dot"></i>比較確定</span>${mp.pins.some(p => p.kind === 'guess') ? '<span><i class="dot q"></i>推測（依動畫和 wiki 描述）</span>' : ''}<span>遊戲原本的地名也可以點</span></div>
     <div class="places">${mp.pins.map(p => `<button class="place ${p.kind === 'guess' ? 'guess' : ''} ${sel === p ? 'on' : ''}" data-place="${esc(p.name)}">${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</button>`).join('')}</div>`;
   if (sel) {
     const mobs = MOBS.filter(m => m.f === state.mapFloor && sel.regions.includes(m.r));
