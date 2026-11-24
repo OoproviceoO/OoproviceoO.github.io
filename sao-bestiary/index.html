@@ -126,6 +126,7 @@ header p{margin:6px 0 0;color:var(--n600);font-size:15px}
 .pin.game:hover i,.pin.game.on i{border-color:var(--y100);box-shadow:0 0 0 3px var(--g700)}
 .pin b{position:absolute;top:36px;white-space:nowrap;font-size:12px;font-weight:700;background:hsl(60 60% 98% / .92);color:var(--g800);padding:2px 8px;border-radius:8px;box-shadow:var(--shadow-sm);pointer-events:none}
 .pin.guess b{color:var(--p700)}
+.pin.up b{top:auto;bottom:36px}
 .legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;font-size:13px;color:var(--n600)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .dot{width:12px;height:12px;border-radius:50%;background:var(--g700);display:inline-block}
@@ -173,6 +174,11 @@ header p{margin:6px 0 0;color:var(--n600);font-size:15px}
 .floor-h{margin:28px 0 12px;font-size:15px;font-weight:800;color:var(--g700)}
 .tabs button{font-size:15px}
 @media (max-width:600px){.tabs button{font-size:14px}.eq-list{padding:4px 16px}.q{padding:16px}}
+.town{margin-top:16px;border-radius:14px;overflow:hidden;box-shadow:var(--shadow);max-width:560px}
+.town img{display:block;width:100%;height:auto}
+.town figcaption{background:#fff;padding:10px 14px;font-size:14px;color:var(--n600)}
+.npc{background:#fff;border-radius:14px;box-shadow:var(--shadow-sm);padding:14px 16px;margin-top:12px}
+.npc b{font-size:16px}.npc .xyz{font-variant-numeric:tabular-nums;color:var(--g700);font-weight:700}
 @media (max-width:600px){
   .wrap{padding:24px 16px 88px}
   header h1{font-size:24px}
@@ -275,7 +281,8 @@ function renderItem() {
   const eqs = EQ.filter(e => match(q, e.n) && !ITEMS[e.n]);
   const mqs = MQ.filter(x => match(q, x[2], x[3], x[8]));
   const sqs = SQ.filter(x => match(q, x.npc, x.town, x.task));
-  if (!items.length && !mobs.length && !eqs.length && !mqs.length && !sqs.length) {
+  const npcs = ALL_NPC().filter(n => match(q, n.n, n.role, n.place, n.sells));
+  if (!npcs.length && !items.length && !mobs.length && !eqs.length && !mqs.length && !sqs.length) {
     // 模糊搜尋：遊戲內中文和 wiki 翻譯不同時，用相同的字來猜
     const qs = [...new Set([...state.q.replace(/\s/g, '')])];
     const score = s => { const t = String(s); return qs.filter(c => t.includes(c)).length; };
@@ -285,6 +292,7 @@ function renderItem() {
   }
   let h = '';
   if (items.length) h += `<div class="section-title">道具 · ${items.length} 項</div>` + items.slice(0, 40).map(it => itemCard(it, q)).join('');
+  if (npcs.length) h += `<div class="section-title">NPC · ${npcs.length} 位</div>` + npcs.map(n => npcCard({...n, role: `第 ${n.f} 層 ${n.place}` + (n.role ? ' · ' + n.role : '')})).join('');
   if (eqs.length) h += `<div class="section-title">裝備 · ${eqs.length} 件</div><div class="eq-list">` + eqs.slice(0, 30).map(e => eqRow(e, q)).join('') + '</div>';
   if (mobs.length) h += `<div class="section-title">相關怪物 · ${mobs.length} 隻</div>` + mobs.slice(0, 30).map(m => mobCard(m, q)).join('');
   if (mqs.length || sqs.length) h += `<div class="section-title">任務 · ${mqs.length + sqs.length} 個</div>` + mqs.slice(0, 20).map(x => mqCard(x, q)).join('') + sqs.map(x => sqCard(x, q)).join('');
@@ -349,13 +357,15 @@ const MAPS = {
     {x: 44.7, y: 60.9, name: '吆區', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
     {x: 32.7, y: 39.1, name: '維勒倫', kind: 'game', regions: ['維勒倫湖'], note: '湖邊的城鎮，旁邊的湖就是維勒倫湖（Virelune Lake）。'},
     {x: 40.9, y: 16.6, name: '坎德莉亞', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
-    {x: 63.8, y: 29.2, name: '托爾巴納', kind: 'game', regions: ['托爾巴納山脈'], note: '最靠近狗頭人之塔的城鎮，跟動畫一樣。有鐵匠 Emy、皇家鍛造所，支線 NPC Sentinel Kael、Hunter Lysa 也在這裡。附近的山區有山中雄鹿。'},
+    {x: 63.8, y: 29.2, name: '托爾巴納', kind: 'game', regions: ['托爾巴納山脈'], town: 'tolbana-town.jpg', townNote: '托爾巴納城鎮地圖，藍色圓圈是飾品鐵匠的鐵匠屋（城鎮左上方）。', npcs: [{n: '飾品鐵匠', role: '鐵匠屋', xyz: '3290, 196, 1485', sells: ''}], note: '最靠近狗頭人之塔的城鎮，跟動畫一樣。有鐵匠 Emy、皇家鍛造所，支線 NPC Sentinel Kael、Hunter Lysa 也在這裡。附近的山區有山中雄鹿。'},
     {x: 79.5, y: 22.6, name: '山鹿雪地', kind: 'sure', regions: ['托爾巴納西北方的雪地區域'], note: '托爾巴納右上方的灰白色山地。山鹿會主動攻擊，75% 掉山鹿皮。'},
     {x: 31.0, y: 53.2, name: '腐臭沼澤', kind: 'sure', regions: ['腐臭沼澤'], note: '哈娜卡北方的區塊。樹人、森林法師和 Boss 巨像守護者在這裡，做森林鑰匙的三樣材料（森林樹皮、木之心、魔法菌絲）都在這裡刷。'},
-    {x: 66.1, y: 17.4, name: '狗頭人之塔', kind: 'sure', regions: ['狗頭人之塔'], note: '第 1 層的迷宮塔，塔頂是樓層 Boss「狗頭人領主 Illfang」。'}
+    {x: 66.1, y: 17.4, name: '狗頭人之塔', kind: 'sure', up: 1, regions: ['狗頭人之塔'], note: '第 1 層的迷宮塔，塔頂是樓層 Boss「狗頭人領主 Illfang」。'}
   ]}
 };
 
+const npcCard = p => `<div class="npc"><b>${esc(p.n)}</b>${p.role ? ` <span class="mini">${esc(p.role)}</span>` : ''}${p.xyz ? `<div class="eq-stat">座標 <span class="xyz">${esc(p.xyz)}</span>（X, Y, Z）</div>` : ''}<div class="eq-stat">${p.sells ? '販售：' + esc(p.sells) : '販售清單還沒有資料'}</div></div>`;
+const ALL_NPC = () => Object.entries(MAPS).flatMap(([f, m]) => m.pins.flatMap(p => (p.npcs || []).map(n => ({...n, f: +f, place: p.name}))));
 function renderMap() {
   const seg = `<div class="filters"><span class="seg-label">樓層</span><div class="seg">${[1, 2, 3].map(f => `<button data-mapfloor="${f}" class="${state.mapFloor === f ? 'on' : ''}">第 ${f} 層</button>`).join('')}</div></div>`;
   const mp = MAPS[state.mapFloor];
@@ -363,12 +373,14 @@ function renderMap() {
   const sel = mp.pins.find(p => p.name === state.place);
   const cls = p => p.kind === 'guess' ? 'guess' : p.kind === 'game' ? 'game' : '';
   let h = seg + `<div class="mapbox"><img src="${mp.img}" alt="第 ${state.mapFloor} 層地圖">${mp.pins.map(p =>
-    `<button class="pin ${cls(p)} ${sel === p ? 'on' : ''}" style="left:${p.x}%;top:${p.y}%" data-place="${esc(p.name)}" aria-label="${esc(p.name)}"><i>${p.kind === 'guess' ? '?' : ''}</i>${p.kind !== 'game' ? `<b>${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</b>` : ''}</button>`).join('')}</div>
+    `<button class="pin ${cls(p)} ${p.up ? 'up' : ''} ${sel === p ? 'on' : ''}" style="left:${p.x}%;top:${p.y}%" data-place="${esc(p.name)}" aria-label="${esc(p.name)}"><i>${p.kind === 'guess' ? '?' : ''}</i>${p.kind !== 'game' ? `<b>${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</b>` : ''}</button>`).join('')}</div>
     <div class="legend"><span><i class="dot"></i>比較確定</span>${mp.pins.some(p => p.kind === 'guess') ? '<span><i class="dot q"></i>推測（依動畫和 wiki 描述）</span>' : ''}<span>遊戲原本的地名也可以點</span></div>
     <div class="places">${mp.pins.map(p => `<button class="place ${p.kind === 'guess' ? 'guess' : ''} ${sel === p ? 'on' : ''}" data-place="${esc(p.name)}">${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</button>`).join('')}</div>`;
   if (sel) {
     const mobs = MOBS.filter(m => m.f === state.mapFloor && sel.regions.includes(m.r));
     h += `<div class="place-info"><h3>${esc(sel.name)}${sel.kind === 'guess' ? '（推測）' : ''}</h3><p>${esc(sel.note)}</p></div>`
+      + (sel.npcs ? `<div class="section-title">NPC · ${sel.npcs.length} 位</div>` + sel.npcs.map(npcCard).join('') : '')
+      + (sel.town ? `<figure class="town" style="margin-left:0;margin-right:0"><img src="${sel.town}" alt="${esc(sel.name)}城鎮地圖"><figcaption>${esc(sel.townNote || '')}</figcaption></figure>` : '')
       + (mobs.length ? `<div class="section-title">這裡的怪物 · ${mobs.length} 隻</div>` + mobs.map(m => mobCard(m, '')).join('') : '');
   } else h += `<p class="foot" style="margin-top:16px">點地圖上的點或上面的地名，就會列出那裡有哪些怪。</p>`;
   return h;
