@@ -116,6 +116,28 @@ header p{margin:6px 0 0;color:var(--n600);font-size:15px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;background:var(--g800);color:#fff;padding:12px 18px;border-radius:12px;box-shadow:var(--shadow-lg);font-size:15px;transition:all .22s;pointer-events:none;max-width:calc(100% - 40px)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .hl{background:var(--y100);border-radius:3px}
+.mapbox{position:relative;margin-top:24px;border-radius:16px;overflow:hidden;box-shadow:var(--shadow);background:var(--g100)}
+.mapbox img{display:block;width:100%;height:auto}
+.pin{position:absolute;transform:translate(-50%,-50%);border:0;padding:0;cursor:pointer;background:transparent;width:44px;height:44px;display:grid;place-items:center}
+.pin i{display:block;width:18px;height:18px;border-radius:50%;border:3px solid #fff;background:var(--g700);box-shadow:0 1px 4px hsl(150 40% 10% / .5);transition:transform .15s}
+.pin.guess i{background:#fff;border-color:var(--p700);color:var(--p700);font-style:normal;font-size:11px;font-weight:900;line-height:12px}
+.pin.game i{width:26px;height:26px;background:transparent;border:3px solid transparent;box-shadow:none}
+.pin:hover i,.pin.on i{transform:scale(1.25)}
+.pin.game:hover i,.pin.game.on i{border-color:var(--y100);box-shadow:0 0 0 3px var(--g700)}
+.pin b{position:absolute;top:36px;white-space:nowrap;font-size:12px;font-weight:700;background:hsl(60 60% 98% / .92);color:var(--g800);padding:2px 8px;border-radius:8px;box-shadow:var(--shadow-sm);pointer-events:none}
+.pin.guess b{color:var(--p700)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;font-size:13px;color:var(--n600)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--g700);display:inline-block}
+.dot.q{background:#fff;border:2px solid var(--p700)}
+.places{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.place{border:0;border-radius:10px;padding:0 14px;height:40px;background:#fff;box-shadow:var(--shadow-sm);font-weight:600;cursor:pointer;color:var(--g800)}
+.place.guess{color:var(--p700)}
+.place.on{background:var(--g700);color:#fff}
+.place-info{margin-top:24px}
+.place-info h3{margin:0;font-size:22px}
+.place-info p{margin:6px 0 0;color:var(--n600)}
+@media (max-width:600px){.pin b{display:none}.pin.on b{display:block}}
 @media (max-width:600px){
   .wrap{padding:24px 16px 88px}
   header h1{font-size:24px}
@@ -142,6 +164,7 @@ header p{margin:6px 0 0;color:var(--n600);font-size:15px}
     <div class="pill" id="pill"></div>
     <button data-tab="item" class="on">查道具</button>
     <button data-tab="mob">圖鑑</button>
+    <button data-tab="map">地圖</button>
     <button data-tab="list">我的清單<span class="badge" id="lc"></span></button>
   </nav>
   <main id="main"></main>
@@ -166,7 +189,7 @@ MOBS.forEach(m => m.d.forEach(d => {
 }));
 Object.values(ITEMS).forEach(it => it.src.sort((a, b) => (b.v ?? 50) - (a.v ?? 50)));
 
-let state = {tab: 'item', q: '', floor: 0, type: '全部'};
+let state = {tab: 'item', q: '', floor: 0, type: '全部', mapFloor: 1, place: ''};
 let list = {};
 try { list = JSON.parse(localStorage.getItem('sao-list') || '{}'); } catch (e) {}
 const saveList = () => { try { localStorage.setItem('sao-list', JSON.stringify(list)); } catch (e) {} };
@@ -269,8 +292,43 @@ function renderList() {
     <p style="text-align:right"><button class="btn-ghost" id="clearList">清空清單</button></p>`;
 }
 
+// ═══ 地圖：新增樓層時，在這裡加一筆（x、y 是圖片上的百分比位置）═══
+// kind: game = 遊戲地圖上原本就有的地名；sure = 比較確定；guess = 推測
+const MAPS = {
+  1: {img: 'map-f1.jpg', pins: [
+    {x: 34.8, y: 81.2, name: '起始之鎮', kind: 'game', regions: ['起始之鎮', '野豬區'], note: '出生城鎮。城外是野豬區，腐化野豬和 Boss Pumba 都在這附近。'},
+    {x: 29.9, y: 65.5, name: '哈娜卡', kind: 'game', regions: ['Hanaka'], note: '名字和位置都很像動畫裡的「霍倫卡村」（桐人接任務、刷豬籠草換劍的村子）。'},
+    {x: 59.3, y: 69.8, name: '水成', kind: 'game', regions: ['Mizunari 原野'], note: '應該就是 Mizunari 原野，會主動攻擊的豬籠草在這裡，0.5% 掉豬籠草之花。'},
+    {x: 80.3, y: 70.0, name: '蓋爾多拉克礦坑', kind: 'game', regions: ['Geldorak 礦坑', 'Geldorak 礦坑地城'], note: 'Geldorak 礦坑和礦坑地城。'},
+    {x: 9.1, y: 43.8, name: '巨人花園', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 44.2, y: 61.2, name: '吆區', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 64.6, y: 17.9, name: '迷宮塔', kind: 'sure', regions: ['狗頭人之塔'], note: '第 1 層的迷宮塔，塔頂是樓層 Boss「狗頭人領主 Illfang」，跟動畫一樣。'},
+    {x: 62.9, y: 28.1, name: '塔下聚落', kind: 'guess', regions: [], note: '推測：塔腳下的紅屋頂聚落，可能是迷宮入口（Boss Furacas 所在的「迷宮入口」），也可能才是托爾巴納。'},
+    {x: 89.4, y: 46.6, name: '托爾巴納', kind: 'guess', regions: ['托爾巴納山脈'], note: '推測：動畫裡托爾巴納是最靠近迷宮塔的城鎮。這座圓形城牆城鎮的西北方剛好有雪地，跟 wiki 描述相符。城裡有鐵匠 Emy、皇家鍛造所。'},
+    {x: 78.1, y: 33.8, name: '山鹿雪地', kind: 'guess', regions: ['托爾巴納西北方的雪地區域'], note: '推測：wiki 寫「托爾巴納西北方的雪地」，這片灰白色山地有瀑布和湖。山鹿會主動攻擊，75% 掉山鹿皮。'}
+  ]}
+};
+
+function renderMap() {
+  const seg = `<div class="filters"><span class="seg-label">樓層</span><div class="seg">${[1, 2, 3].map(f => `<button data-mapfloor="${f}" class="${state.mapFloor === f ? 'on' : ''}">第 ${f} 層</button>`).join('')}</div></div>`;
+  const mp = MAPS[state.mapFloor];
+  if (!mp) return seg + `<div class="empty"><div class="big">🗺️</div><h3>第 ${state.mapFloor} 層的地圖還沒放上來</h3><p>可以先到「圖鑑」用樓層篩選查這層的怪物。</p></div>`;
+  const sel = mp.pins.find(p => p.name === state.place);
+  const cls = p => p.kind === 'guess' ? 'guess' : p.kind === 'game' ? 'game' : '';
+  let h = seg + `<div class="mapbox"><img src="${mp.img}" alt="第 ${state.mapFloor} 層地圖">${mp.pins.map(p =>
+    `<button class="pin ${cls(p)} ${sel === p ? 'on' : ''}" style="left:${p.x}%;top:${p.y}%" data-place="${esc(p.name)}" aria-label="${esc(p.name)}"><i>${p.kind === 'guess' ? '?' : ''}</i>${p.kind !== 'game' ? `<b>${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</b>` : ''}</button>`).join('')}</div>
+    <div class="legend"><span><i class="dot"></i>比較確定</span><span><i class="dot q"></i>推測（依動畫和 wiki 描述）</span><span>遊戲原本的地名也可以點</span></div>
+    <div class="places">${mp.pins.map(p => `<button class="place ${p.kind === 'guess' ? 'guess' : ''} ${sel === p ? 'on' : ''}" data-place="${esc(p.name)}">${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</button>`).join('')}</div>`;
+  if (sel) {
+    const mobs = MOBS.filter(m => m.f === state.mapFloor && sel.regions.includes(m.r));
+    h += `<div class="place-info"><h3>${esc(sel.name)}${sel.kind === 'guess' ? '（推測）' : ''}</h3><p>${esc(sel.note)}</p></div>`
+      + (mobs.length ? `<div class="section-title">這裡的怪物 · ${mobs.length} 隻</div>` + mobs.map(m => mobCard(m, '')).join('') : '');
+  } else h += `<p class="foot" style="margin-top:16px">點地圖上的點或上面的地名，就會列出那裡有哪些怪。</p>`;
+  return h;
+}
+
 function render() {
-  $('#main').innerHTML = state.tab === 'item' ? renderItem() : state.tab === 'mob' ? renderMob() : renderList();
+  $('#main').innerHTML = state.tab === 'item' ? renderItem() : state.tab === 'mob' ? renderMob() : state.tab === 'map' ? renderMap() : renderList();
   const n = Object.values(list).filter(e => !e.done).length;
   $('#lc').textContent = n || '';
   $('#clear').classList.toggle('on', !!state.q);
@@ -297,6 +355,8 @@ document.addEventListener('click', e => {
   if (d.tab) { state.tab = d.tab; render(); }
   else if (d.q) { state.q = d.q; $('#q').value = d.q; state.tab = 'item'; render(); }
   else if (d.item) { state.q = d.item; $('#q').value = d.item; state.tab = 'item'; render(); window.scrollTo({top: 0, behavior: 'smooth'}); }
+  else if (d.mapfloor) { state.mapFloor = +d.mapfloor; state.place = ''; render(); }
+  else if (d.place) { state.place = state.place === d.place ? '' : d.place; render(); }
   else if (d.floor !== undefined) { state.floor = +d.floor; render(); }
   else if (d.type) { state.type = d.type; render(); }
   else if (d.add) {
