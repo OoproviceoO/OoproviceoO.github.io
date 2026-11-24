@@ -296,17 +296,18 @@ function renderList() {
 // kind: game = 遊戲地圖上原本就有的地名；sure = 比較確定；guess = 推測
 const MAPS = {
   1: {img: 'map-f1.jpg', pins: [
-    {x: 35.8, y: 82.7, name: '起始之鎮', kind: 'game', regions: ['起始之鎮', '野豬區'], note: '出生城鎮。城外是野豬區，腐化野豬和 Boss Pumba 都在這附近。'},
-    {x: 31.5, y: 66.7, name: '哈娜卡', kind: 'game', regions: ['Hanaka'], note: '名字和位置都很像動畫裡的「霍倫卡村」（桐人接任務、刷豬籠草換劍的村子）。'},
-    {x: 60.7, y: 72.0, name: '水成', kind: 'game', regions: ['Mizunari 原野'], note: '應該就是 Mizunari 原野，會主動攻擊的豬籠草在這裡，0.5% 掉豬籠草之花。'},
-    {x: 81.6, y: 73.0, name: '蓋爾多拉克礦坑', kind: 'game', regions: ['Geldorak 礦坑', 'Geldorak 礦坑地城'], note: 'Geldorak 礦坑和礦坑地城。'},
-    {x: 88.9, y: 49.5, name: '商人公會', kind: 'game', regions: [], note: '圓形城牆城鎮。圖鑑裡還沒有對應的怪物。'},
-    {x: 11.3, y: 44.4, name: '巨人花園', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
-    {x: 46.0, y: 62.9, name: '吆區', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
-    {x: 34.1, y: 40.8, name: '維勒倫', kind: 'game', regions: ['Virelune 湖'], note: '湖邊的城鎮，應該就是圖鑑裡的「Virelune 湖」。'},
-    {x: 42.4, y: 18.4, name: '坎德莉亞', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
-    {x: 65.4, y: 31.5, name: '托爾巴納', kind: 'game', regions: ['托爾巴納山脈', '托爾巴納西北方的雪地區域'], note: '最靠近狗頭人之塔的城鎮，跟動畫一樣。有鐵匠 Emy、皇家鍛造所，支線 NPC Sentinel Kael、Hunter Lysa 也在這裡。附近的山區有山中雄鹿，西北方雪地有山鹿。'},
-    {x: 67.8, y: 19.5, name: '狗頭人之塔', kind: 'sure', regions: ['狗頭人之塔'], note: '第 1 層的迷宮塔，塔頂是樓層 Boss「狗頭人領主 Illfang」。'}
+    {x: 34.8, y: 80.7, name: '起始之鎮', kind: 'game', regions: ['起始之鎮', '野豬區'], note: '出生城鎮。城外是野豬區，腐化野豬和 Boss Pumba 都在這附近。'},
+    {x: 46.0, y: 75.6, name: '狼之谷', kind: 'game', regions: ['狼之谷'], note: '白色、黑色恐狼和 Boss 阿爾巴爾都在這裡。阿爾巴爾 20% 掉阿爾巴爾之牙，小狼可以刷狼牙。'},
+    {x: 30.3, y: 64.8, name: '哈娜卡', kind: 'game', regions: ['Hanaka'], note: '名字和位置都很像動畫裡的「霍倫卡村」（桐人接任務、刷豬籠草換劍的村子）。'},
+    {x: 59.5, y: 69.9, name: '水成', kind: 'game', regions: ['Mizunari 原野'], note: '應該就是 Mizunari 原野，會主動攻擊的豬籠草在這裡，0.5% 掉豬籠草之花。'},
+    {x: 80.2, y: 70.6, name: '蓋爾多拉克礦坑', kind: 'game', regions: ['Geldorak 礦坑', 'Geldorak 礦坑地城'], note: 'Geldorak 礦坑和礦坑地城。'},
+    {x: 87.2, y: 47.2, name: '商人公會', kind: 'game', regions: [], note: '圓形城牆城鎮。圖鑑裡還沒有對應的怪物。'},
+    {x: 10.0, y: 42.6, name: '巨人花園', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 44.7, y: 60.9, name: '吆區', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 32.7, y: 39.1, name: '維勒倫', kind: 'game', regions: ['Virelune 湖'], note: '湖邊的城鎮，應該就是圖鑑裡的「Virelune 湖」。'},
+    {x: 40.9, y: 16.6, name: '坎德莉亞', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 63.8, y: 29.2, name: '托爾巴納', kind: 'game', regions: ['托爾巴納山脈', '托爾巴納西北方的雪地區域'], note: '最靠近狗頭人之塔的城鎮，跟動畫一樣。有鐵匠 Emy、皇家鍛造所，支線 NPC Sentinel Kael、Hunter Lysa 也在這裡。附近的山區有山中雄鹿，西北方雪地有山鹿。'},
+    {x: 66.1, y: 17.4, name: '狗頭人之塔', kind: 'sure', regions: ['狗頭人之塔'], note: '第 1 層的迷宮塔，塔頂是樓層 Boss「狗頭人領主 Illfang」。'}
   ]}
 };
 
