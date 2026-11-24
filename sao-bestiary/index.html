@@ -194,6 +194,10 @@ header p{margin:6px 0 0;color:var(--n600);font-size:15px}
 .modal div{background:#fff;border-radius:16px;padding:20px;max-width:480px;width:100%;box-shadow:var(--shadow-lg)}
 .modal textarea{width:100%;height:160px;border:0;background:var(--g50);border-radius:10px;padding:12px;font:inherit;font-size:15px}
 .modal button{margin-top:12px;height:44px;border:0;border-radius:10px;background:var(--g700);color:#fff;font-weight:700;padding:0 18px;cursor:pointer}
+.shop{margin-top:12px;border-top:1px solid var(--g100);padding-top:10px}
+.shop-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.shop-i{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:15px}
+.shop-i .k{white-space:nowrap;color:var(--n600);font-size:14px;font-variant-numeric:tabular-nums}
 @media (max-width:600px){
   .wrap{padding:24px 16px 88px}
   header h1{font-size:24px}
@@ -374,14 +378,19 @@ const MAPS = {
     {x: 44.7, y: 60.9, name: '吆區', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
     {x: 32.7, y: 39.1, name: '維勒倫', kind: 'game', regions: ['維勒倫湖'], note: '湖邊的城鎮，旁邊的湖就是維勒倫湖（Virelune Lake）。'},
     {x: 40.9, y: 16.6, name: '坎德莉亞', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
-    {x: 63.8, y: 29.2, name: '托爾巴納', kind: 'game', regions: ['托爾巴納山脈'], town: 'tolbana-town.jpg', townNote: '托爾巴納城鎮地圖，藍色圓圈是飾品鐵匠的鐵匠屋（城鎮左上方）。', npcs: [{n: '飾品鐵匠', role: '鐵匠屋', xyz: '3290, 196, 1485', sells: ''}], note: '最靠近狗頭人之塔的城鎮，跟動畫一樣。有鐵匠 Emy、皇家鍛造所，支線 NPC Sentinel Kael、Hunter Lysa 也在這裡。附近的山區有山中雄鹿。'},
+    {x: 63.8, y: 29.2, name: '托爾巴納', kind: 'game', regions: ['托爾巴納山脈'], town: 'tolbana-town.jpg', townNote: '托爾巴納城鎮地圖，藍色圓圈是飾品鐵匠的鐵匠屋（城鎮左上方）。', npcs: [{n: '飾品鐵匠', role: '鐵匠屋', xyz: '3290, 196, 1485', sells: '冰之精靈、冰魔像、雄鹿系列飾品（製作）', shop: [
+      {g: '冰之精靈飾品', from: '冰之精靈', items: [['冰封戒指', 33, '30 秒'], ['冰封觸角', 33, '30 秒'], ['寒冰精華', 40, '1 分'], ['冰封護符', 33, '30 秒']]},
+      {g: '冰魔像飾品', from: '冰魔像', items: [['寒冰戒指', 33, '30 秒'], ['寒冰手環', 33, '30 秒'], ['寒冰手套', 30, '15 秒'], ['冰霜護符', 30, '15 秒']]},
+      {g: '雄鹿飾品', from: '山中雄鹿', items: [['雄鹿手環', 33, '30 秒'], ['雄鹿手套', 33, '30 秒']]}
+    ]}], note: '最靠近狗頭人之塔的城鎮，跟動畫一樣。有鐵匠 Emy、皇家鍛造所，支線 NPC Sentinel Kael、Hunter Lysa 也在這裡。附近的山區有山中雄鹿。'},
     {x: 79.5, y: 22.6, name: '山鹿雪地', kind: 'sure', regions: ['托爾巴納西北方的雪地區域'], note: '托爾巴納右上方的灰白色山地。山鹿會主動攻擊，75% 掉山鹿皮。'},
     {x: 31.0, y: 53.2, name: '腐臭沼澤', kind: 'sure', regions: ['腐臭沼澤'], note: '哈娜卡北方的區塊。樹人、森林法師和 Boss 巨像守護者在這裡，做森林鑰匙的三樣材料（森林樹皮、木之心、魔法菌絲）都在這裡刷。'},
     {x: 66.1, y: 17.4, name: '狗頭人之塔', kind: 'sure', up: 1, regions: ['狗頭人之塔'], note: '第 1 層的迷宮塔，塔頂是樓層 Boss「狗頭人領主 Illfang」。'}
   ]}
 };
 
-const npcCard = p => `<div class="npc"><b>${esc(p.n)}</b>${p.role ? ` <span class="mini">${esc(p.role)}</span>` : ''}${p.xyz ? `<div class="eq-stat">座標 <span class="xyz">${esc(p.xyz)}</span>（X, Y, Z）</div>` : ''}<div class="eq-stat">${p.sells ? '販售：' + esc(p.sells) : '販售清單還沒有資料'}</div></div>`;
+const npcCard = p => `<div class="npc"><b>${esc(p.n)}</b>${p.role ? ` <span class="mini">${esc(p.role)}</span>` : ''}${p.xyz ? `<div class="eq-stat">座標 <span class="xyz">${esc(p.xyz)}</span>（X, Y, Z）</div>` : ''}<div class="eq-stat">${p.sells ? '販售：' + esc(p.sells) : '販售清單還沒有資料'}</div>${p.shop ? p.shop.map(shopGroup).join('') + '<p class="foot" style="margin:10px 0 0">價格是製作費用（col），還要另外準備材料；材料清單要點進遊戲裡的配方才看得到。</p>' : ''}</div>`;
+const shopGroup = g => { const mob = MOBS.find(m => m.n === g.from); return `<div class="shop"><div class="shop-h"><b>${esc(g.g)}</b>${mob ? `<button class="chip" data-q="${esc(mob.n)}">材料怪：${esc(mob.n)}（${esc(mob.r)}）›</button>` : ''}</div>${g.items.map(([n, c, tm]) => { const e = EQ.find(x => x.n === n); return `<div class="shop-i"><span>${esc(n)}${e ? ` <span class="rar rar-${esc(e.r)}">${esc(e.r)}</span> <span class="mini">Lv. ${e.lv}</span>` : ''}${e && e.b ? `<br><small class="en">${esc(e.b)}</small>` : ''}</span><span class="k">${c} col · ${esc(tm)}</span></div>`; }).join('')}</div>`; };
 const ALL_NPC = () => Object.entries(MAPS).flatMap(([f, m]) => m.pins.flatMap(p => (p.npcs || []).map(n => ({...n, f: +f, place: p.name}))));
 function renderMap() {
   const seg = `<div class="filters"><span class="seg-label">樓層</span><div class="seg">${[1, 2, 3].map(f => `<button data-mapfloor="${f}" class="${state.mapFloor === f ? 'on' : ''}">第 ${f} 層</button>`).join('')}</div></div>`;
