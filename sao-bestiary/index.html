@@ -218,6 +218,44 @@ header p{margin:6px 0 0;color:var(--n600);font-size:15px}
 .eo-dot i{width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px hsl(150 40% 10% / .6);background:var(--c,var(--g600))}
 .eo-dot.on i{width:18px;height:18px;box-shadow:0 0 0 3px var(--y100),0 1px 3px hsl(150 40% 10% / .6)}
 .pl.on{box-shadow:0 0 0 3px var(--g300),var(--shadow)}
+.topnav{position:sticky;top:0;z-index:10;background:hsl(140 45% 97% / .92);backdrop-filter:blur(8px);box-shadow:0 1px 0 var(--g200)}
+.topnav-in{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:0 20px;height:56px}
+.brand{font-weight:800;color:var(--g800);text-decoration:none;white-space:nowrap;font-size:17px}
+.navlinks{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{white-space:nowrap;text-decoration:none;color:var(--n600);font-weight:600;font-size:15px;padding:8px 12px;border-radius:10px;min-height:40px;display:flex;align-items:center;transition:background .15s,color .15s}
+.navlinks a:hover{background:var(--g100);color:var(--g800)}
+.navlinks a.on{background:var(--g700);color:#fff}
+.navlinks a.on .badge{background:#fff;color:var(--g700)}
+.page-h{margin:8px 0 20px}
+.page-h h1{margin:0;font-size:28px;line-height:1.2;color:var(--g800)}
+.page-h p{margin:6px 0 0;color:var(--n600);font-size:15px}
+.pfilter{position:relative;margin-top:16px}
+.pfilter input{width:100%;height:48px;border:0;border-radius:12px;padding:0 44px 0 44px;font-size:16px;background:#fff;box-shadow:var(--shadow-sm);outline:none}
+.pfilter input:focus{box-shadow:0 0 0 3px var(--g300),var(--shadow-sm)}
+.pfilter svg{position:absolute;left:14px;top:14px;color:var(--g600)}
+.hero{padding:32px 0 8px}
+.hero h1{margin:0;font-size:40px;line-height:1.1;color:var(--g800);letter-spacing:.02em}
+.hero p{margin:10px 0 0;color:var(--n600);font-size:16px}
+.hero form{position:relative;margin-top:24px}
+.hero input{width:100%;height:60px;border:0;border-radius:16px;padding:0 110px 0 54px;font-size:18px;background:#fff;box-shadow:var(--shadow);outline:none}
+.hero input:focus{box-shadow:0 0 0 3px var(--g300),var(--shadow)}
+.hero form svg{position:absolute;left:18px;top:18px;color:var(--g600)}
+.hero form button{position:absolute;right:8px;top:8px;height:44px;border:0;border-radius:12px;background:var(--g700);color:#fff;font-weight:700;padding:0 18px;cursor:pointer}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:28px}
+.cat{display:block;text-decoration:none;color:inherit;background:#fff;border-radius:16px;padding:18px;box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s}
+.cat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.cat .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;margin-bottom:10px}
+.cat b{display:block;font-size:17px;color:var(--g800)}
+.cat small{display:block;margin-top:4px;color:var(--n500);font-size:13px}
+.cat .n{float:right;font-weight:800;color:var(--g600);font-variant-numeric:tabular-nums}
+.home-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+.mapclick{position:absolute;transform:translate(-50%,calc(-100% - 10px));background:#fff;border-radius:12px;box-shadow:var(--shadow-lg);padding:10px 12px;font-size:14px;white-space:nowrap;z-index:3}
+.mapclick b{font-variant-numeric:tabular-nums;color:var(--g800)}
+.mapclick button{margin-left:8px}
+.mapmark{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--k700);border:2px solid #fff;transform:translate(-50%,-50%);pointer-events:none;z-index:2}
+.copy{border:0;border-radius:8px;background:var(--g100);color:var(--g700);font-weight:700;font-size:13px;padding:4px 10px;cursor:pointer}
+@media (max-width:700px){.cats{grid-template-columns:1fr 1fr;gap:10px}.cat{padding:14px}.cat .ic{width:34px;height:34px;font-size:17px;margin-bottom:8px}.cat .n{float:none;display:block;font-size:13px;margin-bottom:2px}.cat b{font-size:16px}.home-2{grid-template-columns:1fr}.hero h1{font-size:28px}.topnav-in{padding:0 12px;gap:8px}.brand{display:none}.navlinks{margin-left:0}.page-h h1{font-size:24px}}
 @media (max-width:600px){
   .wrap{padding:24px 16px 88px}
   header h1{font-size:24px}
@@ -229,26 +267,14 @@ header p{margin:6px 0 0;color:var(--n600);font-size:15px}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>艾恩葛朗特掉落圖鑑</h1>
-    <p>第 1–3 層 · <span id="total"></span> 種生物 · <span id="eqn"></span> 件裝備 · <span id="qn"></span> 個任務 · <span id="rn"></span> 個配方 · <span id="pn"></span> 個地點</p>
-  </header>
-  <div class="search">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-    <input id="q" type="search" placeholder="輸入道具、怪物、裝備或 NPC，例如：阿爾巴爾之牙、狩獵弓" autocomplete="off">
-    <button class="clear" id="clear" aria-label="清除">×</button>
+<nav class="topnav"><div class="topnav-in">
+  <a href="#home" class="brand">艾恩葛朗特圖鑑</a>
+  <div class="navlinks" id="navlinks">
+    <a href="#home">主頁</a><a href="#mobs">怪物</a><a href="#equip">裝備</a><a href="#craft">配方</a><a href="#quests">任務</a><a href="#map">地圖</a><a href="#places">商店・NPC</a><a href="#list">清單<span class="badge" id="lc"></span></a>
   </div>
-  <div class="quick" id="quick"><span>常查：</span></div>
-  <nav class="tabs" id="tabs">
-    <div class="pill" id="pill"></div>
-    <button data-tab="item" class="on">查詢</button>
-    <button data-tab="mob">怪物</button>
-    <button data-tab="eq">裝備</button>
-    <button data-tab="quest">任務</button>
-    <button data-tab="map">地圖</button>
-    <button data-tab="list">清單<span class="badge" id="lc"></span></button>
-  </nav>
+</div></nav>
+<div class="wrap">
+  <div id="phead"></div>
   <main id="main"></main>
   <p class="foot">資料來源：<a href="https://saominecraft.wiki.gg/" target="_blank" rel="noopener">SAO Minecraft Wiki</a> 的怪物圖鑑、裝備與任務頁（2026/11/24 擷取），主線任務說明由英文版翻譯；第 2、3 層怪物的等級與生命值、地城與鑰匙資訊取自 <a href="https://saominecraft.com/news" target="_blank" rel="noopener">官方公告</a>；配方、商店、NPC 與地點座標取自 <a href="https://exiled-order.pages.dev/mapa" target="_blank" rel="noopener">EXILED ORDER × NULL 的 Aincrad 地圖</a>（感謝 Tatanjbr、SebasG4mer 等玩家整理，物品名稱由我們翻成中文）。「平均約幾隻」是用掉落機率算出的期望值，實際會依運氣上下浮動。</p>
 </div>
@@ -423,19 +449,28 @@ const CAT_COLOR = {'商店・製作': 'hsl(42 90% 48%)', '收購商': 'hsl(28 80
 function eoPos(p) { const [X, Y, Z] = p.xyz.split(',').map(Number); const v = [1, X / 1000, Z / 1000, Y / 1000];
   return [0, 1].map(k => v.reduce((s, a, i) => s + a * FIT[i][k], 0)); }
 
+const PIN_EO = {'起始之鎮': 'Capital', '狼之谷': 'Wolf Valley', '哈娜卡': 'Hanaka', '水成': 'Mizunari', '蓋爾多拉克礦坑': 'Mina de Geldorack', '商人公會': 'Merchand Guilds', '巨人花園': 'Garden of Gigants', 'OG 區': 'OG Quarter', '維勒倫': 'Virelune', '坎德莉亞': 'Candelia', '托爾巴納': 'Tolbana', '狗頭人之塔': 'Torre de los Kobolds', '腐臭沼澤': 'Putrid Swamp', '冰堡': 'The Citadel of Snows', '山鹿雪地': 'Llanura nevada'};
+const pinXYZ = p => { const e = EO.find(x => x.f === 1 && x.o === PIN_EO[p.name]); return e ? e.xyz : ''; };
+function mapToWorld(px, py) {
+  const Y = 0.06, a = FIT, bx = px - a[0][0] - a[3][0] * Y, by = py - a[0][1] - a[3][1] * Y;
+  const det = a[1][0] * a[2][1] - a[2][0] * a[1][1];
+  return [Math.round((bx * a[2][1] - a[2][0] * by) / det * 1000), Math.round((a[1][0] * by - bx * a[1][1]) / det * 1000)];
+}
+const copyBtn = (txt, label) => `<button class="copy" data-copy="${esc(txt)}">${label || '複製座標'}</button>`;
 function renderMap() {
   const seg = `<div class="filters"><span class="seg-label">樓層</span><div class="seg">${[1, 2, 3].map(f => `<button data-mapfloor="${f}" class="${state.mapFloor === f ? 'on' : ''}">第 ${f} 層</button>`).join('')}</div></div>`;
   const mp = MAPS[state.mapFloor];
   if (!mp) { state.plFloor = state.mapFloor; return seg + `<div class="empty" style="padding:24px"><h3>第 ${state.mapFloor} 層的地圖圖片還沒放上來</h3><p>下面是這層的地點清單和座標。</p></div>` + renderPlaces(); }
   const sel = mp.pins.find(p => p.name === state.place);
   const cls = p => p.kind === 'guess' ? 'guess' : p.kind === 'game' ? 'game' : '';
-  let h = seg + `<div class="mapbox"><img src="${mp.img}" alt="第 ${state.mapFloor} 層地圖">${state.plCat !== '全部' ? EO.map((p, i) => [p, i]).filter(([p]) => p.f === state.mapFloor && p.c === state.plCat).map(([p, i]) => { const [x, y] = eoPos(p); return x > 0 && x < 100 && y > 0 && y < 100 ? `<button class="eo-dot ${state.eoSel === i ? 'on' : ''}" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c] || ''}" data-eo="${i}" aria-label="${esc(p.n)}" title="${esc(p.n)}"><i></i></button>` : ''; }).join('') : ''}${mp.pins.map(p =>
+  let h = seg + `<div class="mapbox" id="mapbox"><img src="${mp.img}" alt="第 ${state.mapFloor} 層地圖">${state.mclick ? `<span class="mapmark" style="left:${state.mclick.x}%;top:${state.mclick.y}%"></span><div class="mapclick" style="left:${Math.min(80, Math.max(20, state.mclick.x))}%;top:${state.mclick.y}%">大概座標 <b>X ${state.mclick.X}　Z ${state.mclick.Z}</b>${copyBtn(state.mclick.X + ' ~ ' + state.mclick.Z)}<br><small class="en">誤差約 ±100 格，高度請自己看</small></div>` : ''}${state.plCat !== '全部' ? EO.map((p, i) => [p, i]).filter(([p]) => p.f === state.mapFloor && p.c === state.plCat).map(([p, i]) => { const [x, y] = eoPos(p); return x > 0 && x < 100 && y > 0 && y < 100 ? `<button class="eo-dot ${state.eoSel === i ? 'on' : ''}" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c] || ''}" data-eo="${i}" aria-label="${esc(p.n)}" title="${esc(p.n)}"><i></i></button>` : ''; }).join('') : ''}${mp.pins.map(p =>
     `<button class="pin ${cls(p)} ${p.up ? 'up' : ''} ${sel === p ? 'on' : ''}" style="left:${p.x}%;top:${p.y}%" data-place="${esc(p.name)}" aria-label="${esc(p.name)}"><i>${p.kind === 'guess' ? '?' : ''}</i>${p.kind !== 'game' ? `<b>${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</b>` : ''}</button>`).join('')}</div>
     <div class="legend">${state.plCat !== '全部' ? `<span><i class="dot" style="background:${CAT_COLOR[state.plCat]}"></i>${esc(state.plCat)}（依座標換算的大概位置，點了看詳細）</span>` : '<span>在下方「地點清單」選一種類型，就會標到地圖上</span>'}<span><i class="dot"></i>比較確定</span>${mp.pins.some(p => p.kind === 'guess') ? '<span><i class="dot q"></i>推測（依動畫和 wiki 描述）</span>' : ''}<span>遊戲原本的地名也可以點</span></div>
     <div class="places">${mp.pins.map(p => `<button class="place ${p.kind === 'guess' ? 'guess' : ''} ${sel === p ? 'on' : ''}" data-place="${esc(p.name)}">${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</button>`).join('')}</div>`;
   if (sel) {
     const mobs = MOBS.filter(m => m.f === state.mapFloor && sel.regions.includes(m.r));
-    h += `<div class="place-info"><h3>${esc(sel.name)}${sel.kind === 'guess' ? '（推測）' : ''}</h3><p>${esc(sel.note)}</p></div>`
+    const xyz = pinXYZ(sel);
+    h += `<div class="place-info"><h3>${esc(sel.name)}${sel.kind === 'guess' ? '（推測）' : ''}</h3>${xyz ? `<p>座標 <b class="xyz" style="color:var(--g700)">${esc(xyz)}</b>（X, Y, Z） ${copyBtn(xyz.replace(/,/g, ''))}</p>` : ''}<p>${esc(sel.note)}</p></div>`
       + (sel.npcs ? `<div class="section-title">NPC · ${sel.npcs.length} 位</div>` + sel.npcs.map(npcCard).join('') : '')
       + (sel.town ? `<figure class="town" style="margin-left:0;margin-right:0"><img src="${sel.town}" alt="${esc(sel.name)}城鎮地圖"><figcaption>${esc(sel.townNote || '')}</figcaption></figure>` : '')
       + (mobs.length ? `<div class="section-title">這裡的怪物 · ${mobs.length} 隻</div>` + mobs.map(m => mobCard(m, '')).join('') : '');
@@ -486,13 +521,7 @@ function renderQuest() {
     const rows = SQ.filter(x => !q || match(q, x.npc, x.town, x.task));
     return seg + `<p class="foot" style="margin-top:4px">支線目前只有第 1 層的資料。座標是遊戲裡的 X, Y, Z。</p>` + (rows.length ? rows.map(x => sqCard(x, q)).join('') : `<div class="empty"><h3>沒有符合「${esc(state.q)}」的支線</h3><p><button class="addr" data-clearq="1">清除搜尋，顯示全部支線</button></p></div>`);
   }
-  let h = seg + `<div class="note-card"><h3>官方公告重點（2026/11）</h3><ul>
-      <li>等級上限：一開始 Lv. 13，打完狗頭人地城升到 16，打完牛頭人之王升到 20。</li>
-      <li>樓層地城要先做到該層「倒數第二個主線任務」才能進（第 1 層是第 35 個）。沒做完，地城入口的告示牌會顯示紅色鎖頭。</li>
-      <li>地城可以少人開，難度會依人數調整；但還是要有鑰匙。</li>
-      <li>考古學家賣的鑰匙：狗頭人 5,000 col、Melliona（蜂巢）1,750 col、死靈法師 2,000 col、牛頭人之王 10,000 col（進場就消耗）。</li>
-      <li>第 3 層的神秘商人賣 14 種飾品，每個 65,000 col，每天最多買 1 個、每週最多 2 個。</li>
-    </ul></div><p class="foot" style="margin-top:4px">主線依順序排列。說明是從 wiki 英文版翻譯的，NPC 名字保留原文。</p>`;
+  let h = seg + `<p class="foot" style="margin-top:4px">主線依順序排列。說明是從 wiki 英文版翻譯的，NPC 名字保留原文。</p>`;
   let n = 0;
   [0, 1, 2, 3].filter(f => state.qFloor < 0 || f === state.qFloor).forEach(f => {
     const rows = MQ.filter(x => +x[0] === f && (!q || match(q, x[2], x[3], x[8])));
@@ -516,7 +545,7 @@ function recipeHtml(n, r, showAt, key) {
 }
 function placeCard(p) {
   const i = EO.indexOf(p);
-  return `<div class="pl ${state.eoSel === i ? 'on' : ''}" id="eo-${i}"><div class="pl-h"><b>${esc(p.n)}</b><span class="mini">${esc(p.c)}</span>${state.plFloor === 0 ? `<span class="mini">第 ${p.f} 層</span>` : ''}<span class="xyz">${esc(p.xyz)}</span></div>
+  return `<div class="pl ${state.eoSel === i ? 'on' : ''}" id="eo-${i}"><div class="pl-h"><b>${esc(p.n)}</b><span class="mini">${esc(p.c)}</span>${state.plFloor === 0 ? `<span class="mini">第 ${p.f} 層</span>` : ''}<span class="xyz">${esc(p.xyz)} ${copyBtn(p.xyz.replace(/,/g, ''), '複製')}</span></div>
     ${p.note ? `<div class="eq-stat">${esc(p.note)}</div>` : ''}
     ${(p.items || []).map(i => i.r ? recipeHtml(i.n, i.r, false) : `<div class="shop-i"><span>${esc(i.n)}</span><span class="k">${i.price ? esc(i.price) : ''}</span></div>`).join('')}
     ${p.buy ? `<div class="buy">${p.buy.map(b => `<span>${esc(b.n)} ${esc(b.price)}</span>`).join('')}</div>` : ''}</div>`;
@@ -531,44 +560,98 @@ function renderPlaces() {
     ${rows.slice(0, 120).map(placeCard).join('')}${rows.length > 120 ? `<p class="foot">只顯示前 120 個，可以用上面的搜尋框縮小範圍。</p>` : ''}`;
 }
 
+const ROUTES = {
+  home: {t: '主頁'},
+  search: {t: '搜尋結果', d: '道具、怪物、裝備、配方、任務、地點一次找。', ph: '輸入道具、怪物、裝備或 NPC'},
+  mobs: {t: '怪物圖鑑', d: '第 1～3 層的怪物、出沒地點、難度和掉落物。點掉落物可以查哪裡打。', ph: '篩選怪物、地點或掉落物'},
+  equip: {t: '裝備', d: '武器、護甲、飾品的等級與數值；能做的會附上配方。', ph: '篩選裝備名稱或加成'},
+  craft: {t: '配方', d: '每件可製作物品需要的材料、費用、時間和製作地點。', ph: '篩選物品或材料，例如：哥布林、寒冰硬皮'},
+  quests: {t: '任務', d: '主線依順序排列，支線附座標。', ph: '篩選任務、NPC 或內容'},
+  map: {t: '地圖', d: '點地圖任何地方會顯示那裡的大概座標；點地名看精確座標和那裡有哪些怪。', ph: '篩選下方的地點清單'},
+  places: {t: '商店・NPC', d: '商店、收購商、NPC、Boss、採集點，全部附座標。', ph: '篩選名稱、賣的東西或收的東西'},
+  list: {t: '我的清單', d: '想刷的材料和數量，會幫你排好刷怪路線。只存在這台裝置的瀏覽器。'}
+};
+const route = () => { const h = decodeURIComponent(location.hash.slice(1)); return ROUTES[h] ? h : 'home'; };
+state.qs = {};
+const ICON = (bg, s) => `<span class="ic" style="background:${bg}">${s}</span>`;
+function renderHome() {
+  const cats = [
+    ['mobs', '怪物圖鑑', `${MOBS.length} 種`, '出沒地點、難度、掉落率', 'var(--g100)', '🐺'],
+    ['equip', '裝備', `${EQ.length} 件`, '依等級找能用的裝備', 'var(--y100)', '🗡️'],
+    ['craft', '配方', `${Object.keys(RECIPES).length} 個`, '材料、費用、製作地點', 'var(--p100)', '⚒️'],
+    ['quests', '任務', `${MQ.length + SQ.length} 個`, '主線順序、支線座標', 'var(--k100)', '📜'],
+    ['map', '地圖', '第 1 層', '點地圖看座標', 'var(--g100)', '🗺️'],
+    ['places', '商店・NPC', `${EO.length} 個`, '商店、收購商、Boss 位置', 'var(--y100)', '🏪'],
+    ['list', '我的清單', `${Object.keys(list).length} 項`, '自動排刷怪路線', 'var(--p100)', '✅']];
+  return `<section class="hero"><h1>艾恩葛朗特圖鑑</h1><p>SAO Minecraft 第 1～3 層的怪物、裝備、配方、任務和地圖，中文整理給朋友查。</p>
+    <form id="homeform"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+    <input id="hq" type="search" placeholder="想找什麼？例如：阿爾巴爾之牙、森林鑰匙、Emy" autocomplete="off"><button>搜尋</button></form>
+    <div class="quick"><span>常查：</span>${['阿爾巴爾之牙', '森林鑰匙', '寒冰硬皮', '附魔金屬幣', '飾品鐵匠'].map(n => `<button class="chip" data-q="${esc(n)}">${esc(n)}</button>`).join('')}</div></section>
+    <div class="cats">${cats.map(([r, n, c, d, bg, ic]) => `<a class="cat" href="#${r}">${ICON(bg, ic)}<span class="n">${c}</span><b>${n}</b><small>${d}</small></a>`).join('')}</div>
+    <div class="home-2">${NOTE_HTML}<div class="note-card" style="background:var(--g100)"><h3 style="color:var(--g700)">使用小提示</h3><ul>
+      <li>遊戲裡的中文名稱跟網站不一樣時，搜尋會自動找相近的字。</li>
+      <li>配方、怪物卡上的「＋ 加入清單」會幫你加總材料，清單頁會排好刷怪路線。</li>
+      <li>看到錯的地方，按卡片上的「回報」複製範本，再傳給維護的人。</li></ul></div></div>`;
+}
+const NOTE_HTML = `<div class="note-card"><h3>官方公告重點（2026/11）</h3><ul>
+      <li>等級上限：一開始 Lv. 13，打完狗頭人地城升到 16，打完牛頭人之王升到 20。</li>
+      <li>樓層地城要先做到該層「倒數第二個主線任務」才能進（第 1 層是第 35 個）。沒做完，地城入口的告示牌會顯示紅色鎖頭。</li>
+      <li>地城可以少人開，難度會依人數調整；但還是要有鑰匙。</li>
+      <li>考古學家賣的鑰匙：狗頭人 5,000 col、Melliona（蜂巢）1,750 col、死靈法師 2,000 col、牛頭人之王 10,000 col（進場就消耗）。</li>
+      <li>第 3 層的神秘商人賣 14 種飾品，每個 65,000 col，每天最多買 1 個、每週最多 2 個。</li>
+    </ul></div>`;
+function renderCraft() {
+  const q = norm(state.q);
+  const names = Object.keys(RECIPES).filter(n => !q || match(q, n, RECIPES[n].en, ...RECIPES[n].mats.map(m => m[0]), RECIPES[n].at && RECIPES[n].at.n));
+  names.sort((a, b) => (RECIPES[a].at.f - RECIPES[b].at.f) || ((+RECIPES[a].lv || 0) - (+RECIPES[b].lv || 0)));
+  let h = `<div class="filters"><span class="count">${names.length} 個配方（依樓層、等級排序）</span></div>`;
+  [1, 2, 3].forEach(f => { const ns = names.filter(n => RECIPES[n].at.f === f); if (ns.length) h += `<div class="floor-h">第 ${f} 層 · ${ns.length} 個</div><div class="eq-list">` + ns.slice(0, 150).map(n => recipeHtml(n, RECIPES[n], true)).join('') + '</div>'; });
+  return names.length ? h : `<div class="empty"><h3>沒有符合「${esc(state.q)}」的配方</h3><p><button class="addr" data-clearq="1">清除篩選</button></p></div>`;
+}
+let lastRoute = null;
+function renderHead() {
+  const r = route(), R = ROUTES[r];
+  $('#phead').innerHTML = r === 'home' ? '' : `<header class="page-h"><h1>${R.t}</h1>${R.d ? `<p>${R.d}</p>` : ''}${R.ph ? `<div class="pfilter"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="pq" type="search" placeholder="${R.ph}" autocomplete="off" value="${esc(state.qs[r] || '')}"></div>` : ''}</header>`;
+  document.querySelectorAll('#navlinks a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + (r === 'search' ? 'home' : r)));
+  const on = document.querySelector('#navlinks a.on'); if (on) on.scrollIntoView({block: 'nearest', inline: 'center'});
+}
 function render() {
-  $('#main').innerHTML = state.tab === 'item' ? renderItem() : state.tab === 'mob' ? renderMob() : state.tab === 'map' ? renderMap() : state.tab === 'eq' ? renderEq() : state.tab === 'quest' ? renderQuest() : renderList();
+  const r = route();
+  if (r !== lastRoute) { lastRoute = r; renderHead(); window.scrollTo(0, 0); }
+  state.q = state.qs[r] || '';
+  $('#main').innerHTML = r === 'home' ? renderHome() : r === 'search' ? renderItem() : r === 'mobs' ? renderMob() : r === 'equip' ? renderEq()
+    : r === 'craft' ? renderCraft() : r === 'quests' ? renderQuest() : r === 'map' ? renderMap() : r === 'places' ? renderPlaces() : renderList();
   const n = Object.values(list).filter(e => !e.done).length;
   $('#lc').textContent = n || '';
-  $('#clear').classList.toggle('on', !!state.q);
-  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === state.tab));
-  movePill();
 }
-function movePill() {
-  const b = document.querySelector(`#tabs button[data-tab="${state.tab}"]`);
-  $('#pill').style.width = b.offsetWidth + 'px';
-  $('#pill').style.transform = `translateX(${b.offsetLeft - 4}px)`;
-}
+const go = (r, q) => { if (q !== undefined) { state.qs[r] = q; lastRoute = null; } if (location.hash === '#' + r) render(); else location.hash = r; };
+window.addEventListener('hashchange', render);
 let tt;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2200); }
 
-$('#total').textContent = MOBS.length; $('#eqn').textContent = EQ.length; $('#qn').textContent = MQ.length + SQ.length; $('#rn').textContent = Object.keys(RECIPES).length; $('#pn').textContent = EO.length;
-['阿爾巴爾之牙', '狼牙', '史萊姆凝膠', '骷髏骨', '蜘蛛絲線'].forEach(n => {
-  const b = document.createElement('button'); b.className = 'chip'; b.textContent = n; b.dataset.q = n; $('#quick').appendChild(b);
-});
-$('#q').addEventListener('input', e => { state.q = e.target.value; if (state.tab === 'list' || state.tab === 'map') state.tab = 'item'; render(); });
-$('#clear').onclick = () => { state.q = ''; $('#q').value = ''; $('#q').focus(); render(); };
+document.addEventListener('click', e => {
+  const img = e.target.closest('#mapbox img');
+  if (img) { const r = img.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 100, y = (e.clientY - r.top) / r.height * 100; const [X, Z] = mapToWorld(x, y); state.mclick = {x, y, X, Z}; render(); return; }
+  const c = e.target.closest('[data-copy]');
+  if (c) { e.stopPropagation(); const v = c.dataset.copy; try { navigator.clipboard.writeText(v).then(() => toast('已複製：' + v), () => toast('座標：' + v)); } catch (err) { toast('座標：' + v); } }
+}, true);
+document.addEventListener('input', e => { if (e.target.id === 'pq') { state.qs[route()] = e.target.value; render(); } });
+document.addEventListener('submit', e => { if (e.target.id === 'homeform') { e.preventDefault(); go('search', $('#hq').value.trim()); } });
 document.addEventListener('click', e => {
   const t = e.target.closest('button'); if (!t) return;
   const d = t.dataset;
-  if (d.tab) { state.tab = d.tab; render(); }
-  else if (d.q) { state.q = d.q; $('#q').value = d.q; state.tab = 'item'; render(); }
-  else if (d.item) { state.q = d.item; $('#q').value = d.item; state.tab = 'item'; render(); window.scrollTo({top: 0, behavior: 'smooth'}); }
+  if (d.q) { go('search', d.q); }
+  else if (d.item) { go('search', d.item); }
   else if (d.recipe) {
     let r = ALL_NPC().flatMap(n => (n.shop || []).flatMap(g => g.items)).find(i => i[0] === d.recipe);
     if (!r && RECIPES[d.recipe]) r = [d.recipe, 0, '', '', RECIPES[d.recipe].mats];
     if (r && r[4]) { r[4].forEach(([m, q]) => { if (list[m]) list[m].qty += q; else list[m] = {qty: q, done: false}; }); saveList(); render(); toast(`已加入清單：${r[4].map(([m, q]) => m + ' ×' + q).join('、')}`); }
   }
-  else if (d.clearq) { state.q = ''; $('#q').value = ''; render(); }
+  else if (d.clearq) { state.qs[route()] = ''; const p = $('#pq'); if (p) p.value = ''; render(); }
   else if (d.eqcat) { state.eqCat = d.eqcat; render(); }
   else if (d.qtype) { state.qType = d.qtype; render(); }
   else if (d.qfloor !== undefined) { state.qFloor = +d.qfloor; render(); }
-  else if (d.mapfloor) { state.mapFloor = +d.mapfloor; state.plFloor = +d.mapfloor; state.place = ''; render(); }
+  else if (d.mapfloor) { state.mclick = null; state.mapFloor = +d.mapfloor; state.plFloor = +d.mapfloor; state.place = ''; render(); }
   else if (d.plfloor !== undefined) { state.plFloor = +d.plfloor; render(); }
   else if (d.plcat) { state.plCat = d.plcat; state.eoSel = -1; render(); }
   else if (d.eo) { state.eoSel = +d.eo; state.plFloor = state.mapFloor; render(); const el = document.getElementById('eo-' + d.eo); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }
@@ -595,7 +678,6 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-rpt]'); if (b) { e.stopPropagation(); const [k, n, en] = b.dataset.rpt.split('|'); report(k, n, en); }
   if (e.target.id === 'modal' || e.target.id === 'mclose') $('#modal').classList.remove('on');
 }, true);
-window.addEventListener('resize', movePill);
 render();
 </script>
 </body>
