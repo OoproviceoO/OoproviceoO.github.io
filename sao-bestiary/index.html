@@ -259,7 +259,7 @@ header p{margin:6px 0 0;color:var(--n600);font-size:15px}
 .vtog{display:flex;gap:4px;margin-left:auto}
 .rlabel{position:absolute;transform:translate(-50%,6px);font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000,0 0 4px #000;white-space:nowrap;pointer-events:none}
 .mapbox.top{background:#0b1a12}
-.o3d{font-size:13px;font-weight:700;color:var(--p700);text-decoration:none;margin-left:6px;white-space:nowrap}
+.o3d{font:inherit;font-size:13px;font-weight:800;color:hsl(350 60% 40%);background:hsl(350 80% 95%);border:0;border-radius:4px;padding:4px 8px;margin-left:6px;white-space:nowrap;cursor:pointer}.o3d:hover{background:hsl(350 80% 90%)}
 .dg{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
 .dg h3{margin:0;font-size:20px;color:var(--g800)}
 .dg .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
@@ -438,7 +438,7 @@ input:focus,.pfilter input:focus,.hero input:focus{box-shadow:0 0 0 2px var(--sa
 <div class="wrap">
   <div id="phead"></div>
   <main id="main"></main>
-  <p class="foot">資料來源：<a href="https://saominecraft.wiki.gg/" target="_blank" rel="noopener">SAO Minecraft Wiki</a> 的怪物圖鑑、裝備與任務頁（2026/11/24 擷取），主線任務說明由英文版翻譯；第 2、3 層怪物的等級與生命值、地城與鑰匙資訊取自 <a href="https://saominecraft.com/news" target="_blank" rel="noopener">官方公告</a>；配方、商店、NPC 與地點座標、怪物掉落率、地城資料與俯視地圖取自 <a href="https://exiled-order.pages.dev/" target="_blank" rel="noopener">EXILED ORDER × NULL</a>（感謝 Tatanjbr、SebasG4mer 等玩家整理，名稱由我們翻成中文）；「3D ↗」連到 <a href="https://exiled-order.pages.dev/bluemap/" target="_blank" rel="noopener">EXILED ORDER 的 3D 地圖</a>。「平均約幾隻」是用掉落機率算出的期望值，實際會依運氣上下浮動。</p>
+  <p class="foot">資料來源：<a href="https://saominecraft.wiki.gg/" target="_blank" rel="noopener">SAO Minecraft Wiki</a> 的怪物圖鑑、裝備與任務頁（2026/11/24 擷取），主線任務說明由英文版翻譯；第 2、3 層怪物的等級與生命值、地城與鑰匙資訊取自 <a href="https://saominecraft.com/news" target="_blank" rel="noopener">官方公告</a>；配方、商店、NPC 與地點座標、怪物掉落率、地城資料與俯視地圖取自 <a href="https://exiled-order.pages.dev/" target="_blank" rel="noopener">EXILED ORDER × NULL</a>（感謝 Tatanjbr、SebasG4mer 等玩家整理，名稱由我們翻成中文）；怪物 3D 模型與道具圖示也取自 EXILED ORDER（模型貼圖用伺服器資源包，缺的圖示用 Minecraft 原版物品圖代替）；第 1 層 3D 地形的高度來自 Distant Horizons 紀錄。「平均約幾隻」是用掉落機率算出的期望值，實際會依運氣上下浮動。</p>
 </div>
 <div class="toast" id="toast"></div>
 <div class="modal" id="modal"><div><h3 style="margin:0 0 8px">回報範本</h3><p class="foot" style="margin:0 0 8px">自動複製失敗，請手動複製下面的文字。</p><textarea readonly></textarea><button id="mclose">關閉</button></div></div>
@@ -622,7 +622,7 @@ function mapToWorld(px, py) {
 const copyBtn = (txt, label) => `<button class="copy" data-copy="${esc(txt)}">${label || '複製座標'}</button>`;
 const TOP = {1: {img: 'aincrad-1.webp', x0: 60, z0: 85, w: 4977, h: 4952}, 2: {img: 'aincrad-2.webp', x0: -1091, z0: -1091, w: 2183, h: 2183}, 3: {img: 'aincrad-3.webp', x0: -183, z0: -43, w: 1577, h: 1577}};
 const topPos = (f, X, Z) => { const m = TOP[f]; return [(X - m.x0) / m.w * 100, (Z - m.z0) / m.h * 100]; };
-const o3d = (f, xyz) => { const [X, Y, Z] = String(xyz).split(',').map(s => parseInt(s)); return `<a class="o3d" href="https://exiled-order.pages.dev/bluemap/#piso_0${f}:${X}:${isNaN(Y) ? 80 : Y}:${Z}:120:0:0.9:0:0:perspective" target="_blank" rel="noopener" title="在 EXILED ORDER 的 3D 地圖打開">3D ↗</a>`; };
+const o3d = (f, xyz) => `<button class="o3d" data-goto="${f}|${esc(String(xyz))}" title="在地圖上標出這個位置">📍 地圖</button>`;
 let EO_BY_ID = null;
 function mobPoints(m) {
   if (!EO_BY_ID) { EO_BY_ID = {}; EO.forEach((p, i) => EO_BY_ID[p.id] = i); }
@@ -659,7 +659,7 @@ function renderTopMap() {
   const ptHtml = pts.map(([p, i]) => { const [x, y] = pos(p); const hit = pins.has(i);
     return hit ? `<span class="mobpin" style="left:${x}%;top:${y}%"></span><button class="pt sel" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c]};transform:translate(-50%,-50%) ${unrot}" data-eo="${i}"><i></i><span>${esc(p.n)}</span></button>`
       : `<button class="pt ${state.eoSel === i ? 'sel' : ''}" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c]};transform:translate(-50%,-50%) ${unrot}" data-eo="${i}" aria-label="${esc(p.n)}"><i></i><span>${esc(p.n)}</span></button>`; }).join('');
-  const rgHtml = regs.map(([p, i]) => { const [x, y] = pos(p); return `<button class="rg ${state.region === i ? 'sel' : ''}" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%) ${unrot}" data-region="${i}">${esc(p.n)}</button>`; }).join('');
+  const rgHtml = regs.map(([p, i]) => { const [x, y] = pos(p); return `<button class="rg ${state.region === i || pins.has(i) ? 'sel' : ''}" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%) ${unrot}" data-region="${i}">${esc(p.n)}</button>`; }).join('');
   const mc = state.mclick && state.mclick.top ? `<span class="mapmark" style="left:${state.mclick.x}%;top:${state.mclick.y}%"></span>` : '';
   const ctl = `<div class="mctl"><div class="seg">${[1, 2, 3].map(x => `<button data-mapfloor="${x}" class="${f === x ? 'on' : ''}">第 ${x} 層</button>`).join('')}</div>
     <div class="seg"><button data-tilt="0" class="${state.tilt || state.terrain ? '' : 'on'}">平面</button><button data-tilt="1" class="${state.tilt && !state.terrain ? 'on' : ''}">立體</button></div>
@@ -667,7 +667,7 @@ function renderTopMap() {
     ${f === 1 ? `<div class="seg"><button data-terrain="1" class="${state.terrain ? 'on' : ''}">⛰ 3D 地形</button></div>` : ''}
     ${MAPS[f] ? `<div class="seg"><button data-mapview="art">插圖</button></div>` : ''}</div>`;
   const legend = `<div class="legend2">${LAYERS.map(c => `<label><input type="checkbox" data-layer="${esc(c)}" ${state.layers[c] ? 'checked' : ''}><i style="background:${CAT_COLOR[c]}"></i>${esc(c)}</label>`).join('')}<span>　滑鼠移到點上看名稱，點地區名稱看那裡有什麼</span></div>`;
-  const coord = state.mclick && state.mclick.top ? `<div class="mobbar" style="background:var(--g100);color:var(--g800)">📍 座標 <b class="xyz">X ${state.mclick.X}　Z ${state.mclick.Z}</b>${copyBtn(state.mclick.X + ' ~ ' + state.mclick.Z)}${o3d(f, state.mclick.X + ',80,' + state.mclick.Z)}<button class="addr" data-clearpins="1" style="margin-left:auto">清除</button></div>` : '';
+  const coord = state.mclick && state.mclick.top ? `<div class="mobbar" style="background:var(--g100);color:var(--g800)">📍 座標 <b class="xyz">X ${state.mclick.X}　Z ${state.mclick.Z}</b>${copyBtn(state.mclick.X + ' ~ ' + state.mclick.Z)}<button class="addr" data-clearpins="1" style="margin-left:auto">清除</button></div>` : '';
   const bar = state.mobName || found.length ? `<div class="mobbar">📍 ${state.mobName ? esc(state.mobName) : `搜尋「${esc(state.q)}」`}：這層標出 ${[...pins].filter(i => EO[i].f === f).length} 處${found.length && [...pins].filter(i => EO[i].f === f).length === 0 ? `（在第 ${[...new Set(found.map(i => EO[i].f))].join('、')} 層）` : ''}<button class="addr" data-clearpins="1" style="margin-left:auto">清除標示</button></div>` : '';
   // 下方：選到的地區或地點
   let below = '';
@@ -675,7 +675,7 @@ function renderTopMap() {
     const R = EO[state.region]; const inR = EO.map((p, i) => [p, i]).filter(([p, i]) => p.c !== '地區' && regionOf(i) === state.region);
     const mobsHere = MOBS.filter(mm => mm.f === f && (mobPoints(mm).some(i => regionOf(i) === state.region) || mm.mapa === R.id));
     const grp = (title, arr, fn) => arr.length ? `<div class="rgroup"><h4>${title} · ${arr.length}</h4><div class="rchips">${arr.map(fn).join('')}</div></div>` : '';
-    below = `<div class="card rpanel"><div class="pl-h"><h3 style="margin:0">${esc(R.n)}</h3><span class="mini">第 ${f} 層 · 地區</span><span class="xyz">${esc(R.xyz)} ${copyBtn(R.xyz.replace(/,/g, ''), '複製')}${o3d(f, R.xyz)}</span></div>
+    below = `<div class="card rpanel"><div class="pl-h"><h3 style="margin:0">${esc(R.n)}</h3><span class="mini">第 ${f} 層 · 地區</span><span class="xyz">${esc(R.xyz)} ${copyBtn(R.xyz.replace(/,/g, ''), '複製')}</span></div>
       ${R.note ? `<div class="eq-stat">${esc(R.note)}</div>` : ''}
       ${grp('怪物', mobsHere, mm => `<button class="rchip" data-mobmap="${MOBS.indexOf(mm)}">${esc(mm.n)}<small>${mm.t}</small></button>`)}
       ${grp('NPC', inR.filter(([p]) => p.c === 'NPC'), ([p, i]) => `<button class="rchip" data-eo="${i}">${esc(p.n)}</button>`)}
@@ -787,11 +787,11 @@ function placeCard(p) {
 }
 function renderPlaces() {
   const q = norm(state.q);
-  const rows = EO.filter(p => (!state.plFloor || p.f === state.plFloor) && (state.plCat === '全部' || p.c === state.plCat)
+  const PL = ['商店・製作', '收購商', 'NPC'];
+  const rows = EO.filter(p => PL.includes(p.c) && (!state.plFloor || p.f === state.plFloor) && (state.plCat === '全部' || p.c === state.plCat)
     && (!q || match(q, p.n, p.o, p.note, ...(p.items || []).map(i => i.n), ...(p.buy || []).map(b => b.n))));
-  return `<div class="section-title">地點清單（含座標 X, Y, Z）</div>
-    <div class="filters"><span class="seg-label">樓層</span><div class="seg">${[0, 1, 2, 3].map(f => `<button data-plfloor="${f}" class="${state.plFloor === f ? 'on' : ''}">${f ? f : '全部'}</button>`).join('')}</div><span class="count">${rows.length} 個</span></div>
-    <div class="chips pl-filters">${EO_CATS.map(c => `<button data-plcat="${esc(c)}" class="${state.plCat === c ? 'on' : ''}">${esc(c)}</button>`).join('')}</div>
+  return `<div class="filters"><span class="seg-label">樓層</span><div class="seg">${[0, 1, 2, 3].map(f => `<button data-plfloor="${f}" class="${state.plFloor === f ? 'on' : ''}">${f ? f : '全部'}</button>`).join('')}</div><span class="count">${rows.length} 個</span></div>
+    <div class="chips pl-filters">${['全部', ...PL].map(c => `<button data-plcat="${esc(c)}" class="${state.plCat === c ? 'on' : ''}">${esc(c)}</button>`).join('')}</div>
     ${rows.slice(0, 120).map(placeCard).join('')}${rows.length > 120 ? `<p class="foot">只顯示前 120 個，可以用上面的搜尋框縮小範圍。</p>` : ''}`;
 }
 
@@ -807,7 +807,7 @@ const ROUTES = {
   dungeons: {t: '地城', d: '樓層地城的人數、等級、鑰匙和掉落。', ph: '篩選地城、Boss 或掉落物'},
   quests: {t: '任務', d: '主線依順序排列，支線附座標。', ph: '篩選任務、NPC 或內容'},
   map: {t: '地圖', d: '點地區名稱看那裡有什麼；點地圖任何地方顯示座標；搜尋怪物或道具會直接標在地圖上。', ph: '搜尋怪物、道具、NPC，例如：阿爾巴爾之牙、Emy'},
-  places: {t: '商店・NPC', d: '商店、收購商、NPC、Boss、採集點，全部附座標。', ph: '篩選名稱、賣的東西或收的東西'},
+  places: {t: '商店・NPC', d: '在哪裡買、在哪裡做、賣給誰。按「📍 地圖」直接在地圖上標出來。', ph: '篩選名稱、賣的東西或收的東西'},
   list: {t: '我的清單', d: '想刷的材料和數量，會幫你排好刷怪路線。只存在這台裝置的瀏覽器。'}
 };
 const route = () => { const h = decodeURIComponent(location.hash.slice(1)); return ROUTES[h] ? h : 'home'; };
@@ -963,6 +963,12 @@ document.addEventListener('click', e => {
   else if (d.region) { state.region = state.region === +d.region ? -1 : +d.region; state.eoSel = -1; render(); }
   else if (d.tilt !== undefined) { state.tilt = +d.tilt; state.terrain = false; render(); }
   else if (d.rot !== undefined) { state.rot = +d.rot === 0 ? 0 : (state.rot || 0) + +d.rot; render(); }
+  else if (d.goto) { const [f, xyz] = d.goto.split('|'); const F = +f, [X, , Z] = xyz.split(',').map(s => parseInt(s));
+    const i = EO.findIndex(p => p.f === F && p.xyz.split(',').map(s => parseInt(s)).join() === xyz.split(',').map(s => parseInt(s)).join());
+    state.mapFloor = F; state.region = -1; state.eoSel = -1; state.qs.map = '';
+    if (i >= 0) { state.mobPins = [i]; state.mobName = EO[i].n; state.mclick = null; }
+    else { const m = TOP[F]; state.mobPins = []; state.mobName = ''; state.mclick = {top: 1, X, Z, x: (X - m.x0) / m.w * 100, y: (Z - m.z0) / m.h * 100}; }
+    lastRoute = null; go('map'); setTimeout(() => { const el = document.querySelector('.stage,.t3d'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }, 80); }
   else if (d.terrain) { state.terrain = !state.terrain; render(); }
   else if (d.mapview) { state.mapView = d.mapview; state.mclick = null; render(); }
   else if (d.mapfloor) { state.mclick = null; state.mapFloor = +d.mapfloor; state.plFloor = +d.mapfloor; state.place = ''; render(); }
