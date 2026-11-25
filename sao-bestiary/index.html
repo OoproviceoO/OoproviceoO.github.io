@@ -415,6 +415,12 @@ input:focus,.pfilter input:focus,.hero input:focus{box-shadow:0 0 0 2px var(--sa
 .eq-ic{width:32px;height:32px;border-radius:4px;background:hsl(210 30% 94%);display:inline-grid;place-items:center;flex:none;overflow:hidden;font-size:16px;vertical-align:middle}.eq-ic img{width:28px;height:28px}
 .mic{display:inline-grid;place-items:center;width:18px;height:18px;vertical-align:-4px;margin-right:3px;font-size:12px}.mic img{width:18px;height:18px}
 .eq-top{align-items:center}
+.t3d{position:relative;height:min(70vh,640px);margin-top:12px;border-radius:6px;overflow:hidden;border:1px solid var(--sao-line);box-shadow:var(--shadow);background:linear-gradient(hsl(205 85% 80%),hsl(205 70% 93%))}
+.t3d canvas{display:block;width:100%!important;height:100%!important}
+.t3msg{position:absolute;inset:0;display:grid;place-items:center;color:var(--n600)}
+.t3lab{position:absolute;transform:translate(-50%,-100%);pointer-events:none;white-space:nowrap;font-size:11px;font-weight:800;color:#fff;text-shadow:0 1px 2px #000,0 0 4px #000}
+.t3pin{position:absolute;transform:translate(-50%,-100%);pointer-events:none;background:var(--sao-o);color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:4px;white-space:nowrap;box-shadow:0 2px 6px #0005}
+.t3pin::after{content:'';position:absolute;left:50%;bottom:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--sao-o)}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700;800&display=swap">
 <meta name="robots" content="noindex,nofollow">
@@ -654,8 +660,9 @@ function renderTopMap() {
   const rgHtml = regs.map(([p, i]) => { const [x, y] = pos(p); return `<button class="rg ${state.region === i ? 'sel' : ''}" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%) ${unrot}" data-region="${i}">${esc(p.n)}</button>`; }).join('');
   const mc = state.mclick && state.mclick.top ? `<span class="mapmark" style="left:${state.mclick.x}%;top:${state.mclick.y}%"></span>` : '';
   const ctl = `<div class="mctl"><div class="seg">${[1, 2, 3].map(x => `<button data-mapfloor="${x}" class="${f === x ? 'on' : ''}">第 ${x} 層</button>`).join('')}</div>
-    <div class="seg"><button data-tilt="0" class="${state.tilt ? '' : 'on'}">平面</button><button data-tilt="1" class="${state.tilt ? 'on' : ''}">立體</button></div>
+    <div class="seg"><button data-tilt="0" class="${state.tilt || state.terrain ? '' : 'on'}">平面</button><button data-tilt="1" class="${state.tilt && !state.terrain ? 'on' : ''}">立體</button></div>
     <div class="seg"><button data-rot="-45" title="向左轉">⟲</button><button data-rot="0" title="轉正">北</button><button data-rot="45" title="向右轉">⟳</button></div>
+    ${f === 1 ? `<div class="seg"><button data-terrain="1" class="${state.terrain ? 'on' : ''}">⛰ 3D 地形</button></div>` : ''}
     ${MAPS[f] ? `<div class="seg"><button data-mapview="art">插圖</button></div>` : ''}</div>`;
   const legend = `<div class="legend2">${LAYERS.map(c => `<label><input type="checkbox" data-layer="${esc(c)}" ${state.layers[c] ? 'checked' : ''}><i style="background:${CAT_COLOR[c]}"></i>${esc(c)}</label>`).join('')}<span>　滑鼠移到點上看名稱，點地區名稱看那裡有什麼</span></div>`;
   const coord = state.mclick && state.mclick.top ? `<div class="mobbar" style="background:var(--g100);color:var(--g800)">📍 座標 <b class="xyz">X ${state.mclick.X}　Z ${state.mclick.Z}</b>${copyBtn(state.mclick.X + ' ~ ' + state.mclick.Z)}${o3d(f, state.mclick.X + ',80,' + state.mclick.Z)}<button class="addr" data-clearpins="1" style="margin-left:auto">清除</button></div>` : '';
@@ -677,6 +684,8 @@ function renderTopMap() {
   }
   if (state.eoSel >= 0 && EO[state.eoSel]) below = `<div class="rpanel">${placeCard(EO[state.eoSel])}</div>` + below;
   if (found.length) below += `<div class="section-title">搜尋結果 · ${found.length}</div><div class="rchips">${found.map(i => `<button class="rchip" data-eo="${i}">${esc(EO[i].n)}<small>第 ${EO[i].f} 層 · ${esc(EO[i].c)} · ${esc(EO[i].xyz.split(',').filter((_, k) => k !== 1).join(' / '))}</small></button>`).join('')}</div>`;
+  state.t3pins = [...pins].filter(i => EO[i].f === f);
+  if (state.terrain && f === 1) return ctl + bar + `<div class="t3d" id="t3d"><div class="t3msg">3D 地形載入中…</div></div><div class="legend2"><span>拖曳旋轉・右鍵或兩指平移・滾輪縮放。高低起伏來自你的 Distant Horizons 紀錄，只有走過的地方是真的地形，其他地方是平滑補上的。</span></div>` + below;
   return ctl + bar + coord + `<div class="stage ${state.tilt ? 'tilt' : 'flat'}" style="--rz:${state.rot || 0}deg"><div class="plane" id="mapbox"><img src="${m.img}" data-top="${f}" alt="第 ${f} 層地圖">${rgHtml}${ptHtml}${mc}</div></div>` + legend + below;
 }
 
@@ -909,6 +918,7 @@ function render() {
   state.q = state.qs[r] || '';
   $('#main').innerHTML = r === 'home' ? renderHome() : r === 'search' ? renderItem() : r === 'mobs' ? renderMob() : r === 'equip' ? renderEq()
     : r === 'craft' ? renderCraft() : r === 'items' ? renderItems() : r === 'item' ? renderItem1() : r === 'guild' ? renderGuild() : r === 'dungeons' ? renderDungeons() : r === 'quests' ? renderQuest() : r === 'map' ? renderMap() : r === 'places' ? renderPlaces() : renderList();
+  const t3 = document.getElementById('t3d'); if (t3) mountTerrain(t3);
   const n = Object.values(list).filter(e => !e.done).length;
   $('#lc').textContent = n || '';
 }
@@ -947,8 +957,9 @@ document.addEventListener('click', e => {
   else if (d.mobmap !== undefined) { const m = MOBS[+d.mobmap], pts = mobPoints(m); state.mobPins = pts; state.mobName = m.n; state.mapFloor = pts.length ? EO[pts[0]].f : m.f; state.plFloor = state.mapFloor; state.mapView = 'top'; state.mclick = null; state.eoSel = -1; go('map'); setTimeout(() => { const el = document.querySelector('.mobpin'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }, 150); }
   else if (d.clearpins) { state.mobPins = []; state.mobName = ''; state.mclick = null; state.eoSel = -1; state.qs.map = ''; const p = $('#pq'); if (p && route() === 'map') p.value = ''; render(); }
   else if (d.region) { state.region = state.region === +d.region ? -1 : +d.region; state.eoSel = -1; render(); }
-  else if (d.tilt !== undefined) { state.tilt = +d.tilt; render(); }
+  else if (d.tilt !== undefined) { state.tilt = +d.tilt; state.terrain = false; render(); }
   else if (d.rot !== undefined) { state.rot = +d.rot === 0 ? 0 : (state.rot || 0) + +d.rot; render(); }
+  else if (d.terrain) { state.terrain = !state.terrain; render(); }
   else if (d.mapview) { state.mapView = d.mapview; state.mclick = null; render(); }
   else if (d.mapfloor) { state.mclick = null; state.mapFloor = +d.mapfloor; state.plFloor = +d.mapfloor; state.place = ''; render(); }
   else if (d.plfloor !== undefined) { state.plFloor = +d.plfloor; render(); }
@@ -1036,6 +1047,57 @@ async function open3d(m) {
     const loop = () => { raf = requestAnimationFrame(loop); if (len > 0) pose(clk.getElapsedTime() % len); ctl.update(); ren.render(sc, cam); }; loop();
     stop3d = () => { cancelAnimationFrame(raf); ro.disconnect(); ctl.dispose(); sc.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } }); ren.dispose(); ren.forceContextLoss(); };
   } catch (err) { cv.innerHTML = '<p>這隻怪的 3D 模型載入失敗（預覽版沒有附模型，請到 GitHub 網站看）。</p>'; }
+}
+
+// ===== 第 1 層 3D 地形（Distant Horizons 高度 + 俯視圖材質） =====
+let T3 = null;
+async function mountTerrain(host) {
+  if (T3 && T3.wrap) { host.innerHTML = ''; host.appendChild(T3.wrap); T3.setPins(); T3.size(); T3.wake(); return; }
+  if (T3 && T3.loading) return; T3 = {loading: true};
+  try {
+    const [T, {OrbitControls}] = await (THREEP = THREEP || Promise.all([import('three'), import('three/addons/OrbitControls.js')]));
+    const loadImg = src => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = src; });
+    const [hm, mapImg] = await Promise.all([loadImg('height-1.png'), loadImg(TOP[1].img)]);
+    const tc = document.createElement('canvas'); tc.width = mapImg.naturalWidth; tc.height = mapImg.naturalHeight; const tx2 = tc.getContext('2d');
+    tx2.beginPath(); tx2.ellipse(tc.width / 2, tc.height / 2, tc.width / 2 - 2, tc.height / 2 - 2, 0, 0, Math.PI * 2); tx2.clip(); tx2.drawImage(mapImg, 0, 0);
+    const tex = new T.CanvasTexture(tc);
+    const N = 384, cv = document.createElement('canvas'); cv.width = cv.height = N; const cx = cv.getContext('2d'); cx.drawImage(hm, 0, 0, N, N);
+    const px = cx.getImageData(0, 0, N, N).data, M = TOP[1], EX = 1.6, LO = 40, HI = 330;
+    const hAt = (u, v) => { const i = (Math.min(N - 1, Math.max(0, Math.round(v * (N - 1)))) * N + Math.min(N - 1, Math.max(0, Math.round(u * (N - 1))))) * 4; return (LO + px[i] / 255 * (HI - LO) - 90) * EX; };
+    const geo = new T.PlaneGeometry(M.w, M.h, N - 1, N - 1); geo.rotateX(-Math.PI / 2);
+    const pos = geo.attributes.position;
+    for (let k = 0; k < pos.count; k++) { const u = (pos.getX(k) + M.w / 2) / M.w, v = (pos.getZ(k) + M.h / 2) / M.h; pos.setY(k, hAt(u, v)); }
+    geo.computeVertexNormals();
+    tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 8;
+    const sc = new T.Scene(); sc.add(new T.Mesh(geo, new T.MeshLambertMaterial({map: tex, transparent: true, alphaTest: 0.5})));
+    sc.add(new T.HemisphereLight(0xffffff, 0x88aa88, 1.6)); const sun = new T.DirectionalLight(0xffffff, 1.4); sun.position.set(-1, 1.4, -0.6); sc.add(sun);
+    sc.fog = new T.Fog(0xcfe6f7, 6000, 14000);
+    const ren = new T.WebGLRenderer({antialias: true, alpha: true}); ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+    const cam = new T.PerspectiveCamera(45, 1, 10, 30000); cam.position.set(0, 2600, 3600);
+    const ctl = new OrbitControls(cam, ren.domElement); ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * 0.47; ctl.minDistance = 300; ctl.maxDistance = 9000; ctl.target.set(0, 0, 0); ctl.screenSpacePanning = false;
+    const wrap = document.createElement('div'); wrap.style.cssText = 'position:absolute;inset:0'; wrap.appendChild(ren.domElement);
+    const labs = document.createElement('div'); labs.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden'; wrap.appendChild(labs);
+    const w2v = (X, Z) => { const u = (X - M.x0) / M.w, v = (Z - M.z0) / M.h; return new T.Vector3(u * M.w - M.w / 2, hAt(u, v) + 6, v * M.h - M.h / 2); };
+    let marks = [];
+    const setPins = () => {
+      labs.innerHTML = ''; marks = [];
+      EO.forEach((p, i) => { if (p.f !== 1 || p.c !== '地區') return; const [X, , Z] = p.xyz.split(',').map(Number); const el = document.createElement('div'); el.className = 't3lab'; el.textContent = p.n; labs.appendChild(el); marks.push([w2v(X, Z), el]); });
+      (state.t3pins || []).forEach(i => { const [X, , Z] = EO[i].xyz.split(',').map(Number); const el = document.createElement('div'); el.className = 't3pin'; el.textContent = EO[i].n; labs.appendChild(el); marks.push([w2v(X, Z), el]); });
+      const pp = (state.t3pins || [])[0]; if (pp !== undefined) { const [X, , Z] = EO[pp].xyz.split(',').map(Number); ctl.target.copy(w2v(X, Z)); }
+    };
+    const size = () => { const w = wrap.clientWidth || 1, h = wrap.clientHeight || 1; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
+    new ResizeObserver(size).observe(wrap);
+    let raf = 0; const v = new T.Vector3();
+    const loop = () => {
+      if (!document.body.contains(wrap)) { raf = 0; return; }
+      raf = requestAnimationFrame(loop); ctl.update(); ren.render(sc, cam);
+      const W = wrap.clientWidth, H = wrap.clientHeight;
+      marks.forEach(([p, el]) => { v.copy(p).project(cam); const vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05; el.style.display = vis ? '' : 'none'; if (vis) { el.style.left = (v.x + 1) / 2 * W + 'px'; el.style.top = (1 - v.y) / 2 * H + 'px'; } });
+    };
+    const wake = () => { if (!raf) loop(); };
+    T3 = {wrap, setPins, size, wake};
+    host.innerHTML = ''; host.appendChild(wrap); setPins(); size(); wake();
+  } catch (e) { T3 = null; host.innerHTML = '<div class="t3msg">3D 地形載入失敗（預覽版沒有附地形檔，請到 GitHub 網站看）。</div>'; }
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') close3d(); });
 </script>
