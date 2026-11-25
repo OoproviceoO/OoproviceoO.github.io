@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>艾恩葛朗特掉落圖鑑</title>
+<style>
+:root{color-scheme:light;
+  --g50:hsl(140 45% 97%);--g100:hsl(140 42% 93%);--g200:hsl(142 36% 86%);--g300:hsl(145 32% 74%);
+  --g600:hsl(150 42% 31%);--g700:hsl(152 46% 24%);--g800:hsl(152 44% 18%);--g900:hsl(152 40% 12%);
+  --n400:hsl(150 7% 58%);--n500:hsl(150 7% 45%);--n600:hsl(150 8% 36%);
+  --y50:hsl(50 100% 97%);--y100:hsl(48 92% 89%);--y700:hsl(36 82% 30%);
+  --p100:hsl(275 55% 94%);--p700:hsl(275 38% 40%);
+  --k100:hsl(345 75% 94%);--k700:hsl(345 55% 38%);
+  --shadow-sm:0 1px 2px hsl(150 30% 20% / .08);
+  --shadow:0 1px 3px hsl(150 30% 20% / .10),0 6px 16px hsl(150 30% 20% / .07);
+  --shadow-lg:0 4px 8px hsl(150 30% 20% / .10),0 16px 32px hsl(150 30% 20% / .12);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;font-size:16px;line-height:1.55;color:var(--g900);
+  background:var(--g50);background-image:radial-gradient(circle at 100% 0,var(--y100) 0,transparent 340px),radial-gradient(circle at 0 120px,var(--p100) 0,transparent 260px);background-repeat:no-repeat}
+button,input{font:inherit;color:inherit}
+.wrap{max-width:860px;margin:0 auto;padding:40px 20px 96px}
+header h1{margin:0;font-size:30px;line-height:1.2;font-weight:800;letter-spacing:.02em;color:var(--g800)}
+header p{margin:6px 0 0;color:var(--n600);font-size:15px}
+.search{position:relative;margin-top:24px}
+.search input{width:100%;height:60px;border:0;border-radius:16px;padding:0 52px 0 54px;font-size:18px;background:#fff;box-shadow:var(--shadow);outline:none;transition:box-shadow .2s}
+.search input:focus{box-shadow:0 0 0 3px var(--g300),var(--shadow)}
+.search svg{position:absolute;left:18px;top:18px;color:var(--g600)}
+.search .clear{position:absolute;right:8px;top:8px;width:44px;height:44px;border:0;border-radius:12px;background:transparent;color:var(--n500);cursor:pointer;display:none;font-size:20px}
+.search .clear.on{display:block}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.quick span{font-size:13px;color:var(--n500);margin-right:2px}
+.chip{border:0;background:var(--y100);color:var(--y700);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600;cursor:pointer;min-height:32px;transition:transform .08s}
+.chip:active{transform:scale(.96)}
+.tabs{position:relative;display:flex;margin-top:28px;background:var(--g100);border-radius:14px;padding:4px}
+.tabs button{position:relative;z-index:1;flex:1;height:44px;border:0;background:transparent;border-radius:10px;font-weight:600;color:var(--n600);cursor:pointer;transition:color .2s}
+.tabs button.on{color:var(--g800)}
+.tabs .pill{position:absolute;top:4px;bottom:4px;left:4px;border-radius:10px;background:#fff;box-shadow:var(--shadow-sm);transition:transform .28s cubic-bezier(.3,.7,.3,1),width .28s}
+.badge{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--g700);color:#fff;font-size:12px;line-height:20px}
+.badge:empty{display:none}
+.filters{display:flex;flex-wrap:wrap;gap:16px;margin:24px 0 8px;align-items:center}
+.seg{display:flex;gap:4px}
+.seg button{border:0;background:transparent;border-radius:8px;padding:0 12px;height:36px;color:var(--n600);font-weight:600;cursor:pointer;font-size:14px}
+.seg button.on{background:var(--g200);color:var(--g800)}
+.seg-label{font-size:13px;color:var(--n500);margin-right:4px;align-self:center}
+.count{margin-left:auto;font-size:14px;color:var(--n500)}
+.section-title{margin:32px 0 12px;font-size:14px;font-weight:700;color:var(--n500);letter-spacing:.04em}
+.card{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:20px;margin-bottom:16px;animation:in .35s both}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.item-head{display:flex;align-items:flex-start;gap:12px}
+.item-head h3{margin:0;font-size:20px;line-height:1.3}
+.en{color:var(--n500);font-size:14px}
+.add{margin-left:auto;flex:none;border:0;border-radius:10px;height:44px;padding:0 16px;background:var(--g700);color:#fff;font-weight:700;cursor:pointer;transition:transform .08s,background .2s}
+.add:active{transform:scale(.97)}
+.add.in{background:var(--g100);color:var(--g700)}
+.src{display:grid;grid-template-columns:1fr auto;gap:2px 16px;padding:12px 0;border-top:1px solid var(--g100)}
+.item-head+.src{border-top:0;margin-top:8px}
+.search input::-webkit-search-cancel-button{display:none}
+.src .who{font-weight:700}
+.src .where{grid-column:1;font-size:14px;color:var(--n600)}
+.src .rate{grid-column:2;grid-row:1/3;text-align:right;align-self:center}
+.rate b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.rate small{font-size:13px;color:var(--n500)}
+.tag{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:2px}
+.t-Boss{background:var(--k100);color:var(--k700)}
+.t-小Boss{background:var(--p100);color:var(--p700)}
+.t-怪物{background:var(--g100);color:var(--g700)}
+.t-小怪{background:hsl(150 10% 94%);color:var(--n600)}
+.stars{color:hsl(40 90% 48%);letter-spacing:1px;font-size:13px}
+.stars i{color:var(--g200);font-style:normal}
+.r-common b{color:var(--g800)}
+.r-rare b{color:var(--y700)}
+.r-vrare b{color:var(--k700)}
+.mob-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}
+.mob-head h3{margin:0;font-size:18px}
+.mob-meta{margin-top:4px;font-size:14px;color:var(--n600)}
+.drops{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.drop{border:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border-radius:10px;padding:6px 10px;font-size:14px;background:var(--g50);min-height:36px;text-align:left}
+.drop:hover{background:var(--g100)}
+.drop em{font-style:normal;font-weight:700;font-variant-numeric:tabular-nums}
+.drop.rare{background:var(--y50)} .drop.rare em{color:var(--y700)}
+.drop.vrare{background:var(--k100)} .drop.vrare em{color:var(--k700)}
+.drop .gem{font-size:11px;color:inherit}
+.drop.vrare .gem{color:var(--k700)} .drop.rare .gem{color:var(--y700)}
+.none{font-size:14px;color:var(--n400)}
+.stat{font-size:13px;color:var(--n600);margin-left:8px}
+.empty{text-align:center;padding:48px 20px;color:var(--n600)}
+.empty .big{font-size:40px}
+.empty h3{margin:8px 0 4px;color:var(--g800)}
+.list-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--g100)}
+.list-row:first-child{border-top:0}
+.list-row .nm{flex:1;min-width:0}
+.list-row .nm b{display:block}
+.list-row .nm small{color:var(--n500);font-size:13px}
+.list-row.done .nm b{text-decoration:line-through;color:var(--n400)}
+.check{width:28px;height:28px;flex:none;border-radius:8px;border:2px solid var(--g300);background:#fff;cursor:pointer;display:grid;place-items:center;color:#fff;font-weight:900;padding:0}
+.check.on{background:var(--g600);border-color:var(--g600)}
+.step{display:flex;align-items:center;background:var(--g50);border-radius:10px}
+.step button{width:36px;height:36px;border:0;background:transparent;font-size:18px;cursor:pointer;color:var(--g700)}
+.step span{min-width:28px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.x{width:36px;height:36px;border:0;background:transparent;color:var(--n400);cursor:pointer;font-size:18px;border-radius:8px}
+.x:hover{background:var(--k100);color:var(--k700)}
+.route h4{margin:0;font-size:17px}
+.route .fl{font-size:13px;color:var(--n500)}
+.route ul{list-style:none;padding:0;margin:12px 0 0}
+.route li{display:flex;gap:12px;padding:8px 0;font-size:15px;align-items:baseline}
+.route li .k{margin-left:auto;text-align:right;color:var(--n600);font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.route li .k b{color:var(--g800)}
+.accent{border-left:4px solid var(--g300)}
+.foot{margin-top:40px;font-size:13px;color:var(--n500)}
+.foot a{color:var(--g700)}
+.btn-ghost{border:0;background:transparent;color:var(--n500);font-size:14px;cursor:pointer;padding:8px;border-radius:8px}
+.btn-ghost:hover{color:var(--k700)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;background:var(--g800);color:#fff;padding:12px 18px;border-radius:12px;box-shadow:var(--shadow-lg);font-size:15px;transition:all .22s;pointer-events:none;max-width:calc(100% - 40px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.hl{background:var(--y100);border-radius:3px}
+.mapbox{position:relative;margin-top:24px;border-radius:16px;overflow:hidden;box-shadow:var(--shadow);background:var(--g100)}
+.mapbox img{display:block;width:100%;height:auto}
+.pin{position:absolute;transform:translate(-50%,-50%);border:0;padding:0;cursor:pointer;background:transparent;width:44px;height:44px;display:grid;place-items:center}
+.pin i{display:block;width:18px;height:18px;border-radius:50%;border:3px solid #fff;background:var(--g700);box-shadow:0 1px 4px hsl(150 40% 10% / .5);transition:transform .15s}
+.pin.guess i{background:#fff;border-color:var(--p700);color:var(--p700);font-style:normal;font-size:11px;font-weight:900;line-height:12px}
+.pin.game i{width:26px;height:26px;background:transparent;border:3px solid transparent;box-shadow:none}
+.pin:hover i,.pin.on i{transform:scale(1.25)}
+.pin.game:hover i,.pin.game.on i{border-color:var(--y100);box-shadow:0 0 0 3px var(--g700)}
+.pin b{position:absolute;top:36px;white-space:nowrap;font-size:12px;font-weight:700;background:hsl(60 60% 98% / .92);color:var(--g800);padding:2px 8px;border-radius:8px;box-shadow:var(--shadow-sm);pointer-events:none}
+.pin.guess b{color:var(--p700)}
+.pin.up b{top:auto;bottom:36px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;font-size:13px;color:var(--n600)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--g700);display:inline-block}
+.dot.q{background:#fff;border:2px solid var(--p700)}
+.places{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.place{border:0;border-radius:10px;padding:0 14px;height:40px;background:#fff;box-shadow:var(--shadow-sm);font-weight:600;cursor:pointer;color:var(--g800)}
+.place.guess{color:var(--p700)}
+.place.on{background:var(--g700);color:#fff}
+.place-info{margin-top:24px}
+.place-info h3{margin:0;font-size:22px}
+.place-info p{margin:6px 0 0;color:var(--n600)}
+@media (max-width:600px){.pin b{display:none}.pin.on b{display:block}}
+.eq-list{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:4px 20px;margin-top:16px}
+.eq{padding:14px 0;border-top:1px solid var(--g100)}
+.eq:first-child{border-top:0}
+.eq-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.eq-top b{font-size:16px}
+.eq-lv{margin-left:auto;font-weight:700;color:var(--g800);font-variant-numeric:tabular-nums;white-space:nowrap}
+.eq-stat{font-size:14px;color:var(--n600);margin-top:2px}
+.eq-bonus{font-size:14px;color:var(--g700);margin-top:2px}
+.eq-src{margin-top:6px;font-size:13px}
+.eq-src button{border:0;background:var(--y100);color:var(--y700);border-radius:8px;padding:4px 10px;font-weight:600;cursor:pointer;font-size:13px}
+.rar{font-size:12px;font-weight:700;border-radius:6px;padding:1px 7px}
+.rar-普通{background:hsl(150 10% 93%);color:var(--n600)}
+.rar-罕見{background:var(--g100);color:var(--g700)}
+.rar-稀有{background:hsl(185 45% 90%);color:hsl(185 60% 24%)}
+.rar-史詩{background:var(--p100);color:var(--p700)}
+.rar-傳說{background:var(--y100);color:var(--y700)}
+.rar-神話{background:var(--k100);color:var(--k700)}
+.mini{font-size:12px;color:var(--n500);border:1px solid var(--g200);border-radius:6px;padding:0 6px}
+.lvbox{display:flex;align-items:center;gap:8px}
+.lvbox input{width:72px;height:36px;border:0;border-radius:8px;background:#fff;box-shadow:var(--shadow-sm);text-align:center;font-weight:700;font-size:16px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:0;background:#fff;box-shadow:var(--shadow-sm);border-radius:999px;padding:0 12px;height:34px;font-size:14px;font-weight:600;color:var(--n600);cursor:pointer}
+.chips button.on{background:var(--g700);color:#fff}
+.q{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:12px}
+.q-top{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.q-no{font-weight:800;color:var(--g600);font-variant-numeric:tabular-nums;min-width:2.2em}
+.q-top h3{margin:0;font-size:17px}
+.q-npc{font-size:14px;color:var(--n500)}
+.q p{margin:8px 0 0;font-size:15px;color:var(--g900)}
+.q-rw{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.q-rw span{font-size:13px;font-weight:600;background:var(--y50);color:var(--y700);border-radius:8px;padding:2px 8px}
+.q-tip{margin-top:8px;font-size:14px;color:var(--p700);background:var(--p100);border-radius:10px;padding:8px 12px}
+.floor-h{margin:28px 0 12px;font-size:15px;font-weight:800;color:var(--g700)}
+.tabs button{font-size:15px}
+@media (max-width:600px){.tabs button{font-size:14px}.eq-list{padding:4px 16px}.q{padding:16px}}
+.town{margin-top:16px;border-radius:14px;overflow:hidden;box-shadow:var(--shadow);max-width:560px}
+.town img{display:block;width:100%;height:auto}
+.town figcaption{background:#fff;padding:10px 14px;font-size:14px;color:var(--n600)}
+.npc{background:#fff;border-radius:14px;box-shadow:var(--shadow-sm);padding:14px 16px;margin-top:12px}
+.npc b{font-size:16px}.npc .xyz{font-variant-numeric:tabular-nums;color:var(--g700);font-weight:700}
+.ost{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.ost span{font-size:12px;font-weight:700;border-radius:8px;padding:2px 8px;background:var(--g100);color:var(--g700)}
+.ost span.c{background:var(--p100);color:var(--p700)}
+.ost small{font-size:12px;color:var(--n500)}
+.rpt{border:0;background:transparent;color:var(--n400);font-size:12px;cursor:pointer;padding:4px 6px;border-radius:6px;margin-left:auto}
+.rpt:hover{color:var(--k700);background:var(--k100)}
+.note-card{background:var(--y50);border-radius:16px;padding:16px 20px;margin:8px 0 20px;box-shadow:var(--shadow-sm)}
+.note-card h3{margin:0 0 8px;font-size:16px;color:var(--y700)}
+.note-card ul{margin:0;padding-left:20px;font-size:14px;color:var(--g900)}
+.note-card li{margin:4px 0}
+.modal{position:fixed;inset:0;background:hsl(150 30% 10% / .4);display:none;place-items:center;padding:20px;z-index:20}
+.modal.on{display:grid}
+.modal div{background:#fff;border-radius:16px;padding:20px;max-width:480px;width:100%;box-shadow:var(--shadow-lg)}
+.modal textarea{width:100%;height:160px;border:0;background:var(--g50);border-radius:10px;padding:12px;font:inherit;font-size:15px}
+.modal button{margin-top:12px;height:44px;border:0;border-radius:10px;background:var(--g700);color:#fff;font-weight:700;padding:0 18px;cursor:pointer}
+.shop{margin-top:12px;border-top:1px solid var(--g100);padding-top:10px}
+.shop-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.shop-i{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:15px}
+.mats{color:var(--n600)}
+.mat{border:0;background:none;padding:0;color:var(--g700);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline dotted}
+.addr{margin-top:4px;border:0;border-radius:8px;background:var(--g100);color:var(--g700);font-weight:700;font-size:13px;padding:4px 10px;cursor:pointer}
+.addr:hover{background:var(--g200)}
+.shop-i .k{text-align:right;white-space:nowrap;color:var(--n600);font-size:14px;font-variant-numeric:tabular-nums}
+.pl-filters{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.pl{background:#fff;border-radius:14px;box-shadow:var(--shadow-sm);padding:14px 16px;margin-bottom:10px}
+.pl-h{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.pl-h b{font-size:16px}
+.pl .xyz{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--g700);font-weight:700;font-size:13px;white-space:nowrap}
+.rc{border-top:1px solid var(--g100);margin-top:10px;padding-top:10px}
+.rc-h{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.rc-h .k{margin-left:auto;font-size:13px;color:var(--n600);white-space:nowrap}
+.rc-st{font-size:13px;color:var(--g700);margin-top:2px}
+.buy{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.buy span{font-size:13px;background:var(--y50);color:var(--y700);border-radius:8px;padding:2px 8px}
+.src-note{font-size:13px;color:var(--n500);margin:8px 0 16px}
+.eo-dot{position:absolute;transform:translate(-50%,-50%);width:28px;height:28px;border:0;padding:0;background:transparent;cursor:pointer;display:grid;place-items:center}
+.eo-dot i{width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px hsl(150 40% 10% / .6);background:var(--c,var(--g600))}
+.eo-dot.on i{width:18px;height:18px;box-shadow:0 0 0 3px var(--y100),0 1px 3px hsl(150 40% 10% / .6)}
+.pl.on{box-shadow:0 0 0 3px var(--g300),var(--shadow)}
+.topnav{position:sticky;top:0;z-index:10;background:hsl(140 45% 97% / .92);backdrop-filter:blur(8px);box-shadow:0 1px 0 var(--g200)}
+.topnav-in{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:0 20px;height:56px}
+.brand{font-weight:800;color:var(--g800);text-decoration:none;white-space:nowrap;font-size:17px}
+.navlinks{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{white-space:nowrap;text-decoration:none;color:var(--n600);font-weight:600;font-size:15px;padding:8px 12px;border-radius:10px;min-height:40px;display:flex;align-items:center;transition:background .15s,color .15s}
+.navlinks a:hover{background:var(--g100);color:var(--g800)}
+.navlinks a.on{background:var(--g700);color:#fff}
+.navlinks a.on .badge{background:#fff;color:var(--g700)}
+.page-h{margin:8px 0 20px}
+.page-h h1{margin:0;font-size:28px;line-height:1.2;color:var(--g800)}
+.page-h p{margin:6px 0 0;color:var(--n600);font-size:15px}
+.pfilter{position:relative;margin-top:16px}
+.pfilter input{width:100%;height:48px;border:0;border-radius:12px;padding:0 44px 0 44px;font-size:16px;background:#fff;box-shadow:var(--shadow-sm);outline:none}
+.pfilter input:focus{box-shadow:0 0 0 3px var(--g300),var(--shadow-sm)}
+.pfilter svg{position:absolute;left:14px;top:14px;color:var(--g600)}
+.hero{padding:32px 0 8px}
+.hero h1{margin:0;font-size:40px;line-height:1.1;color:var(--g800);letter-spacing:.02em}
+.hero p{margin:10px 0 0;color:var(--n600);font-size:16px}
+.hero form{position:relative;margin-top:24px}
+.hero input{width:100%;height:60px;border:0;border-radius:16px;padding:0 110px 0 54px;font-size:18px;background:#fff;box-shadow:var(--shadow);outline:none}
+.hero input:focus{box-shadow:0 0 0 3px var(--g300),var(--shadow)}
+.hero form svg{position:absolute;left:18px;top:18px;color:var(--g600)}
+.hero form button{position:absolute;right:8px;top:8px;height:44px;border:0;border-radius:12px;background:var(--g700);color:#fff;font-weight:700;padding:0 18px;cursor:pointer}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:28px}
+.cat{display:block;text-decoration:none;color:inherit;background:#fff;border-radius:16px;padding:18px;box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s}
+.cat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.cat .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;margin-bottom:10px}
+.cat b{display:block;font-size:17px;color:var(--g800)}
+.cat small{display:block;margin-top:4px;color:var(--n500);font-size:13px}
+.cat .n{float:right;font-weight:800;color:var(--g600);font-variant-numeric:tabular-nums}
+.home-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+.mapclick{position:absolute;transform:translate(-50%,calc(-100% - 10px));background:#fff;border-radius:12px;box-shadow:var(--shadow-lg);padding:10px 12px;font-size:14px;white-space:nowrap;z-index:3}
+.mapclick b{font-variant-numeric:tabular-nums;color:var(--g800)}
+.mapclick button{margin-left:8px}
+.mapmark{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--k700);border:2px solid #fff;transform:translate(-50%,-50%);pointer-events:none;z-index:2}
+.copy{border:0;border-radius:8px;background:var(--g100);color:var(--g700);font-weight:700;font-size:13px;padding:4px 10px;cursor:pointer}
+@media (max-width:700px){.cats{grid-template-columns:1fr 1fr;gap:10px}.cat{padding:14px}.cat .ic{width:34px;height:34px;font-size:17px;margin-bottom:8px}.cat .n{float:none;display:block;font-size:13px;margin-bottom:2px}.cat b{font-size:16px}.home-2{grid-template-columns:1fr}.hero h1{font-size:28px}.topnav-in{padding:0 12px;gap:8px}.brand{display:none}.navlinks{margin-left:0}.page-h h1{font-size:24px}}
+.vtog{display:flex;gap:4px;margin-left:auto}
+.rlabel{position:absolute;transform:translate(-50%,6px);font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000,0 0 4px #000;white-space:nowrap;pointer-events:none}
+.mapbox.top{background:#0b1a12}
+.o3d{font:inherit;font-size:13px;font-weight:800;color:hsl(350 60% 40%);background:hsl(350 80% 95%);border:0;border-radius:4px;padding:4px 8px;margin-left:6px;white-space:nowrap;cursor:pointer}.o3d:hover{background:hsl(350 80% 90%)}
+.dg{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+.dg h3{margin:0;font-size:20px;color:var(--g800)}
+.dg .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.dg .meta span{font-size:13px;font-weight:600;border-radius:8px;padding:3px 9px;background:var(--g50);color:var(--g700)}
+.dg .loot{margin-top:12px}
+.dg .loot div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid var(--g100);font-size:15px}
+.dg .loot small{color:var(--n500)}
+.mob-desc{margin:6px 0 0;font-size:14px;color:var(--n600);font-style:italic}
+.mobpin{position:absolute;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:var(--k700);border:3px solid #fff;box-shadow:0 0 0 0 hsl(345 65% 48% / .6);animation:pulse 1.6s infinite;pointer-events:none;z-index:2}
+@keyframes pulse{0%{box-shadow:0 0 0 0 hsl(345 65% 55% / .7)}70%{box-shadow:0 0 0 16px hsl(345 65% 55% / 0)}100%{box-shadow:0 0 0 0 hsl(345 65% 55% / 0)}}
+.mobpin-l{position:absolute;transform:translate(-50%,16px);background:#fff;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700;color:var(--k700);white-space:nowrap;box-shadow:var(--shadow-sm);pointer-events:none;z-index:2}
+.mobbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--k100);color:var(--k700);border-radius:12px;padding:10px 14px;margin:12px 0;font-weight:600}
+.locbtn{border:0;border-radius:8px;background:var(--k100);color:var(--k700);font-weight:700;font-size:13px;padding:4px 10px;cursor:pointer;margin-left:6px}
+@media (max-width:600px){
+  .wrap{padding:24px 16px 88px}
+  header h1{font-size:24px}
+  .card{padding:16px}
+  .item-head h3{font-size:18px}
+  .count{width:100%;margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:opacity .15s!important}}
+
+/* ===== SAO 主題：藍天、白色半透明面板、細線框、橘色選取亮光 ===== */
+:root{
+  --g50:hsl(208 60% 97%);--g100:hsl(208 45% 93%);--g200:hsl(208 30% 86%);--g300:hsl(205 70% 72%);
+  --g600:hsl(205 65% 42%);--g700:hsl(32 92% 48%);--g800:hsl(215 18% 26%);--g900:hsl(215 22% 18%);
+  --n400:hsl(210 10% 62%);--n500:hsl(210 10% 48%);--n600:hsl(212 12% 38%);
+  --sao-o:hsl(34 95% 52%);--sao-o2:hsl(40 100% 62%);--sao-line:hsl(210 30% 82%);--sao-panel:hsl(0 0% 100% / .86);
+  --shadow-sm:0 1px 2px hsl(212 40% 30% / .08);--shadow:0 2px 6px hsl(212 40% 30% / .10),0 10px 24px hsl(212 50% 40% / .08);
+}
+body{font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;color:var(--g900);
+  background:linear-gradient(180deg,hsl(205 85% 78%) 0,hsl(203 80% 88%) 260px,hsl(205 70% 95%) 620px,hsl(208 60% 97%) 100%) fixed;
+  background-image:linear-gradient(180deg,hsl(205 85% 78%) 0,hsl(203 80% 88%) 260px,hsl(205 70% 95%) 620px,hsl(208 60% 97%) 100%),
+    linear-gradient(hsl(0 0% 100% / .35) 1px,transparent 1px),linear-gradient(90deg,hsl(0 0% 100% / .35) 1px,transparent 1px);
+  background-size:auto,40px 40px,40px 40px;background-attachment:fixed}
+.wrap{max-width:1000px;padding-top:28px}
+.num,.sao-en{font-family:"Exo 2","Noto Sans TC",sans-serif}
+/* 面板 */
+.card,.eq-list,.q,.dg,.pl,.npc,.note-card,.cat,.mapbox,.place{background:var(--sao-panel);border:1px solid var(--sao-line);border-radius:6px;box-shadow:var(--shadow);backdrop-filter:blur(6px)}
+.card,.dg{position:relative}
+.card::before,.dg::before,.eq-list::before{content:"";position:absolute;left:0;top:0;width:3px;height:100%;background:linear-gradient(var(--sao-o),transparent);border-radius:6px 0 0 6px;opacity:.0;transition:opacity .2s}
+.card:hover::before,.dg:hover::before{opacity:1}
+.eq-list{position:relative}
+.note-card{background:var(--sao-panel)}
+.note-card h3{color:var(--g800)!important;letter-spacing:.04em}
+/* 標題 */
+.page-h h1,.hero h1{color:var(--g800);letter-spacing:.06em;font-weight:800}
+.page-h h1::after{content:"";display:block;width:64px;height:3px;margin-top:10px;background:linear-gradient(90deg,var(--sao-o),transparent)}
+.section-title,.floor-h{color:var(--g800);letter-spacing:.08em}
+.section-title::before,.floor-h::before{content:"◆ ";color:var(--sao-o);font-size:.8em}
+/* 按鈕與選取 */
+.seg button.on,.chips button.on,.place.on{background:var(--sao-o)!important;color:#fff!important;box-shadow:0 0 0 3px hsl(34 95% 52% / .25)}
+.add,.hero form button,.modal button{background:var(--sao-o);border-radius:4px}
+.add.in{background:var(--g100);color:var(--g800)}
+.chip{background:hsl(0 0% 100% / .8);color:var(--g800);border:1px solid var(--sao-line);border-radius:4px}
+.chip:hover{border-color:var(--sao-o);color:var(--sao-o)}
+.addr,.copy{background:hsl(0 0% 100%);border:1px solid var(--sao-line);color:var(--g800);border-radius:4px}
+.addr:hover,.copy:hover{border-color:var(--sao-o);color:var(--sao-o)}
+.badge{background:var(--sao-o)}
+input:focus,.pfilter input:focus,.hero input:focus{box-shadow:0 0 0 2px var(--sao-o2),var(--shadow-sm)!important}
+.pfilter input,.hero input,.lvbox input{border:1px solid var(--sao-line);border-radius:4px}
+/* 導覽列：SAO 白色選單列 */
+.topnav{background:hsl(0 0% 100% / .88);box-shadow:0 1px 0 var(--sao-line),0 4px 16px hsl(212 50% 40% / .08)}
+.brand{font-family:"Exo 2","Noto Sans TC",sans-serif;letter-spacing:.08em;color:var(--g800)}
+.brand::before{content:"";display:inline-block;width:10px;height:10px;border:2px solid var(--sao-o);border-radius:50%;margin-right:8px;vertical-align:1px}
+.navlinks a{border-radius:4px;color:var(--n600)}
+.navlinks a:hover{background:var(--g100);color:var(--g800)}
+.navlinks a.on{background:transparent;color:var(--sao-o);box-shadow:inset 0 -3px 0 var(--sao-o)}
+.navlinks a.on .badge{background:var(--sao-o);color:#fff}
+/* 主頁：SAO 圓形選單 */
+.ring-menu{display:flex;flex-wrap:wrap;justify-content:center;gap:18px 22px;margin:30px 0 8px}
+.ring{display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;color:var(--g800);width:76px}
+.ring .c{width:64px;height:64px;border-radius:50%;background:hsl(0 0% 100% / .92);border:2px solid var(--sao-line);display:grid;place-items:center;font-size:26px;box-shadow:var(--shadow);transition:transform .15s,border-color .15s,box-shadow .15s}
+.ring:hover .c{transform:translateY(-3px) scale(1.05);border-color:var(--sao-o);box-shadow:0 0 0 4px hsl(34 95% 52% / .25),var(--shadow)}
+.ring b{font-size:14px;letter-spacing:.04em;white-space:nowrap}
+.ring small{font-size:11px;color:var(--n500);margin-top:-6px}
+.hero{text-align:center;padding-top:12px}
+.hero p{margin-left:auto;margin-right:auto;max-width:560px}
+.hero .sub{font-family:"Exo 2",sans-serif;letter-spacing:.3em;color:var(--g600);font-size:13px;font-weight:700}
+.hero form{max-width:640px;margin-left:auto;margin-right:auto}
+.hero .quick{justify-content:center}
+/* 稀有度與標籤沿用，數字用 SAO 字型 */
+.rate b,.eq-lv,.q-no,.cat .n,.xyz{font-family:"Exo 2","Noto Sans TC",sans-serif}
+.mapbox{border-radius:6px}
+/* 道具頁 */
+.items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.it-card{display:flex;gap:10px;align-items:center;background:var(--sao-panel);border:1px solid var(--sao-line);border-radius:6px;padding:10px 12px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:border-color .15s,transform .15s}
+.it-card:hover{border-color:var(--sao-o);transform:translateY(-1px)}
+.it-ic{width:36px;height:36px;flex:none;border-radius:6px;background:var(--g100);display:grid;place-items:center;font-size:18px;image-rendering:pixelated}
+.it-card b{display:block;font-size:15px}
+.it-card small{display:block;font-size:12px;color:var(--n500)}
+.idetail{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.idetail .it-ic{width:72px;height:72px;font-size:34px}
+.guild-hero{text-align:center;padding:24px;background:var(--sao-panel);border:1px solid var(--sao-line);border-radius:6px;box-shadow:var(--shadow)}
+.guild-emblem{width:96px;height:96px;margin:0 auto 12px;border-radius:50%;border:3px solid var(--sao-o);display:grid;place-items:center;font-size:42px;background:#fff}
+.gl-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.todo{color:var(--n500);font-style:italic}
+@media (max-width:700px){.ring-menu{gap:14px 10px}.ring{width:68px}.ring .c{width:54px;height:54px;font-size:22px}.gl-grid{grid-template-columns:1fr}}
+
+/* ===== 地圖 2.0 ===== */
+.stage{perspective:1600px;margin-top:12px;border-radius:6px;overflow:hidden;background:radial-gradient(circle at 50% 30%,hsl(205 80% 86%),hsl(208 60% 72%));border:1px solid var(--sao-line);box-shadow:var(--shadow)}
+.plane{position:relative;transform-origin:50% 55%;transition:transform .45s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+.plane img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+.stage.tilt .plane{transform:scale(.86) rotateX(var(--tx,48deg)) rotateZ(var(--rz,0deg));margin:-25% 0 -10%}
+.plane img{-webkit-mask-image:radial-gradient(closest-side,#000 98%,transparent 100%);mask-image:radial-gradient(closest-side,#000 98%,transparent 100%)}
+.stage.flat .plane{transform:rotateZ(var(--rz,0deg))}
+.pt{position:absolute;width:20px;height:20px;transform:translate(-50%,-50%);border:0;padding:0;background:transparent;cursor:pointer;display:grid;place-items:center;z-index:1}
+.pt i{width:7px;height:7px;border-radius:50%;background:var(--c);border:1.5px solid #fff;box-shadow:0 0 2px #000a;transition:transform .15s}
+.pt span{position:absolute;bottom:16px;left:50%;transform:translateX(-50%) scale(.9);opacity:0;pointer-events:none;background:hsl(0 0% 100% / .95);border:1px solid var(--sao-line);border-radius:4px;padding:2px 7px;font-size:12px;font-weight:700;color:var(--g800);white-space:nowrap;transition:opacity .12s,transform .12s;box-shadow:var(--shadow-sm)}
+.pt:hover{z-index:5}.pt:hover i{transform:scale(2)}.pt:hover span,.pt.sel span{opacity:1;transform:translateX(-50%) scale(1)}
+.pt.sel i{transform:scale(2.2);box-shadow:0 0 0 3px var(--sao-o)}
+.rg{position:absolute;transform:translate(-50%,-50%);border:0;background:hsl(0 0% 100% / .0);color:#fff;font-size:11px;font-weight:800;letter-spacing:.03em;text-shadow:0 1px 2px #000,0 0 5px #000;white-space:nowrap;cursor:pointer;padding:3px 6px;border-radius:4px;z-index:2}
+.rg:hover{background:hsl(0 0% 100% / .9);color:var(--g800);text-shadow:none}
+.rg.sel{background:var(--sao-o);color:#fff;text-shadow:none}
+.stage.tilt .pt span,.stage.tilt .rg{transform-origin:50% 100%}
+.mctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.mctl .seg button{border:1px solid var(--sao-line);background:#fff}
+.legend2{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px;font-size:13px;color:var(--n600)}
+.legend2 label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.legend2 i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.rpanel{margin-top:16px}
+.rgroup{margin-top:10px}
+.rgroup h4{margin:0 0 6px;font-size:14px;color:var(--n600);letter-spacing:.06em}
+.rchips{display:flex;flex-wrap:wrap;gap:6px}
+.rchip{border:1px solid var(--sao-line);background:#fff;border-radius:4px;padding:5px 10px;font:inherit;font-size:14px;cursor:pointer;color:var(--g800)}
+.rchip:hover,.rchip.on{border-color:var(--sao-o);color:var(--sao-o)}
+.rchip small{color:var(--n500);margin-left:4px}
+
+/* ===== 道具圖示、3D ===== */
+.ic-img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.it-ic{overflow:hidden}
+.drop{display:inline-flex;align-items:center;gap:6px;position:relative}
+.drop .dic{width:26px;height:26px;border-radius:4px;background:hsl(210 30% 94%);display:grid;place-items:center;flex:none;font-size:15px}
+.drop .dic img{width:22px;height:22px;image-rendering:pixelated}
+.tip{position:fixed;z-index:60;pointer-events:none;background:hsl(0 0% 100% / .97);border:1px solid var(--sao-line);border-top:3px solid var(--sao-o);border-radius:6px;padding:10px 12px;box-shadow:0 8px 24px hsl(210 40% 30% / .18),0 2px 4px hsl(210 40% 30% / .1);font-size:13px;color:var(--n600);max-width:260px;opacity:0;transform:translateY(4px) scale(.97);transition:opacity .15s,transform .15s}
+.tip.on{opacity:1;transform:none}
+.tip .th{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.tip .th .dic{width:40px;height:40px}.tip .th .dic img{width:34px;height:34px}
+.tip b{display:block;font-size:15px;color:var(--g800)}
+.tip .hint{margin-top:6px;color:var(--sao-o);font-weight:700}
+.m3dbtn{border:1px solid var(--sao-line);background:linear-gradient(hsl(0 0% 100%),hsl(205 60% 95%));border-radius:4px;padding:3px 10px;font:inherit;font-size:13px;font-weight:800;color:hsl(205 70% 35%);cursor:pointer}
+.m3dbtn:hover{border-color:var(--sao-o);color:var(--sao-o)}
+.v3d{position:fixed;inset:0;z-index:70;background:hsl(210 40% 15% / .55);display:grid;place-items:center;padding:16px;animation:fadein .2s}
+.v3d .box{width:min(720px,100%);background:linear-gradient(hsl(205 80% 92%),hsl(0 0% 100%));border-radius:8px;border:1px solid var(--sao-line);box-shadow:0 20px 50px hsl(210 50% 20% / .35);overflow:hidden;display:flex;flex-direction:column}
+.v3d .hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--sao-line)}
+.v3d .hd h3{margin:0;font-size:20px}
+.v3d .hd button{margin-left:auto;border:0;background:none;font-size:24px;cursor:pointer;color:var(--n500);width:44px;height:44px}
+.v3d .cv{height:min(60vh,480px);position:relative;background:radial-gradient(circle at 50% 70%,hsl(0 0% 100%),hsl(205 70% 88%))}
+.v3d .cv canvas{display:block;width:100%!important;height:100%!important;cursor:grab}
+.v3d .cv p{position:absolute;inset:0;display:grid;place-items:center;margin:0;color:var(--n500)}
+.v3d .ft{padding:8px 16px 12px;font-size:13px;color:var(--n500)}
+@keyframes fadein{from{opacity:0}}
+.eq-ic{width:32px;height:32px;border-radius:4px;background:hsl(210 30% 94%);display:inline-grid;place-items:center;flex:none;overflow:hidden;font-size:16px;vertical-align:middle}.eq-ic img{width:28px;height:28px}
+.mic{display:inline-grid;place-items:center;width:18px;height:18px;vertical-align:-4px;margin-right:3px;font-size:12px}.mic img{width:18px;height:18px}
+.eq-top{align-items:center}
+.t3d{position:relative;height:min(70vh,640px);margin-top:12px;border-radius:6px;overflow:hidden;border:1px solid var(--sao-line);box-shadow:var(--shadow);background:linear-gradient(hsl(205 85% 80%),hsl(205 70% 93%))}
+.t3d canvas{display:block;width:100%!important;height:100%!important}
+.t3msg{position:absolute;inset:0;display:grid;place-items:center;color:var(--n600)}
+.t3lab{position:absolute;transform:translate(-50%,-100%);pointer-events:none;white-space:nowrap;font-size:11px;font-weight:800;color:#fff;text-shadow:0 1px 2px #000,0 0 4px #000}
+.pinv .ft{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pinv .ft .addr{margin-left:auto}
+.t3pin{position:absolute;transform:translate(-50%,-100%);pointer-events:none;background:var(--sao-o);color:#fff;font-size:12px;font-weight:800;padding:2px 8px;border-radius:4px;white-space:nowrap;box-shadow:0 2px 6px #0005}
+.t3pin::after{content:'';position:absolute;left:50%;bottom:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--sao-o)}
+.sp{display:block;width:100%;height:100%;max-width:34px;max-height:34px;margin:auto;background:url(atlas.png) 0 0/4000% 2700%;image-rendering:pixelated}
+.it-ic .sp{width:30px;height:30px}.dic .sp{width:22px;height:22px}.tip .dic .sp{width:34px;height:34px}.eq-ic .sp{width:28px;height:28px}.mic .sp{width:18px;height:18px}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700;800&display=swap">
+<meta name="robots" content="noindex,nofollow">
+<script type="importmap">{"imports":{"three":"./lib/three.module.min.js","three/addons/":"./lib/"}}</script>
+</head>
+<body>
+<nav class="topnav"><div class="topnav-in">
+  <a href="#home" class="brand">AINCRAD · 圖鑑</a>
+  <div class="navlinks" id="navlinks">
+    <a href="#home">主頁</a><a href="#mobs">怪物</a><a href="#items">道具</a><a href="#equip">裝備</a><a href="#craft">配方</a><a href="#dungeons">地城</a><a href="#quests">任務</a><a href="#map">地圖</a><a href="#places">商店・NPC</a><a href="#guild">公會</a><a href="#list">清單<span class="badge" id="lc"></span></a>
+  </div>
+</div></nav>
+<div class="wrap">
+  <div id="phead"></div>
+  <main id="main"></main>
+  <p class="foot">資料來源：<a href="https://saominecraft.wiki.gg/" target="_blank" rel="noopener">SAO Minecraft Wiki</a> 的怪物圖鑑、裝備與任務頁（2026/11/24 擷取），主線任務說明由英文版翻譯；第 2、3 層怪物的等級與生命值、地城與鑰匙資訊取自 <a href="https://saominecraft.com/news" target="_blank" rel="noopener">官方公告</a>；配方、商店、NPC 與地點座標、怪物掉落率、地城資料與俯視地圖取自 <a href="https://exiled-order.pages.dev/" target="_blank" rel="noopener">EXILED ORDER × NULL</a>（感謝 Tatanjbr、SebasG4mer 等玩家整理，名稱由我們翻成中文）；怪物 3D 模型與道具圖示也取自 EXILED ORDER（模型貼圖用伺服器資源包，缺的圖示用 Minecraft 原版物品圖代替）；第 1 層 3D 地形的高度來自 Distant Horizons 紀錄。「平均約幾隻」是用掉落機率算出的期望值，實際會依運氣上下浮動。</p>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div><h3 style="margin:0 0 8px">回報範本</h3><p class="foot" style="margin:0 0 8px">自動複製失敗，請手動複製下面的文字。</p><textarea readonly></textarea><button id="mclose">關閉</button></div></div>
+<script>
+const MOBS = __DATA__;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pnum = p => p && p.endsWith('%') ? parseFloat(p) : null;
+const rclass = v => v == null ? 'common' : v < 1 ? 'vrare' : v < 10 ? 'rare' : 'common';
+const stars = n => n ? '★'.repeat(n) + '<i>' + '★'.repeat(5 - n) + '</i>' : '';
+const kills = v => v ? Math.ceil(100 / v) : null;
+
+// 道具索引
+const ITEMS = {};
+MOBS.forEach(m => m.d.forEach(d => {
+  const k = d.i;
+  (ITEMS[k] ||= {name: d.i, en: d.e, src: []}).src.push({m, p: d.p, v: pnum(d.p), note: d.n});
+  if (!ITEMS[k].en && d.e) ITEMS[k].en = d.e;
+}));
+Object.values(ITEMS).forEach(it => it.src.sort((a, b) => (b.v ?? 50) - (a.v ?? 50)));
+
+let state = {tab: 'item', q: '', floor: 0, type: '全部', mapFloor: 1, place: '', plFloor: 1, plCat: '全部', eoSel: -1, mapView: 'top', region: -1, tilt: 0, rot: 0, eqCat: '全部', myLv: 0, qType: 'main', qFloor: -1};
+let list = {};
+try { list = JSON.parse(localStorage.getItem('sao-list') || '{}'); } catch (e) {}
+const saveList = () => { try { localStorage.setItem('sao-list', JSON.stringify(list)); } catch (e) {} };
+
+const norm = s => String(s || '').toLowerCase().replace(/[\s'’，,]/g, '');
+const match = (q, ...xs) => xs.some(x => norm(x).includes(q));
+const hl = (s, q) => {
+  const raw = state.q.trim();
+  if (!q || !raw) return esc(s);
+  const i = String(s).toLowerCase().indexOf(raw.toLowerCase());
+  return i < 0 ? esc(s) : esc(s.slice(0, i)) + '<span class="hl">' + esc(s.slice(i, i + raw.length)) + '</span>' + esc(s.slice(i + raw.length));
+};
+const place = m => `第 ${m.f} 層 · ${esc(m.r)}${m.re && m.re !== m.r ? ` <span class="en">(${esc(m.re)})</span>` : ''}`;
+
+function itemCard(it, q) {
+  const inList = !!list[it.name];
+  return `<article class="card">
+    <div class="item-head"><div><h3>${hl(it.name, q)}</h3>${it.en && it.en !== it.name ? `<div class="en">${hl(it.en, q)}</div>` : ''}</div>
+    <button class="add ${inList ? 'in' : ''}" data-add="${esc(it.name)}">${inList ? '✓ 已在清單' : '＋ 加入清單'}</button></div>
+    ${(() => { const e = EQ.find(e => e.n === it.name); return e ? `<div class="eq-list" style="box-shadow:none;background:var(--g50);margin:12px 0 4px">${eqRow(e, '').replace(/<div class="eq-src">[\s\S]*?<\/div>/, '')}</div>` : ''; })()}
+    ${RECIPES[it.name] ? recipeHtml('可以製作', RECIPES[it.name], true, it.name) : ''}
+    ${it.src.map(s => `<div class="src r-${rclass(s.v)}">
+      <div class="who">${esc(s.m.n)}<span class="tag t-${s.m.t}">${s.m.t}</span> <span class="stars">${stars(s.m.s)}</span></div>
+      <div class="where">${place(s.m)}${s.m.b === '主動' ? ' · 會主動攻擊' : ''}</div>
+      <div class="rate"><b>${s.p === '?' ? '?' : esc(s.p)}</b><small>${s.v ? (s.v >= 100 ? '必掉' : `平均約 ${kills(s.v)} 隻`) : esc(s.note || '機率未知')}</small></div>
+    </div>`).join('')}
+  </article>`;
+}
+
+function mobCard(m, q) {
+  const st = [m.st.hp ? `生命值 ${m.st.hp}` : '', m.st.speed ? `速度 ${m.st.speed}` : ''].filter(Boolean).join(' · ');
+  return `<article class="card">
+    <div class="mob-head"><h3>${hl(m.n, q)}</h3>${m.ne !== m.n ? `<span class="en">${hl(m.ne, q)}</span>` : ''}<span class="tag t-${m.t}">${m.t}</span>${m.eid ? `<button class="m3dbtn" data-m3d="${MOBS.indexOf(m)}">3D 模型</button>` : ''}${mobPoints(m).length ? `<button class="locbtn" data-mobmap="${MOBS.indexOf(m)}">📍 地圖（${mobPoints(m).length}）</button>` : ''}<button class="rpt" data-rpt="怪物|${esc(m.n)}|${esc(m.ne)}">回報錯誤</button></div>
+    <div class="mob-meta">${place(m)} · ${m.b === '主動' ? '會主動攻擊' : m.b === '中立' ? '中立（被打才反擊）' : '被動（不攻擊）'} ${m.s ? '· <span class="stars">' + stars(m.s) + '</span>' : ''}${st ? `<span class="stat">${st}</span>` : ''}</div>
+    ${m.desc ? `<p class="mob-desc">${esc(m.desc)}</p>` : ''}
+    ${m.ost ? `<div class="ost">${m.ost.lv ? `<span>Lv. ${esc(m.ost.lv)}</span>` : ''}${m.ost.hp ? `<span>生命值 ${esc(m.ost.hp)}</span>` : ''}${m.ost.dmg ? `<span>傷害 ${esc(m.ost.dmg)}</span>` : ''}${m.ost.chp ? `<span class="c">腐化版生命值 ${esc(m.ost.chp)}</span>` : ''}<small>官方 11/10 公告數值</small></div>` : ''}
+    <div class="drops">${m.d.length ? m.d.map(d => {
+      const v = pnum(d.p), c = rclass(v);
+      return `<button class="drop ${c}" data-item="${esc(d.i)}" data-tip="${esc(d.i)}|${esc(d.p)}|${esc(d.e || '')}"><span class="dic">${ICON_HTML(d.i)}</span><em>${esc(d.p)}</em>${hl(d.i, q)}${c === 'vrare' ? '<span class="gem">◆</span>' : c === 'rare' ? '<span class="gem">◇</span>' : ''}</button>`;
+    }).join('') : '<span class="none">沒有已知掉落物</span>'}</div>
+  </article>`;
+}
+
+function renderItem() {
+  const q = norm(state.q);
+  if (!q) return `<div class="empty"><div class="big">🗡️</div><h3>想刷什麼材料？</h3><p>在上面輸入道具名稱，中文或英文都可以。<br>也可以點「常查」裡的道具，或到「圖鑑」直接點怪物的掉落物。</p></div>`;
+  const items = Object.values(ITEMS).filter(it => match(q, it.name, it.en));
+  const mobs = MOBS.filter(m => match(q, m.n, m.ne, m.r, m.re));
+  const eqs = EQ.filter(e => match(q, e.n) && !ITEMS[e.n]);
+  const mqs = MQ.filter(x => match(q, x[2], x[3], x[8]));
+  const sqs = SQ.filter(x => match(q, x.npc, x.town, x.task));
+  const npcs = ALL_NPC().filter(n => match(q, n.n, n.role, n.place, n.sells));
+  const recs = Object.keys(RECIPES).filter(n => match(q, n, RECIPES[n].en) && !EQ.some(e => e.n === n));
+  const places = EO.filter(p => match(q, p.n, p.o));
+  if (!recs.length && !places.length && !npcs.length && !items.length && !mobs.length && !eqs.length && !mqs.length && !sqs.length) {
+    // 模糊搜尋：遊戲內中文和 wiki 翻譯不同時，用相同的字來猜
+    const qs = [...new Set([...state.q.replace(/\s/g, '')])];
+    const score = s => { const t = String(s); return qs.filter(c => t.includes(c)).length; };
+    const near = Object.values(ITEMS).map(it => ({it, sc: score(it.name)})).filter(x => x.sc >= Math.max(1, Math.ceil(qs.length * 0.3))).sort((a, b) => b.sc - a.sc).slice(0, 6);
+    return `<div class="empty"><div class="big">🔍</div><h3>找不到「${esc(state.q)}」</h3><p>${near.length ? '遊戲裡的名稱可能跟 wiki 不一樣，你是不是要找：' : '換個字試試，例如只輸入一部分「牙」或英文「fang」。'}</p></div>`
+      + near.map(x => itemCard(x.it, '')).join('');
+  }
+  let h = '';
+  if (items.length) h += `<div class="section-title">道具 · ${items.length} 項</div>` + items.slice(0, 40).map(it => itemCard(it, q)).join('');
+  if (recs.length) h += `<div class="section-title">配方 · ${recs.length} 個</div><div class="eq-list">` + recs.slice(0, 30).map(n => recipeHtml(n, RECIPES[n], true)).join('') + '</div>';
+  if (places.length) h += `<div class="section-title">地點 · ${places.length} 個</div>` + places.slice(0, 20).map(placeCard).join('');
+  if (npcs.length) h += `<div class="section-title">NPC · ${npcs.length} 位</div>` + npcs.map(n => npcCard({...n, role: `第 ${n.f} 層 ${n.place}` + (n.role ? ' · ' + n.role : '')})).join('');
+  if (eqs.length) h += `<div class="section-title">裝備 · ${eqs.length} 件</div><div class="eq-list">` + eqs.slice(0, 30).map(e => eqRow(e, q)).join('') + '</div>';
+  if (mobs.length) h += `<div class="section-title">相關怪物 · ${mobs.length} 隻</div>` + mobs.slice(0, 30).map(m => mobCard(m, q)).join('');
+  if (mqs.length || sqs.length) h += `<div class="section-title">任務 · ${mqs.length + sqs.length} 個</div>` + mqs.slice(0, 20).map(x => mqCard(x, q)).join('') + sqs.map(x => sqCard(x, q)).join('');
+  return h;
+}
+
+function renderMob() {
+  const q = norm(state.q);
+  const rows = MOBS.filter(m => (!state.floor || m.f === state.floor)
+    && (state.type === '全部' || (state.type === 'Boss' ? (m.t === 'Boss' || m.t === '小Boss') : (m.t === '怪物' || m.t === '小怪')))
+    && (!q || match(q, m.n, m.ne, m.r, m.re, ...m.d.map(d => d.i), ...m.d.map(d => d.e))));
+  const seg = (key, vals, labels) => `<div class="seg">${vals.map((v, i) => `<button data-${key}="${v}" class="${state[key] == v ? 'on' : ''}">${labels[i]}</button>`).join('')}</div>`;
+  return `<div class="filters">
+      <span class="seg-label">樓層</span>${seg('floor', [0, 1, 2, 3], ['全部', '1', '2', '3'])}
+      <span class="seg-label">類型</span>${seg('type', ['全部', 'Boss', '一般'], ['全部', 'Boss', '一般怪'])}
+      <span class="count">${rows.length} 隻${q ? `（含「${esc(state.q)}」）` : ''}</span></div>`
+    + (rows.length ? rows.map(m => mobCard(m, q)).join('') : `<div class="empty"><h3>沒有符合條件的怪物</h3><p>試試切回「全部」或清除搜尋。</p></div>`);
+}
+
+function renderList() {
+  const names = Object.keys(list);
+  if (!names.length) return `<div class="empty"><div class="big">📜</div><h3>清單是空的</h3><p>在「查道具」找到想刷的材料，按「＋ 加入清單」，<br>這裡就會幫你整理要去哪裡、打哪隻怪。</p></div>`;
+  // 每個道具選掉率最高的來源，依地點分組
+  const route = {};
+  names.forEach(n => {
+    const it = ITEMS[n]; if (!it) return;
+    const e = list[n]; if (e.done) return;
+    const best = it.src[0];
+    const key = best.m.f + '|' + best.m.r;
+    (route[key] ||= {f: best.m.f, r: best.m.r, re: best.m.re, rows: []}).rows.push({n, e, best, alt: it.src.length - 1});
+  });
+  const groups = Object.values(route).sort((a, b) => a.f - b.f);
+  const left = names.filter(n => !list[n].done).length;
+  return `<div class="section-title">要刷的材料 · 剩 ${left} / ${names.length} 項</div>
+    <article class="card">${names.map(n => {
+      const e = list[n], it = ITEMS[n] || {en: ''};
+      return `<div class="list-row ${e.done ? 'done' : ''}">
+        <button class="check ${e.done ? 'on' : ''}" data-done="${esc(n)}" aria-label="標記完成">${e.done ? '✓' : ''}</button>
+        <div class="nm"><b>${esc(n)}</b><small>${esc(it.en || '')}</small></div>
+        <div class="step"><button data-dec="${esc(n)}" aria-label="減少">−</button><span>${e.qty}</span><button data-inc="${esc(n)}" aria-label="增加">＋</button></div>
+        <button class="x" data-del="${esc(n)}" aria-label="移除">×</button></div>`;
+    }).join('')}</article>
+    ${groups.length ? `<div class="section-title">刷怪路線 · 依地點整理（每項都選掉率最高的怪）</div>` + groups.map(g => `
+      <article class="card route accent"><h4>${esc(g.r)}${g.re && g.re !== g.r ? ` <span class="en">${esc(g.re)}</span>` : ''}</h4><div class="fl">第 ${g.f} 層</div>
+      <ul>${g.rows.map(r => `<li><span><b>${esc(r.n)}</b> × ${r.e.qty}<br><small class="en">打 ${esc(r.best.m.n)}（${esc(r.best.p)}）${r.alt ? ` · 另有 ${r.alt} 隻也會掉` : ''}</small></span>
+        <span class="k">${r.best.v ? (r.best.v >= 100 ? `<b>${r.e.qty}</b> 隻` : `約 <b>${Math.ceil(r.e.qty * 100 / r.best.v)}</b> 隻`) : '機率未知'}</span></li>`).join('')}</ul></article>`).join('')
+      : `<div class="empty"><h3>全部刷完了 🎉</h3><p>可以按下面的按鈕清空清單。</p></div>`}
+    <p style="text-align:right"><button class="btn-ghost" id="clearList">清空清單</button></p>`;
+}
+
+// ═══ 地圖：新增樓層時，在這裡加一筆（x、y 是圖片上的百分比位置）═══
+// kind: game = 遊戲地圖上原本就有的地名；sure = 比較確定；guess = 推測
+const MAPS = {
+  1: {img: 'map-f1.jpg', pins: [
+    {x: 34.8, y: 80.7, name: '起始之鎮', kind: 'game', regions: ['起始之鎮', '野豬區'], note: '出生城鎮。城外是野豬區，腐化野豬和 Boss Pumba 都在這附近。'},
+    {x: 46.0, y: 75.6, name: '狼之谷', kind: 'game', regions: ['狼之谷'], note: '白色、黑色恐狼和 Boss 阿爾巴爾都在這裡。阿爾巴爾 20% 掉阿爾巴爾之牙，小狼可以刷狼牙。'},
+    {x: 30.3, y: 64.8, name: '哈娜卡', kind: 'game', regions: ['哈娜卡'], note: '名字和位置都很像動畫裡的「霍倫卡村」（桐人接任務、刷豬籠草換劍的村子）。'},
+    {x: 59.5, y: 69.9, name: '水成', kind: 'game', regions: ['水成原野'], note: '水成原野（Mizunari Fields），會主動攻擊的豬籠草在這裡，0.5% 掉豬籠草之花。'},
+    {x: 80.2, y: 70.6, name: '蓋爾多拉克礦坑', kind: 'game', regions: ['蓋爾多拉克礦坑', '蓋爾多拉克礦坑地城'], note: '蓋爾多拉克礦坑（Geldorak Mine）和礦坑地城。'},
+    {x: 87.2, y: 47.2, name: '商人公會', kind: 'game', regions: [], note: '圓形城牆城鎮。圖鑑裡還沒有對應的怪物。'},
+    {x: 10.0, y: 42.6, name: '巨人花園', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 44.7, y: 60.9, name: 'OG 區', kind: 'game', regions: [], note: '遊戲地圖上的「OG 區」（OG Quarter）。圖鑑裡還沒有對應的怪物。'},
+    {x: 32.7, y: 39.1, name: '維勒倫', kind: 'game', regions: ['維勒倫湖'], note: '湖邊的城鎮，旁邊的湖就是維勒倫湖（Virelune Lake）。'},
+    {x: 40.9, y: 16.6, name: '坎德莉亞', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 63.8, y: 29.2, name: '托爾巴納', kind: 'game', regions: ['托爾巴納山脈'], town: 'tolbana-town.jpg', townNote: '托爾巴納城鎮地圖，藍色圓圈是飾品鐵匠的鐵匠屋（城鎮左上方）。', npcs: [{n: '飾品鐵匠', role: '鐵匠屋', xyz: '3290, 196, 1485', sells: '冰之精靈、冰魔像、雄鹿系列飾品（製作）', shop: [
+      {g: '冰之精靈飾品', from: '冰之精靈', items: [['冰封戒指', 33, '30 秒', '稀有', [['寒冰魔法碎片', 12], ['冰霜之塵', 8]]], ['冰封觸角', 33, '30 秒', '稀有', [['寒冰魔法碎片', 16]]], ['寒冰精華', 40, '1 分', '史詩', [['冰霜之塵', 32]]], ['冰封護符', 33, '30 秒', '稀有', [['寒冰魔法碎片', 12], ['白樺細繩', 1]]]]},
+      {g: '冰魔像飾品', from: '冰魔像', items: [['寒冰戒指', 33, '30 秒', '稀有', [['寒冰硬皮', 12], ['冰霜之塵', 8]]], ['寒冰手環', 33, '30 秒', '稀有', [['寒冰硬皮', 16]]], ['寒冰手套', 30, '15 秒', '普通', [['寒冰硬皮', 12]]], ['冰霜護符', 30, '15 秒', '普通', [['寒冰硬皮', 8], ['白樺細繩', 1]]]]},
+      {g: '雄鹿飾品', from: '山中雄鹿', items: [['雄鹿手環', 33, '30 秒', '稀有', [['山鹿皮', 12]]], ['雄鹿手套', 33, '30 秒', '稀有', [['山鹿皮', 12]]]]}
+    ]}], note: '最靠近狗頭人之塔的城鎮，跟動畫一樣。有鐵匠 Emy、皇家鍛造所，支線 NPC Sentinel Kael、Hunter Lysa 也在這裡。附近的山區有山中雄鹿。'},
+    {x: 79.5, y: 22.6, name: '山鹿雪地', kind: 'sure', regions: ['托爾巴納西北方的雪地區域'], note: '托爾巴納右上方的灰白色山地。山鹿會主動攻擊，75% 掉山鹿皮。'},
+    {x: 31.0, y: 53.2, name: '腐臭沼澤', kind: 'sure', regions: ['腐臭沼澤'], note: '哈娜卡北方的區塊。樹人、森林法師和 Boss 巨像守護者在這裡，做森林鑰匙的三樣材料（森林樹皮、木之心、魔法菌絲）都在這裡刷。'},
+    {x: 75.0, y: 36.6, name: '冰堡', kind: 'sure', regions: ['冰堡'], note: '雪山裡的城堡（wiki 叫「雪之城塞」Snow Citadel），在瀑布和湖的左邊。冰之精靈、冰魔像和 Boss 冰熊都在這裡，冰霜之塵三隻都會掉。托爾巴納的獵人 Lysa 支線要你來這裡打 12 隻冰之精靈。'},
+    {x: 66.1, y: 17.4, name: '狗頭人之塔', kind: 'sure', up: 1, regions: ['狗頭人之塔'], note: '第 1 層的迷宮塔，塔頂是樓層 Boss「狗頭人領主 Illfang」。'}
+  ]}
+};
+
+const npcCard = p => `<div class="npc"><b>${esc(p.n)}</b>${p.role ? ` <span class="mini">${esc(p.role)}</span>` : ''}${p.xyz ? `<div class="eq-stat">座標 <span class="xyz">${esc(p.xyz)}</span>（X, Y, Z）</div>` : ''}<div class="eq-stat">${p.sells ? '販售：' + esc(p.sells) : '販售清單還沒有資料'}</div>${p.shop ? p.shop.map(shopGroup).join('') + '<p class="foot" style="margin:10px 0 0">價格是製作費用（col），另外要準備材料。稀有度以遊戲內顯示為準；點材料名稱可以查哪裡打。</p>' : ''}</div>`;
+const shopGroup = g => { const mob = MOBS.find(m => m.n === g.from); return `<div class="shop"><div class="shop-h"><b>${esc(g.g)}</b>${mob ? `<button class="chip" data-q="${esc(mob.n)}">材料怪：${esc(mob.n)}（${esc(mob.r)}）›</button>` : ''}</div>${g.items.map(([n, c, tm, rr, mats]) => { const e = EQ.find(x => x.n === n); return `<div class="shop-i"><span>${esc(n)} <span class="rar rar-${esc(rr || (e && e.r) || '')}">${esc(rr || (e && e.r) || '')}</span>${e ? ` <span class="mini">Lv. ${e.lv}</span>` : ''}${e && e.b ? `<br><small class="en">${esc(e.b)}</small>` : ''}${mats ? `<br><small class="mats">材料：${mats.map(([m, q]) => `<button class="mat" data-item="${esc(m)}"><span class="mic">${ICON_HTML(m)}</span>${esc(m)} ×${q}</button>`).join('、')}</small>` : ''}</span><span class="k">${c} col · ${esc(tm)}${mats ? `<br><button class="addr" data-recipe="${esc(n)}">＋ 材料加入清單</button>` : ''}</span></div>`; }).join('')}</div>`; };
+const ALL_NPC = () => Object.entries(MAPS).flatMap(([f, m]) => m.pins.flatMap(p => (p.npcs || []).map(n => ({...n, f: +f, place: p.name}))));
+const FIT = [[4.5964574493396775, 2.176873259731392], [17.17398007047495, 1.2167300858038805], [-0.11149870737944441, 17.65943998618244], [10.154208902337512, -26.677536498765487]];
+const CAT_COLOR = {'商店・製作': 'hsl(42 90% 48%)', '收購商': 'hsl(28 80% 45%)', 'NPC': 'hsl(275 45% 50%)', 'Boss': 'hsl(345 65% 48%)', '怪物': 'hsl(150 45% 32%)', '採集點': 'hsl(170 45% 35%)', '地區': 'hsl(150 8% 40%)', '地標': 'hsl(150 8% 55%)'};
+function eoPos(p) { const [X, Y, Z] = p.xyz.split(',').map(Number); const v = [1, X / 1000, Z / 1000, Y / 1000];
+  return [0, 1].map(k => v.reduce((s, a, i) => s + a * FIT[i][k], 0)); }
+
+const PIN_EO = {'起始之鎮': 'Capital', '狼之谷': 'Wolf Valley', '哈娜卡': 'Hanaka', '水成': 'Mizunari', '蓋爾多拉克礦坑': 'Mina de Geldorack', '商人公會': 'Merchand Guilds', '巨人花園': 'Garden of Gigants', 'OG 區': 'OG Quarter', '維勒倫': 'Virelune', '坎德莉亞': 'Candelia', '托爾巴納': 'Tolbana', '狗頭人之塔': 'Torre de los Kobolds', '腐臭沼澤': 'Putrid Swamp', '冰堡': 'The Citadel of Snows', '山鹿雪地': 'Llanura nevada'};
+const pinXYZ = p => { const e = EO.find(x => x.f === 1 && x.o === PIN_EO[p.name]); return e ? e.xyz : ''; };
+function mapToWorld(px, py) {
+  const Y = 0.06, a = FIT, bx = px - a[0][0] - a[3][0] * Y, by = py - a[0][1] - a[3][1] * Y;
+  const det = a[1][0] * a[2][1] - a[2][0] * a[1][1];
+  return [Math.round((bx * a[2][1] - a[2][0] * by) / det * 1000), Math.round((a[1][0] * by - bx * a[1][1]) / det * 1000)];
+}
+const copyBtn = (txt, label) => `<button class="copy" data-copy="${esc(txt)}">${label || '複製座標'}</button>`;
+const TOP = {1: {img: 'aincrad-1.webp', x0: 60, z0: 85, w: 4977, h: 4952}, 2: {img: 'aincrad-2.webp', x0: -1091, z0: -1091, w: 2183, h: 2183}, 3: {img: 'aincrad-3.webp', x0: -183, z0: -43, w: 1577, h: 1577}};
+const topPos = (f, X, Z) => { const m = TOP[f]; return [(X - m.x0) / m.w * 100, (Z - m.z0) / m.h * 100]; };
+const o3d = (f, xyz) => `<button class="o3d" data-goto="${f}|${esc(String(xyz))}" title="在地圖上標出這個位置">📍 地圖</button>`;
+let EO_BY_ID = null;
+function mobPoints(m) {
+  if (!EO_BY_ID) { EO_BY_ID = {}; EO.forEach((p, i) => EO_BY_ID[p.id] = i); }
+  const s = new Set(); const base = m.mapa in EO_BY_ID ? EO[EO_BY_ID[m.mapa]] : null;
+  if (base) s.add(EO_BY_ID[m.mapa]);
+  EO.forEach((p, i) => { if ((p.c === '怪物' || p.c === 'Boss') && p.f === m.f && (p.n === m.n || (base && base.c !== '地區' && p.n === base.n))) s.add(i); });
+  return [...s];
+}
+const LAYERS = ['Boss', '怪物', 'NPC', '商店・製作', '收購商', '採集點', '地標'];
+let _regionOf = null;
+function regionOf(i) {   // 每個地點歸到最近的地區
+  if (!_regionOf) { _regionOf = {}; const regs = EO.map((p, k) => [p, k]).filter(([p]) => p.c === '地區');
+    EO.forEach((p, k) => { if (p.c === '地區') return; const [X, , Z] = p.xyz.split(',').map(Number); let best = -1, bd = 1e9;
+      regs.forEach(([r, j]) => { if (r.f !== p.f) return; const [x, , z] = r.xyz.split(',').map(Number); const d = (x - X) ** 2 + (z - Z) ** 2; if (d < bd) { bd = d; best = j; } });
+      _regionOf[k] = best; }); }
+  return _regionOf[i];
+}
+function mapSearch(q) {   // 地圖搜尋：地點名稱、賣的、收的，以及會掉這個道具的怪
+  if (!q) return [];
+  const s = new Set();
+  EO.forEach((p, i) => { if (match(q, p.n, p.o, ...(p.items || []).map(x => x.n), ...(p.buy || []).map(x => x.n))) s.add(i); });
+  MOBS.forEach(m => { if (match(q, m.n, m.ne, ...m.d.map(d => d.i))) mobPoints(m).forEach(i => s.add(i)); });
+  return [...s];
+}
+function renderTopMap() {
+  const f = state.mapFloor, m = TOP[f], q = norm(state.q);
+  state.layers = state.layers || {'Boss': 1, '怪物': 1, 'NPC': 1, '商店・製作': 1, '收購商': 0, '採集點': 0, '地標': 0};
+  const found = mapSearch(q), foundSet = new Set(found);
+  const pins = new Set([...(state.mobPins || []), ...found]);
+  const pos = p => { const [X, , Z] = p.xyz.split(',').map(Number); return topPos(f, X, Z); };
+  const pts = EO.map((p, i) => [p, i]).filter(([p]) => p.f === f && p.c !== '地區' && (state.layers[p.c] || pins.has(EO.indexOf(p))));
+  const regs = EO.map((p, i) => [p, i]).filter(([p]) => p.f === f && p.c === '地區');
+  const unrot = 'rotateZ(calc(-1 * var(--rz,0deg)))';
+  const ptHtml = pts.map(([p, i]) => { const [x, y] = pos(p); const hit = pins.has(i);
+    return hit ? `<span class="mobpin" style="left:${x}%;top:${y}%"></span><button class="pt sel" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c]};transform:translate(-50%,-50%) ${unrot}" data-eo="${i}"><i></i><span>${esc(p.n)}</span></button>`
+      : `<button class="pt ${state.eoSel === i ? 'sel' : ''}" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c]};transform:translate(-50%,-50%) ${unrot}" data-eo="${i}" aria-label="${esc(p.n)}"><i></i><span>${esc(p.n)}</span></button>`; }).join('');
+  const rgHtml = regs.map(([p, i]) => { const [x, y] = pos(p); return `<button class="rg ${state.region === i || pins.has(i) ? 'sel' : ''}" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%) ${unrot}" data-region="${i}">${esc(p.n)}</button>`; }).join('');
+  const mc = state.mclick && state.mclick.top ? `<span class="mapmark" style="left:${state.mclick.x}%;top:${state.mclick.y}%"></span>` : '';
+  const ctl = `<div class="mctl"><div class="seg">${[1, 2, 3].map(x => `<button data-mapfloor="${x}" class="${f === x ? 'on' : ''}">第 ${x} 層</button>`).join('')}</div>
+    <div class="seg"><button data-tilt="0" class="${state.tilt || state.terrain ? '' : 'on'}">平面</button><button data-tilt="1" class="${state.tilt && !state.terrain ? 'on' : ''}">立體</button></div>
+    <div class="seg"><button data-rot="-45" title="向左轉">⟲</button><button data-rot="0" title="轉正">北</button><button data-rot="45" title="向右轉">⟳</button></div>
+    ${f === 1 ? `<div class="seg"><button data-terrain="1" class="${state.terrain ? 'on' : ''}">⛰ 3D 地形</button></div>` : ''}
+    ${MAPS[f] ? `<div class="seg"><button data-mapview="art">插圖</button></div>` : ''}</div>`;
+  const legend = `<div class="legend2">${LAYERS.map(c => `<label><input type="checkbox" data-layer="${esc(c)}" ${state.layers[c] ? 'checked' : ''}><i style="background:${CAT_COLOR[c]}"></i>${esc(c)}</label>`).join('')}<span>　滑鼠移到點上看名稱，點地區名稱看那裡有什麼</span></div>`;
+  const coord = state.mclick && state.mclick.top ? `<div class="mobbar" style="background:var(--g100);color:var(--g800)">📍 座標 <b class="xyz">X ${state.mclick.X}　Z ${state.mclick.Z}</b>${copyBtn(state.mclick.X + ' ~ ' + state.mclick.Z)}<button class="addr" data-clearpins="1" style="margin-left:auto">清除</button></div>` : '';
+  const bar = state.mobName || found.length ? `<div class="mobbar">📍 ${state.mobName ? esc(state.mobName) : `搜尋「${esc(state.q)}」`}：這層標出 ${[...pins].filter(i => EO[i].f === f).length} 處${found.length && [...pins].filter(i => EO[i].f === f).length === 0 ? `（在第 ${[...new Set(found.map(i => EO[i].f))].join('、')} 層）` : ''}<button class="addr" data-clearpins="1" style="margin-left:auto">清除標示</button></div>` : '';
+  // 下方：選到的地區或地點
+  let below = '';
+  if (state.region >= 0 && EO[state.region] && EO[state.region].f === f) {
+    const R = EO[state.region]; const inR = EO.map((p, i) => [p, i]).filter(([p, i]) => p.c !== '地區' && regionOf(i) === state.region);
+    const mobsHere = MOBS.filter(mm => mm.f === f && (mobPoints(mm).some(i => regionOf(i) === state.region) || mm.mapa === R.id));
+    const grp = (title, arr, fn) => arr.length ? `<div class="rgroup"><h4>${title} · ${arr.length}</h4><div class="rchips">${arr.map(fn).join('')}</div></div>` : '';
+    below = `<div class="card rpanel"><div class="pl-h"><h3 style="margin:0">${esc(R.n)}</h3><span class="mini">第 ${f} 層 · 地區</span><span class="xyz">${esc(R.xyz)} ${copyBtn(R.xyz.replace(/,/g, ''), '複製')}</span></div>
+      ${R.note ? `<div class="eq-stat">${esc(R.note)}</div>` : ''}
+      ${grp('怪物', mobsHere, mm => `<button class="rchip" data-mobmap="${MOBS.indexOf(mm)}">${esc(mm.n)}<small>${mm.t}</small></button>`)}
+      ${grp('NPC', inR.filter(([p]) => p.c === 'NPC'), ([p, i]) => `<button class="rchip" data-eo="${i}">${esc(p.n)}</button>`)}
+      ${grp('商店・製作', inR.filter(([p]) => p.c === '商店・製作'), ([p, i]) => `<button class="rchip" data-eo="${i}">${esc(p.n)}</button>`)}
+      ${grp('收購商', inR.filter(([p]) => p.c === '收購商'), ([p, i]) => `<button class="rchip" data-eo="${i}">${esc(p.n)}</button>`)}
+      ${grp('採集點・地標', inR.filter(([p]) => p.c === '採集點' || p.c === '地標'), ([p, i]) => `<button class="rchip" data-eo="${i}">${esc(p.n)}</button>`)}
+      ${!mobsHere.length && !inR.length ? '<p class="todo">這個地區還沒有怪物或 NPC 資料。</p>' : ''}</div>`;
+  }
+  if (state.eoSel >= 0 && EO[state.eoSel]) below = `<div class="rpanel">${placeCard(EO[state.eoSel])}</div>` + below;
+  if (found.length) below += `<div class="section-title">搜尋結果 · ${found.length}</div><div class="rchips">${found.map(i => `<button class="rchip" data-eo="${i}">${esc(EO[i].n)}<small>第 ${EO[i].f} 層 · ${esc(EO[i].c)} · ${esc(EO[i].xyz.split(',').filter((_, k) => k !== 1).join(' / '))}</small></button>`).join('')}</div>`;
+  state.t3pins = [...pins].filter(i => EO[i].f === f);
+  if (state.terrain && f === 1) return ctl + bar + `<div class="t3d" id="t3d"><div class="t3msg">3D 地形載入中…</div></div><div class="legend2"><span>拖曳旋轉・右鍵或兩指平移・滾輪縮放。高低起伏來自你的 Distant Horizons 紀錄，只有走過的地方是真的地形，其他地方是平滑補上的。</span></div>` + below;
+  return ctl + bar + coord + `<div class="stage ${state.tilt ? 'tilt' : 'flat'}" style="--rz:${state.rot || 0}deg"><div class="plane" id="mapbox"><img src="${m.img}" data-top="${f}" alt="第 ${f} 層地圖">${rgHtml}${ptHtml}${mc}</div></div>` + legend + below;
+}
+
+function renderMap() {
+  if (state.mapView === 'top' || !MAPS[state.mapFloor]) return renderTopMap();
+  const seg = `<div class="filters"><span class="seg-label">樓層</span><div class="seg">${[1, 2, 3].map(f => `<button data-mapfloor="${f}" class="${state.mapFloor === f ? 'on' : ''}">第 ${f} 層</button>`).join('')}</div><div class="seg vtog"><button data-mapview="art" class="on">插圖（有地名）</button><button data-mapview="top">俯視圖（精確座標）</button></div></div>`;
+  const mp = MAPS[state.mapFloor];
+  if (!mp) { state.plFloor = state.mapFloor; return seg + `<div class="empty" style="padding:24px"><h3>第 ${state.mapFloor} 層的地圖圖片還沒放上來</h3><p>下面是這層的地點清單和座標。</p></div>` + renderPlaces(); }
+  const sel = mp.pins.find(p => p.name === state.place);
+  const cls = p => p.kind === 'guess' ? 'guess' : p.kind === 'game' ? 'game' : '';
+  let h = seg + `<div class="mapbox" id="mapbox"><img src="${mp.img}" alt="第 ${state.mapFloor} 層地圖">${state.mclick ? `<span class="mapmark" style="left:${state.mclick.x}%;top:${state.mclick.y}%"></span><div class="mapclick" style="left:${Math.min(80, Math.max(20, state.mclick.x))}%;top:${state.mclick.y}%">大概座標 <b>X ${state.mclick.X}　Z ${state.mclick.Z}</b>${copyBtn(state.mclick.X + ' ~ ' + state.mclick.Z)}<br><small class="en">誤差約 ±100 格，高度請自己看</small></div>` : ''}${state.plCat !== '全部' ? EO.map((p, i) => [p, i]).filter(([p]) => p.f === state.mapFloor && p.c === state.plCat).map(([p, i]) => { const [x, y] = eoPos(p); return x > 0 && x < 100 && y > 0 && y < 100 ? `<button class="eo-dot ${state.eoSel === i ? 'on' : ''}" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c] || ''}" data-eo="${i}" aria-label="${esc(p.n)}" title="${esc(p.n)}"><i></i></button>` : ''; }).join('') : ''}${mp.pins.map(p =>
+    `<button class="pin ${cls(p)} ${p.up ? 'up' : ''} ${sel === p ? 'on' : ''}" style="left:${p.x}%;top:${p.y}%" data-place="${esc(p.name)}" aria-label="${esc(p.name)}"><i>${p.kind === 'guess' ? '?' : ''}</i>${p.kind !== 'game' ? `<b>${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</b>` : ''}</button>`).join('')}</div>
+    <div class="legend">${state.plCat !== '全部' ? `<span><i class="dot" style="background:${CAT_COLOR[state.plCat]}"></i>${esc(state.plCat)}（依座標換算的大概位置，點了看詳細）</span>` : '<span>在下方「地點清單」選一種類型，就會標到地圖上</span>'}<span><i class="dot"></i>比較確定</span>${mp.pins.some(p => p.kind === 'guess') ? '<span><i class="dot q"></i>推測（依動畫和 wiki 描述）</span>' : ''}<span>遊戲原本的地名也可以點</span></div>
+    <div class="places">${mp.pins.map(p => `<button class="place ${p.kind === 'guess' ? 'guess' : ''} ${sel === p ? 'on' : ''}" data-place="${esc(p.name)}">${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</button>`).join('')}</div>`;
+  if (sel) {
+    const mobs = MOBS.filter(m => m.f === state.mapFloor && sel.regions.includes(m.r));
+    const xyz = pinXYZ(sel);
+    h += `<div class="place-info"><h3>${esc(sel.name)}${sel.kind === 'guess' ? '（推測）' : ''}</h3>${xyz ? `<p>座標 <b class="xyz" style="color:var(--g700)">${esc(xyz)}</b>（X, Y, Z） ${copyBtn(xyz.replace(/,/g, ''))}</p>` : ''}<p>${esc(sel.note)}</p></div>`
+      + (sel.npcs ? `<div class="section-title">NPC · ${sel.npcs.length} 位</div>` + sel.npcs.map(npcCard).join('') : '')
+      + (sel.town ? `<figure class="town" style="margin-left:0;margin-right:0"><img src="${sel.town}" alt="${esc(sel.name)}城鎮地圖"><figcaption>${esc(sel.townNote || '')}</figcaption></figure>` : '')
+      + (mobs.length ? `<div class="section-title">這裡的怪物 · ${mobs.length} 隻</div>` + mobs.map(m => mobCard(m, '')).join('') : '');
+  } else h += `<p class="foot" style="margin-top:16px">點地圖上的點或上面的地名，就會列出那裡有哪些怪。</p>`;
+  return h + renderPlaces();
+}
+
+const EQ = __EQ__;
+const MQ = __MQ__;
+const SQ = __SQ__;
+const EQ_CATS = ['全部', ...new Set(EQ.map(e => e.c))];
+const FLOOR_NAME = {0: '教學', 1: '第 1 層 · 起始之鎮', 2: '第 2 層 · Urbus', 3: '第 3 層 · 迷霧森林'};
+
+function eqRow(e, q) {
+  const src = ITEMS[e.n];
+  const stat = [e.d ? `傷害 ${esc(e.d)}` : '', e.s ? `攻速 ${esc(e.s)}` : ''].filter(Boolean).join(' · ');
+  return `<div class="eq"><div class="eq-top"><span class="eq-ic">${ICON_HTML(e.n)}</span><b>${hl(e.n, q)}</b>${e.r ? `<span class="rar rar-${esc(e.r)}">${esc(e.r)}</span>` : ''}<span class="mini">${esc(e.sub || e.c)}</span>${e.two ? '<span class="mini">雙手</span>' : ''}<span class="eq-lv">Lv. ${e.lv || '?'}</span><button class="rpt" style="margin-left:4px" data-rpt="裝備|${esc(e.n)}|">回報</button></div>
+    ${stat ? `<div class="eq-stat">${stat}</div>` : ''}${e.b ? `<div class="eq-bonus">${esc(e.b)}</div>` : ''}${e.src ? `<div class="eq-stat">取得：${esc(e.src)}</div>` : ''}
+    ${RECIPES[e.n] ? recipeHtml('配方', RECIPES[e.n], true, e.n) : ''}
+    ${src ? `<div class="eq-src"><button data-item="${esc(e.n)}">怪物掉落：${src.src.map(s => esc(s.m.n) + ' ' + esc(s.p)).join('、')} ›</button></div>` : ''}</div>`;
+}
+
+function renderEq() {
+  const q = norm(state.q);
+  let rows = EQ.filter(e => (state.eqCat === '全部' || e.c === state.eqCat) && (!state.myLv || e.lv <= state.myLv) && (!q || match(q, e.n, e.b, e.sub)));
+  rows = rows.slice().sort((a, b) => state.myLv ? (b.lv - a.lv) : (a.lv - b.lv));
+  return `<div class="filters"><div class="chips">${EQ_CATS.map(c => `<button data-eqcat="${esc(c)}" class="${state.eqCat === c ? 'on' : ''}">${esc(c)}</button>`).join('')}</div></div>
+    <div class="filters"><div class="lvbox"><span class="seg-label">我的等級</span><input id="mylv" type="number" min="1" max="99" inputmode="numeric" placeholder="全部" value="${state.myLv || ''}"></div>
+    <span class="count">${rows.length} 件${state.myLv ? `（Lv. ${state.myLv} 以下能用的，等級高的排前面）` : '（依等級排序）'}</span></div>
+    ${rows.length ? `<div class="eq-list">${rows.map(e => eqRow(e, q)).join('')}</div>` : `<div class="empty"><h3>沒有符合條件的裝備</h3><p>試試切回「全部」或清空等級。</p></div>`}`;
+}
+
+function mqCard(x, q) {
+  const rw = [x[5] ? `EXP ${Number(x[5]).toLocaleString()}` : '', x[6] ? `${Number(x[6]).toLocaleString()} col` : '', x[7]].filter(Boolean);
+  return `<article class="q"><div class="q-top"><span class="q-no">#${esc(x[1])}</span><h3>${hl(x[3], q)}</h3>${x[2] ? `<span class="q-npc">NPC：${hl(x[2], q)}</span>` : ''}<button class="rpt" data-rpt="主線任務|第 ${x[0]} 層 #${esc(x[1])} ${esc(x[3])}|">回報</button></div>
+    <p>${hl(x[8], q)}</p>${rw.length ? `<div class="q-rw">${rw.map(r => `<span>${esc(r)}</span>`).join('')}</div>` : ''}</article>`;
+}
+function sqCard(x, q) {
+  return `<article class="q"><div class="q-top"><h3>${hl(x.npc, q)}</h3><span class="q-npc">${esc(x.town)}${x.xyz ? `　座標 ${esc(x.xyz)}` : ''}</span></div>
+    <p>${hl(x.task, q)}</p><div class="q-rw"><span>EXP ${esc(x.exp)}</span><span>${esc(x.col)} col</span></div>${x.tip ? `<div class="q-tip">💡 ${esc(x.tip)}</div>` : ''}</article>`;
+}
+function renderQuest() {
+  const q = norm(state.q);
+  const hint = q ? `<p class="foot" style="margin:0 0 8px">目前只顯示含「${esc(state.q)}」的任務　<button class="addr" data-clearq="1">清除搜尋</button></p>` : '';
+  const seg = hint + `<div class="filters"><div class="seg"><button data-qtype="main" class="${state.qType === 'main' ? 'on' : ''}">主線</button><button data-qtype="side" class="${state.qType === 'side' ? 'on' : ''}">支線</button></div>
+    ${state.qType === 'main' ? `<span class="seg-label">樓層</span><div class="seg">${[-1, 0, 1, 2, 3].map(f => `<button data-qfloor="${f}" class="${state.qFloor === f ? 'on' : ''}">${f < 0 ? '全部' : f === 0 ? '教學' : f}</button>`).join('')}</div>` : ''}</div>`;
+  if (state.qType === 'side') {
+    const rows = SQ.filter(x => !q || match(q, x.npc, x.town, x.task));
+    return seg + `<p class="foot" style="margin-top:4px">支線目前只有第 1 層的資料。座標是遊戲裡的 X, Y, Z。</p>` + (rows.length ? rows.map(x => sqCard(x, q)).join('') : `<div class="empty"><h3>沒有符合「${esc(state.q)}」的支線</h3><p><button class="addr" data-clearq="1">清除搜尋，顯示全部支線</button></p></div>`);
+  }
+  let h = seg + `<p class="foot" style="margin-top:4px">主線依順序排列。說明是從 wiki 英文版翻譯的，NPC 名字保留原文。</p>`;
+  let n = 0;
+  [0, 1, 2, 3].filter(f => state.qFloor < 0 || f === state.qFloor).forEach(f => {
+    const rows = MQ.filter(x => +x[0] === f && (!q || match(q, x[2], x[3], x[8])));
+    n += rows.length;
+    if (rows.length) h += `<div class="floor-h">${FLOOR_NAME[f]}</div>` + rows.map(x => mqCard(x, q)).join('');
+  });
+  if (!n) h += `<div class="empty"><h3>沒有符合「${esc(state.q)}」的主線任務</h3><p><button class="addr" data-clearq="1">清除搜尋，顯示全部任務</button></p></div>`;
+  return h;
+}
+
+const EO = __EO__;
+const EO_CATS = ['全部', '商店・製作', '收購商', 'NPC', 'Boss', '怪物', '採集點', '地區', '地標'];
+const RECIPES = {};
+EO.forEach(p => (p.items || []).forEach(i => { if (i.r && !RECIPES[i.n]) RECIPES[i.n] = {...i.r, at: p, en: i.en}; }));
+function recipeHtml(n, r, showAt, key) {
+  key = key || n;
+  return `<div class="rc"><div class="rc-h">${n !== '配方' ? `<span class="eq-ic">${ICON_HTML(n)}</span>` : ''}<b>${esc(n)}</b>${r.rar ? `<span class="rar rar-${esc(r.rar)}">${esc(r.rar)}</span>` : ''}${r.lv ? `<span class="mini">Lv. ${esc(r.lv)}</span>` : ''}<span class="k">${esc(r.cost || '')}${r.time ? ' · ' + esc(r.time) : ''}</span></div>
+    ${r.mats && r.mats.length ? `<div class="eq-stat">材料：${r.mats.map(([m, q]) => `<button class="mat" data-item="${esc(m)}">${esc(m)} ×${q}</button>`).join('、')} <button class="addr" data-recipe="${esc(key)}">＋ 材料加入清單</button></div>` : ''}
+    ${r.stats && r.stats.length ? `<div class="rc-st">${r.stats.map(esc).join('、')}</div>` : ''}
+    ${showAt && r.at ? `<div class="eq-stat">製作地點：第 ${r.at.f} 層 · ${esc(r.at.n)} · 座標 ${esc(r.at.xyz)}</div>` : ''}</div>`;
+}
+function placeCard(p) {
+  const i = EO.indexOf(p);
+  return `<div class="pl ${state.eoSel === i ? 'on' : ''}" id="eo-${i}"><div class="pl-h"><b>${esc(p.n)}</b><span class="mini">${esc(p.c)}</span>${state.plFloor === 0 ? `<span class="mini">第 ${p.f} 層</span>` : ''}<span class="xyz">${esc(p.xyz)} ${copyBtn(p.xyz.replace(/,/g, ''), '複製')}${o3d(p.f, p.xyz)}</span></div>
+    ${p.note ? `<div class="eq-stat">${esc(p.note)}</div>` : ''}
+    ${(p.items || []).map(i => i.r ? recipeHtml(i.n, i.r, false) : `<div class="shop-i"><span>${esc(i.n)}</span><span class="k">${i.price ? esc(i.price) : ''}</span></div>`).join('')}
+    ${p.buy ? `<div class="buy">${p.buy.map(b => `<span>${esc(b.n)} ${esc(b.price)}</span>`).join('')}</div>` : ''}</div>`;
+}
+function renderPlaces() {
+  const q = norm(state.q);
+  const PL = ['商店・製作', '收購商', 'NPC'];
+  const rows = EO.filter(p => PL.includes(p.c) && (!state.plFloor || p.f === state.plFloor) && (state.plCat === '全部' || p.c === state.plCat)
+    && (!q || match(q, p.n, p.o, p.note, ...(p.items || []).map(i => i.n), ...(p.buy || []).map(b => b.n))));
+  return `<div class="filters"><span class="seg-label">樓層</span><div class="seg">${[0, 1, 2, 3].map(f => `<button data-plfloor="${f}" class="${state.plFloor === f ? 'on' : ''}">${f ? f : '全部'}</button>`).join('')}</div><span class="count">${rows.length} 個</span></div>
+    <div class="chips pl-filters">${['全部', ...PL].map(c => `<button data-plcat="${esc(c)}" class="${state.plCat === c ? 'on' : ''}">${esc(c)}</button>`).join('')}</div>
+    ${rows.slice(0, 120).map(placeCard).join('')}${rows.length > 120 ? `<p class="foot">只顯示前 120 個，可以用上面的搜尋框縮小範圍。</p>` : ''}`;
+}
+
+const ROUTES = {
+  home: {t: '主頁'},
+  search: {t: '搜尋結果', d: '道具、怪物、裝備、配方、任務、地點一次找。', ph: '輸入道具、怪物、裝備或 NPC'},
+  items: {t: '道具', d: '所有掉落物、材料和可製作物品。點一下看哪裡掉、怎麼做、誰收購。', ph: '篩選道具名稱'},
+  item: {t: '物品簡介'},
+  guild: {t: '公會', d: '我們的公會（準備中）。'},
+  mobs: {t: '怪物圖鑑', d: '第 1～3 層的怪物、出沒地點、難度和掉落物。點掉落物可以查哪裡打。', ph: '篩選怪物、地點或掉落物'},
+  equip: {t: '裝備', d: '武器、護甲、飾品的等級與數值；能做的會附上配方。', ph: '篩選裝備名稱或加成'},
+  craft: {t: '配方', d: '每件可製作物品需要的材料、費用、時間和製作地點。', ph: '篩選物品或材料，例如：哥布林、寒冰硬皮'},
+  dungeons: {t: '地城', d: '樓層地城的人數、等級、鑰匙和掉落。', ph: '篩選地城、Boss 或掉落物'},
+  quests: {t: '任務', d: '主線依順序排列，支線附座標。', ph: '篩選任務、NPC 或內容'},
+  map: {t: '地圖', d: '點地區名稱看那裡有什麼；點地圖任何地方顯示座標；搜尋怪物或道具會直接標在地圖上。', ph: '搜尋怪物、道具、NPC，例如：阿爾巴爾之牙、Emy'},
+  places: {t: '商店・NPC', d: '在哪裡買、在哪裡做、賣給誰。按「📍 地圖」直接在地圖上標出來。', ph: '篩選名稱、賣的東西或收的東西'},
+  list: {t: '我的清單', d: '想刷的材料和數量，會幫你排好刷怪路線。只存在這台裝置的瀏覽器。'}
+};
+const route = () => { const h = decodeURIComponent(location.hash.slice(1)); return ROUTES[h] ? h : 'home'; };
+state.qs = {};
+const ICON = (bg, s) => `<span class="ic" style="background:${bg}">${s}</span>`;
+function renderHome() {
+  const menu = [['mobs', '怪物', '🐺', `${MOBS.length}`], ['items', '道具', '💎', `${allItemNames().length}`], ['equip', '裝備', '🗡️', `${EQ.length}`], ['craft', '配方', '⚒️', `${Object.keys(RECIPES).length}`],
+    ['dungeons', '地城', '🏰', `${DG.length}`], ['quests', '任務', '📜', `${MQ.length + SQ.length}`], ['map', '地圖', '🗺️', '1–3 層'], ['places', '商店・NPC', '🏪', `${EO.length}`], ['guild', '公會', '🛡️', '準備中'], ['list', '清單', '✅', `${Object.keys(list).length}`]];
+  return `<section class="hero"><div class="sub">SWORD ART ONLINE · AINCRAD</div><h1>艾恩葛朗特圖鑑</h1>
+    <nav class="ring-menu">${menu.map(([r, n, ic, c]) => `<a class="ring" href="#${r}"><span class="c">${ic}</span><b>${n}</b><small class="num">${c}</small></a>`).join('')}</nav>
+    <form id="homeform"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+    <input id="hq" type="search" placeholder="搜尋道具、怪物、裝備、NPC…" autocomplete="off"><button>搜尋</button></form>
+    <div class="quick"><span>常查：</span>${['阿爾巴爾之牙', '森林鑰匙', '寒冰硬皮', '附魔金屬幣', '飾品鐵匠'].map(n => `<button class="chip" data-q="${esc(n)}">${esc(n)}</button>`).join('')}</div></section>
+    <div class="home-2">${NOTE_HTML}<div class="note-card"><h3>使用小提示</h3><ul>
+      <li>遊戲裡的中文名稱跟網站不一樣時，搜尋會自動找相近的字。</li>
+      <li>怪物卡的「📍 地圖」會直接把位置標在地圖上。</li>
+      <li>配方的「＋ 材料加入清單」會幫你加總材料，清單頁會排好刷怪路線。</li>
+      <li>看到錯的地方，按卡片上的「回報」複製範本，再傳給維護的人。</li></ul></div></div>`;
+}
+const NOTE_HTML = `<div class="note-card"><h3>官方公告重點（2026/11）</h3><ul>
+      <li>等級上限：一開始 Lv. 13，打完狗頭人地城升到 16，打完牛頭人之王升到 20。</li>
+      <li>樓層地城要先做到該層「倒數第二個主線任務」才能進（第 1 層是第 35 個）。沒做完，地城入口的告示牌會顯示紅色鎖頭。</li>
+      <li>地城可以少人開，難度會依人數調整；但還是要有鑰匙。</li>
+      <li>考古學家賣的鑰匙：狗頭人 5,000 col、Melliona（蜂巢）1,750 col、死靈法師 2,000 col、牛頭人之王 10,000 col（進場就消耗）。</li>
+      <li>第 3 層的神秘商人賣 14 種飾品，每個 65,000 col，每天最多買 1 個、每週最多 2 個。</li>
+    </ul></div>`;
+const DG = __DG__;
+function renderDungeons() {
+  const q = norm(state.q);
+  const rows = DG.filter(d => !q || match(q, d.n, d.boss, d.desc, d.key && d.key.n, ...d.loot.map(l => l.n)));
+  if (!rows.length) return `<div class="empty"><h3>沒有符合「${esc(state.q)}」的地城</h3><p><button class="addr" data-clearq="1">清除篩選</button></p></div>`;
+  return rows.map(d => `<article class="dg"><div class="pl-h"><h3>${esc(d.n)}</h3><span class="mini">第 ${d.f} 層</span>${d.pos ? `<span class="xyz">${esc(d.pos)} ${copyBtn(d.pos.replace(/,/g, ''), '複製')}${o3d(d.f, d.pos)}</span>` : ''}</div>
+    ${d.desc ? `<p style="margin:8px 0 0;color:var(--n600)">${esc(d.desc)}</p>` : ''}
+    <div class="meta"><span>Boss：${esc(d.boss)}</span><span>${d.rules.min}～${d.rules.max} 人</span><span>建議 Lv. ${d.rules.lv}</span>${d.rules.time ? `<span>限時 ${Math.round(d.rules.time / 60)} 分</span>` : ''}<span>${esc(d.rules.death)}</span>${d.dif.length ? `<span>難度：${d.dif.map(esc).join('、')}</span>` : ''}</div>
+    ${d.key ? `<p style="margin:12px 0 0">鑰匙：<button class="mat" data-item="${esc(d.key.n)}">${esc(d.key.n)}</button> ×${d.key.q}${d.key.used ? '（進場會消耗）' : '（不會消耗）'}${RECIPES[d.key.n] ? ' <span class="mini">可以製作</span>' : ''}</p>` : ''}
+    <div class="loot"><div style="border:0"><b>掉落</b><small>機率</small></div>${d.loot.map(l => `<div><span>${esc(l.n)}${l.r ? ` <span class="rar rar-${esc(l.r)}">${esc(l.r)}</span>` : ''}${l.de ? `<br><small>${esc(l.de)} 掉落</small>` : ''}</span><span class="k">${l.p != null ? (l.p * 100 >= 100 ? '必掉' : (Math.round(l.p * 1000) / 10) + '%') : ''}</span></div>`).join('')}</div>
+    ${d.rec && d.rec.ms ? `<p class="foot" style="margin:10px 0 0">最快通關紀錄：${Math.floor(d.rec.ms / 60000)} 分 ${Math.round(d.rec.ms % 60000 / 1000)} 秒（${(d.rec.equipo || []).map(esc).join('、')}）</p>` : ''}</article>`).join('');
+}
+let _items = null;
+function allItemNames() {
+  if (_items) return _items;
+  const s = new Set();
+  Object.keys(ITEMS).forEach(n => s.add(n));
+  Object.entries(RECIPES).forEach(([n, r]) => { s.add(n); r.mats.forEach(([m]) => s.add(m)); });
+  EO.forEach(p => (p.buy || []).forEach(b => s.add(b.n)));
+  return (_items = [...s].sort((a, b) => a.localeCompare(b, 'zh-Hant')));
+}
+function itemInfo(n) {
+  const drops = ITEMS[n] ? ITEMS[n].src : [];
+  const rec = RECIPES[n];
+  const usedIn = Object.entries(RECIPES).filter(([, r]) => r.mats.some(([m]) => m === n)).map(([k]) => k);
+  const buyers = EO.filter(p => (p.buy || []).some(b => b.n === n)).map(p => ({p, price: p.buy.find(b => b.n === n).price}));
+  const eq = EQ.find(e => e.n === n);
+  const en = (ITEMS[n] && ITEMS[n].en) || (rec && rec.en) || '';
+  return {drops, rec, usedIn, buyers, eq, en};
+}
+const ICON_MAP = {"螫針":"w2250.png","飛蛛之翼":"w2294.png","守護者之戟":"w90145.png","遺跡之魂":"w2157.png","傳令者之魂":"w2215.png","紫水晶":"w2422.png","迷霧護符":"w1324.png","墮落獵人護符":"w1300.png","墮落德魯伊護符":"w1299.png","腐化龍紋護符":"w1333.png","幽魂護符":"w1329.png","骷髏護符":"w1289.png","冰封護符":"w90150.png","哥布林護符":"w1326.png","冰霜護符":"x_collier_golem_glace.png","發光護符":"w1330.png","秘術護符":"w90151.png","獸人護符":"w1325.png","竊來的護符":"w1292.png","森林護符":"w1288.png","黏液護符":"w1291.png","紫水晶護符":"w1332.png","鋁土礦護符":"w1312.png","廢鐵護符":"w1311.png","銅護符":"w1290.png","鐵護符":"w1297.png","腐化裂隙護符":"w1307.png","蛛網護符":"w1328.png","林地護符":"w1323.png","暗林護符":"w1327.png","豬籠草護符":"x_amulette_nephente.png","鯊魚護符":"x_amulette_requin.png","不純縞瑪瑙護符":"w1313.png","純縞瑪瑙護符":"x_1314.png","盜賊護符":"w1331.png","膠質護符":"x_amulette_slime.png","精英護符":"x_amulette_treant_elite.png","紅柱石":"w2418.png","平價戒指":"w2510.png","迷霧戒指":"w2512.png","墮落者戒指":"w2484.png","墮落德魯伊戒指":"w2487.png","腐化龍紋戒指":"w2522.png","幽魂戒指":"w2517.png","哥布林戒指":"w2514.png","發光戒指":"w2518.png","蜂蜜戒指":"w2493.png","秘術戒指":"w1559.png","獸人戒指":"w2513.png","黏液戒指":"w2478.png","森林戒指":"w2473.png","白樺戒指":"w2494.png","金合歡戒指":"w2495.png","紫水晶戒指":"w2520.png","愛情戒指":"w2488.png","安山岩戒指":"w2508.png","蜘蛛戒指":"x_anneau_tissu_araignee.png","鋁土礦戒指":"w2500.png","廢鐵戒指":"w2499.png","粗粒銅戒指":"w2507.png","骷髏戒指":"w2474.png","花崗岩戒指":"w2506.png","野豬戒指":"w2475.png","利維坦戒指":"w2485.png","狼之戒指":"w2480.png","Morveth 戒指":"w2504.png","Narax 戒指":"w1449.png","契約戒指":"w2481.png","石戒指":"w2509.png","Pumba 戒指":"w2476.png","Winnie 戒指":"w2503.png","發光洞窟戒指":"w1550.png","溺水鷹身女妖戒指":"w2497.png","碾碎鷹身女妖戒指":"w2498.png","燃燒鷹身女妖戒指":"w2496.png","死神戒指":"w2483.png","蛛網戒指":"w2516.png","林地戒指":"w2511.png","暗林戒指":"w2515.png","天空戒指":"w2521.png","豬籠草之戒":"x_anneau_nephente.png","熊之戒指":"w2491.png","公牛戒指":"w2490.png","不純縞瑪瑙戒指":"w2501.png","純縞瑪瑙戒指":"w2502.png","守護毒刺戒指":"w2492.png","冒險者戒指":"w2505.png","盜賊戒指":"w2519.png","金色花蜜戒指":"w2489.png","鯊魚戒指":"w90002.png","冰封觸角":"w90003.png","無煙煤":"w2389.png","基礎弓":"w1567.png","森林之弓":"w1569.png","哥布林骨架":"w2332.png","獸人骨架":"w2314.png","墮落者神器":"w2210.png","煤玉":"w2388.png","死靈鋤":"w2700.png","強化鋤":"w2701.png","草原鋤":"w2699.png","森林鋤":"w2702.png","藍銅礦":"w2401.png","咆哮之弩":"w1734.png","墮落之弩":"w1733.png","寒冬之弩":"w1735.png","紫水晶弩":"w1745.png","鋁土礦弩":"w1738.png","灰燼之弩":"w1575.png","廢鐵弩":"w1737.png","粗粒銅弩":"w1743.png","鐵弩":"w1732.png","鐵鋼弩":"w1744.png","強盜之弩":"w1730.png","古木之弩":"w1746.png","不純縞瑪瑙弩":"w1740.png","純縞瑪瑙弩":"w1742.png","毒刺之弩":"w1739.png","愛情之弩":"w1736.png","獵人之弩":"w1731.png","死靈法師之弩":"w1741.png","普通法杖":"w90131.png","墮落魔法杖":"w2577.png","寒冬魔法杖":"w90134.png","詛咒魔法杖":"w2579.png","Nodachi 魔法杖":"w2576.png","幽暗魔法杖":"w90135.png","森林魔法杖":"w2570.png","紫水晶魔法杖":"w90139.png","鋁土礦魔法杖":"w2583.png","廢鐵魔法杖":"w2582.png","銅魔法杖":"w2571.png","粗粒銅魔法杖":"w2588.png","鐵魔法杖":"w2575.png","鐵鋼魔法杖":"w2589.png","廢墟魔法杖":"w2572.png","亡魂魔杖":"w90136.png","古木魔法杖":"w2591.png","不純縞瑪瑙魔法杖":"w2585.png","純縞瑪瑙魔法杖":"w2587.png","毒刺魔法杖":"w90137.png","愛情魔法杖":"w2715.png","魔術師魔法杖":"w2714.png","死靈法師魔法杖":"w90138.png","愛情法杖":"w2594.png","盜賊票券":"w90078.png","古森林票券":"w90079.png","中錢袋":"w2311.png","小錢袋":"w2156.png","迷霧之靴":"w1518.png","墮落盜賊之靴":"w1467.png","肆虐之靴":"w1522.png","幽魂之靴":"w90026.png","哥布林之靴":"w1513.png","發光之靴":"w1523.png","漆黑之靴":"w1527.png","秘術之靴":"w1562.png","獸人之靴":"w1514.png","森林之靴":"w1520.png","簡易之靴":"w1508.png","高級之靴":"w1509.png","織網者之靴":"w1524.png","戰術之靴":"w1339.png","紫水晶之靴":"w1530.png","強盜之靴":"w1528.png","霧牙之靴":"w1519.png","Ika 之靴":"w1349.png","盜賊之靴":"w1529.png","結晶蜂蜜之靴":"w1396.png","蜘蛛絲之靴":"w1525.png","警覺紫晶靴":"w1426.png","狩獵紫晶靴":"w1418.png","隱匿紫晶靴":"x_bottes_amethyste_assassin_p3.png","神秘紫晶靴":"w1422.png","堅韌紫晶靴":"w1410.png","蜂巢之靴":"w1384.png","浪沫之靴":"w1380.png","死神之靴":"w1370.png","蛛網之靴":"w1526.png","部落之靴":"w1515.png","林牙之靴":"w1517.png","冒險者之靴":"w1510.png","林地之靴":"w1516.png","暗林之靴":"w1521.png","探險家之靴":"w1511.png","守護者之靴":"w1374.png","傳令者之靴":"w1378.png","拓荒者之靴":"w1512.png","亡魂之靴":"w1379.png","泰坦之靴":"w1354.png","獵人短靴":"w1360.png","忍者短靴":"w1357.png","平價手環":"w1615.png","迷霧手環":"w1617.png","幽魂手環":"w1622.png","哥布林手環":"w1619.png","發光手環":"w1623.png","蜂蜜手環":"w1607.png","秘術手環":"w90005.png","獸人手環":"w1618.png","黏液手環":"w1592.png","Runimiel 手環":"w1608.png","森林手環":"w1589.png","安山岩手環":"w1613.png","蜘蛛手環":"w1595.png","Asterios 手環":"w1610.png","鋁土礦手環":"w1604.png","廢鐵手環":"w1603.png","粗粒銅手環":"w1612.png","微腐化手環":"w1625.png","花崗岩手環":"w1611.png","野豬手環":"w1590.png","Kazor 手環":"w1602.png","Oceiros 手環":"w1599.png","石手環":"w1614.png","Wolnir 手環":"w1598.png","Yuleck 手環":"w1600.png","冰之手環":"x_1596.png","蛛網手環":"w1621.png","疾風手環":"w1470.png","狼之手環":"x_bracelet_loup1.png","雄鹿手環":"w1594.png","群狼手環":"w1609.png","豬籠草手環":"x_bracelet_nephente.png","不純縞瑪瑙手環":"w1605.png","純縞瑪瑙手環":"w1606.png","林地手環":"w1616.png","暗林手環":"w1620.png","坎卜斯手環":"w1601.png","盜賊手環":"w90158.png","鯊魚手環":"w90157.png","膠質手環":"x_bracelet_slime.png","精英手環":"x_bracelet_treant_elite.png","森之嫩芽":"w2197.png","幽魂鎖鏈":"w2255.png","優質耐力藥水 I":"w90118.png","優質耐力藥水 II":"w90119.png","優質耐力藥水 III":"w90120.png","優質耐力藥水 IV":"w90121.png","優質魔力藥水 I":"w90113.png","優質魔力藥水 II":"w90115.png","優質魔力藥水 III":"w90116.png","優質魔力藥水 IV":"w90117.png","膠質披風":"x_manteau_slime.png","蜘蛛披風":"x_manteau_tissu_araignee.png","蜂殼":"w2251.png","Ika 之殼":"w2224.png","鯊魚甲殼":"w2204.png","精英甲殼":"x_carapace_treant_elite.png","秘術兜帽":"w1463.png","金牛兜帽":"w1497.png","盜賊兜帽":"w1456.png","盜賊頭罩":"w1553.png","卵繭":"w2288.png","黃蜘蛛甲殼":"w2310.png","棕蜘蛛甲殼":"w2297.png","黑色甲殼":"w2291.png","紫蜘蛛甲殼":"w2302.png","野豬肉":"w1957.png","秘術頭盔":"w1561.png","結晶蜂蜜頭盔":"w1393.png","警覺紫晶頭盔":"w1423.png","狩獵紫晶頭盔":"w1415.png","隱匿紫晶頭盔":"x_casque_amethyste_assassin_p3.png","神秘紫晶頭盔":"w1419.png","堅韌紫晶頭盔":"w1407.png","蜂巢頭盔":"w1381.png","死神頭盔":"w1367.png","守護者頭盔":"w1371.png","傳令者頭盔":"w1375.png","泰坦頭盔":"w1351.png","蜜蜂觸媒":"w90060.png","寒冬觸媒":"w90059.png","古木觸媒":"w1663.png","愛情觸媒":"w1643.png","壞死權杖":"w90061.png","愛之權杖":"w2595.png","平價腰帶":"w1537.png","奇異腰帶":"w1535.png","發光腰帶":"w1549.png","新手腰帶":"w1533.png","簡易腰帶":"w1531.png","高級腰帶":"w1532.png","粗粒銅腰帶":"w1534.png","暗淡銅腰帶":"w1536.png","野豬腰帶":"w1451.png","熊皮腰帶":"w1477.png","銅腰帶":"x_ceinture_cuivre.png","鐵腰帶":"x_ceinture_fer.png","腐化裂隙腰帶":"w1473.png","部落腰帶":"w1543.png","雄鹿腰帶":"w1460.png","公牛腰帶":"w1476.png","寒冬闊刃大劍":"w2623.png","迷霧之尾":"w2327.png","森林之尾":"w2324.png","巫師的墮落墜飾":"w1302.png","盜賊的墮落墜飾":"w1303.png","Acamiel 項鍊":"w1315.png","平價項鍊":"w1322.png","墮落士兵項鍊":"w1301.png","新手項鍊":"w1318.png","符文項鍊":"w1309.png","三色項鍊":"w1316.png","Albal 項鍊":"w1296.png","愛情項鍊":"w1306.png","安山岩項鍊":"w1320.png","Aragorn 項鍊":"w1458.png","花崗岩項鍊":"w1319.png","Grivemar 項鍊":"w1305.png","石項鍊":"w1321.png","腐化裂隙項鍊":"w1308.png","公牛項鍊":"w1310.png","寒風項鍊":"w1304.png","守護者項鍊":"w1317.png","鯊魚牙":"w90154.png","阿爾巴爾之牙":"w2177.png","狼牙":"w2176.png","肆虐之心":"w2339.png","腐爛之心":"w2170.png","木之心":"w2199.png","Nymbrea 之心":"w2186.png","獸人之心":"w2319.png","白樺細繩":"w2367.png","冷杉細繩":"w2379.png","相思木細繩":"w2374.png","鋁土細繩":"w2375.png","廢鐵細繩":"w2376.png","橡木細繩":"w2366.png","不純瑪瑙細繩":"w2377.png","純瑪瑙細繩":"w2378.png","Kazor 之冠":"w1465.png","至日之冠":"w1471.png","肆虐樹皮":"w2338.png","幼嫩樹皮":"w2334.png","森林樹皮":"w2201.png","泰坦樹皮":"w2203.png","腐化水晶":"w2173.png","秘術頭骨":"w1461.png","骷髏頭骨":"w1450.png","狼頭骨":"w90156.png","狼牙小刀":"w1564.png","霧爪小刀":"w1540.png","林爪小刀":"w1538.png","狼之小刀":"x_couteau_loup.png","森林弓弦":"w2200.png","公牛角":"w2237.png","咆哮牛角":"w2287.png","破舊皮革":"w2183.png","基礎匕首":"w1763.png","墮落匕首":"w1781.png","Kasaka 尖牙匕首":"w1785.png","劣質匕首":"w1766.png","簡易匕首":"w1771.png","恐懼匕首":"w1786.png","紫水晶匕首":"w1816.png","鋁土礦匕首":"w1795.png","廢鐵匕首":"w1792.png","銅匕首":"w1767.png","粗粒銅匕首":"w1810.png","訓練匕首":"w1760.png","鐵匕首":"w1775.png","鐵鋼匕首":"w1813.png","Nodachi 匕首":"w1784.png","不純縞瑪瑙匕首":"w1801.png","純縞瑪瑙匕首":"w1804.png","強盜匕首":"w1770.png","獵人匕首":"w1772.png","傳令者匕首":"w1778.png","狂戰士冠冕":"w1447.png","古代齒輪":"w1555.png","閃光鱗片":"w2268.png","水中殘骸":"w2348.png","寒冬盾牌":"w2547.png","漆黑盾牌":"w1489.png","遺忘之盾":"w2545.png","腐臭盾牌":"w2098.png","簡易盾牌":"w2537.png","紫水晶盾牌":"w1556.png","愛情盾牌":"w2548.png","Illfang 之盾":"w2546.png","幽魂精華":"w2304.png","寒冰精華":"w90155.png","哥布林精華":"w2330.png","威嚴精華":"w2350.png","Gorbel 精華":"w2181.png","獸人精華":"w2320.png","史萊姆精華":"w2369.png","Sylnovar 精華":"w2343.png","Sylvaer 精華":"w2347.png","部落精華":"w2321.png","古森林精華":"w2336.png","基礎劍":"w2597.png","獵人劍":"w2605.png","劣質長劍":"w2600.png","簡易長劍":"w2602.png","獵人長劍":"w2608.png","墮落者長劍":"w2615.png","劣質劍":"w2599.png","簡易劍":"w2601.png","紫水晶劍":"w2673.png","鋁土劍":"w2636.png","廢鐵劍":"w2631.png","粒狀銅劍":"w2663.png","訓練劍":"w2596.png","鋼鐵劍":"w2668.png","沙丘劍":"w2628.png","古木劍":"w2678.png","不純縞瑪瑙劍":"w2647.png","純縞瑪瑙劍":"w2652.png","毒刺劍":"w2641.png","墮落者劍":"w2613.png","死靈法師劍":"w2657.png","紫水晶巨劍":"w2674.png","鋁土礦巨劍":"w2637.png","廢鐵巨劍":"w2632.png","銅巨劍":"w2603.png","粗粒銅巨劍":"w2664.png","鐵巨劍":"w2611.png","鐵鋼巨劍":"w2669.png","沙丘巨劍":"w2629.png","古木巨劍":"w2679.png","不純縞瑪瑙巨劍":"w2648.png","純縞瑪瑙巨劍":"w2653.png","毒刺巨劍":"w2642.png","獵人巨劍":"w2607.png","Fallen 巨劍":"w2614.png","死靈法師巨劍":"w2658.png","寒冬權杖":"w2593.png","詛咒權杖":"w2717.png","Oracile 荊棘":"w1846.png","腐化孢子":"w2172.png","寒冰魔法碎片":"w2188.png","紫水晶碎晶":"w2300.png","魔法木碎晶":"w2191.png","神秘代幣":"w2386.png","焰葉花":"w1850.png","蔥花":"w1838.png","小麥花":"w1836.png","優質抗性強化劑 II":"w1985.png","優質抗性強化劑 III":"w2000.png","優質知識強化劑 II":"w1983.png","優質知識強化劑 III":"w1998.png","優質兇猛強化劑 II":"w1982.png","優質兇猛強化劑 III":"w1997.png","優質耐心強化劑 II":"w1986.png","優質耐心強化劑 III":"w2001.png","優質耐久強化劑 II":"w1984.png","優質耐久強化劑 III":"w1999.png","優質活力強化劑 II":"w1981.png","優質活力強化劑 III":"w1996.png","腐化碎片":"w2380.png","熊魂碎片":"w2190.png","破碎黃色碎片":"w2212.png","破碎紅色碎片":"w2213.png","葉片碎片":"w2209.png","幽魂鬼火":"w1552.png","迷霧之爪":"w2325.png","熊爪":"w2239.png","森林之爪":"w2322.png","新年之貓":"w1500.png","史萊姆凝膠":"w2179.png","紫藤":"w1840.png","石榴石":"w2396.png","熊脂":"w2241.png","結晶蜂蜜護腿":"w1395.png","幽魂護腿":"w1344.png","戰術護腿":"w1338.png","Ika 護腿":"w1348.png","警覺紫晶護腿":"w1425.png","狩獵紫晶護腿":"w1417.png","隱匿紫晶護腿":"x_jambieres_amethyste_assassin_p3.png","神秘紫晶護腿":"w1421.png","堅韌紫晶護腿":"w1409.png","蜂巢護腿":"w1383.png","死神護腿":"w1369.png","獵人護腿":"w1359.png","守護者護腿":"w1373.png","術士護腿":"w1365.png","傳令者護腿":"w1377.png","魔術師護腿":"w1362.png","忍者護腿":"w1356.png","泰坦護腿":"w1353.png","野獸魔導書":"w1631.png","墮落術士魔導書":"w1468.png","無束魔導書":"w1626.png","骷髏魔導書":"w1634.png","幻影魔導書":"w1640.png","秘術魔導書":"w1557.png","幽暗魔導書":"w1638.png","荒野魔導書":"w1628.png","森林魔導書":"w1629.png","金牛魔導書":"w1498.png","紫水晶紋魔導書":"w1661.png","鋁土礦紋魔導書":"w1647.png","廢鐵紋魔導書":"w1644.png","粗粒銅紋魔導書":"w1657.png","鐵鋼紋魔導書":"w1659.png","不純縞瑪瑙紋魔導書":"w1649.png","純縞瑪瑙紋魔導書":"w1652.png","微腐化魔導書":"w1565.png","亡魂魔導書":"w1632.png","暗林魔導書":"w1545.png","術士魔導書":"w1637.png","魔術師魔導書":"w1635.png","紫水晶鐮刀":"w1817.png","鋁土礦鐮刀":"w1796.png","廢鐵鐮刀":"w1793.png","銅鐮刀":"w1768.png","粗粒銅鐮刀":"w1811.png","鐵鐮刀":"w1776.png","鐵鋼鐮刀":"w1814.png","不純縞瑪瑙鐮刀":"w1802.png","純縞瑪瑙鐮刀":"w1805.png","獵人鐮刀":"w1773.png","傳令者鐮刀":"w1780.png","平價手套":"w2062.png","迷霧手套":"w2065.png","墮落獵人手套":"w2046.png","幽魂手套":"w2071.png","兇猛手套":"w2074.png","哥布林手套":"w2068.png","寒冰手套":"w90160.png","發光手套":"w2072.png","秘術手套":"w2045.png","獸人手套":"w2067.png","野性手套":"w2053.png","簡易手套":"w2056.png","高級手套":"w2057.png","紫水晶手套":"w2073.png","安山岩手套":"w2060.png","蜘蛛手套":"x_gants_tissu_araignee.png","強盜手套":"w2040.png","鋁土礦手套":"w2050.png","廢鐵手套":"w2049.png","銅手套":"w2039.png","微腐化手套":"w2076.png","皮革手套":"w2041.png","花崗岩手套":"w2059.png","鐵手套":"w2042.png","野豬手套":"w2038.png","新手手套":"w2058.png","石製手套":"w2061.png","熊皮手套":"w2054.png","骷髏手套":"x_gants_skeleton.png","腐化裂隙手套":"w2047.png","蛛網手套":"w2070.png","林地手套":"w2063.png","暗林手套":"w2069.png","雄鹿手套":"w2043.png","霧牙手套":"w2066.png","林牙手套":"w2064.png","群狼手套":"w2044.png","公牛手套":"w2055.png","不純縞瑪瑙手套":"w2051.png","純縞瑪瑙手套":"w2052.png","盜賊手套":"w90159.png","骨製手套":"w2037.png","精英手套":"x_gants_treant_elite.png","死靈斧":"w2706.png","秘術之斧":"w1560.png","強化斧":"w2707.png","Illfang 之斧":"w2617.png","草原斧":"w2705.png","部落之斧":"w1542.png","森林斧":"w2708.png","赤鐵礦":"w2394.png","橙赤鐵礦":"w2405.png","黃蜘蛛線":"w2308.png","白蜘蛛線":"w2305.png","棕蜘蛛線":"w2295.png","黑線":"w2289.png","紫蜘蛛線":"w2301.png","蜘蛛絲線":"w2158.png","強化蜘蛛線":"w2159.png","隱藏之刃":"w2312.png","Sylnovar 葉片":"w2341.png","Sylvaer 葉片":"w2345.png","小麥葉":"w1835.png","刺客鉤鐮":"w1798.png","基礎鐮刀":"w1764.png","墮落鐮刀":"w1782.png","聖誕鉤鐮":"w1788.png","聖誕節鐮刀":"w1789.png","死靈法師鉤鐮":"w1807.png","愛之鉤鐮":"w1790.png","愛情鐮刀":"w1791.png","暗影骨頭":"w2286.png","骷髏骨":"w2192.png","強化骷髏骨":"w2195.png","水鷹身女妖之卵":"w2248.png","Sylnovar 寶玉":"w2342.png","Sylvaer 寶玉":"w2346.png","刺客太刀":"w1800.png","基礎太刀":"w1765.png","墮落太刀":"w1783.png","死靈法師太刀":"w1809.png","紫水晶太刀":"w1818.png","鋁土礦太刀":"w1797.png","廢鐵太刀":"w1794.png","銅太刀":"w1769.png","粗粒銅太刀":"w1812.png","鐵太刀":"w1777.png","鐵鋼太刀":"w1815.png","不純縞瑪瑙太刀":"w1803.png","純縞瑪瑙太刀":"w1806.png","獵人太刀":"w1774.png","傳令者太刀":"w1779.png","薰衣草":"w1839.png","腐化錠":"w2381.png","鋁土錠":"w2416.png","銅錠":"w2399.png","鐵錠":"w2393.png","不純瑪瑙錠":"w2410.png","純瑪瑙錠":"w2408.png","基礎提燈":"w1630.png","黑色提燈":"w1503.png","紅色提燈":"w1502.png","紫水晶提燈":"w90067.png","鋁土提燈":"w1648.png","廢鐵提燈":"w1645.png","銅提燈":"w90063.png","粒狀銅提燈":"w1658.png","鐵提燈":"w90065.png","鋼鐵提燈":"w1660.png","不純縞瑪瑙提燈":"w1650.png","純縞瑪瑙提燈":"w1653.png","魔術師提燈":"w90066.png","Melliona 鑰匙":"w1830.png","Xal’Zirith 鑰匙":"w1824.png","遺忘之墓鑰匙":"w1831.png","墮落者鑰匙":"w1823.png","森林鑰匙":"w1821.png","牛頭人之王鑰匙":"w90072.png","史萊姆之淚":"w2370.png","腐化裂隙之淚":"w1474.png","孔雀石":"w2400.png","棕蜘蛛大顎":"w2296.png","黑色大顎":"w2290.png","聖誕連指手套":"w2048.png","午夜斗篷":"w1459.png","天空斗篷":"w1563.png","霧牙斗篷":"w1541.png","林牙斗篷":"w1539.png","魔法菌絲":"w2196.png","蜂蜜":"w90093.png","鋁土礦":"w2415.png","煤礦":"w2387.png","銅礦":"w2398.png","鐵礦":"w2392.png","不純瑪瑙礦":"w2409.png","純瑪瑙礦":"w2407.png","鋁土零件":"w1486.png","廢鐵零件":"w1485.png","銅零件":"w1452.png","金幣":"w1501.png","強盜金幣":"w2313.png","不純縞瑪瑙零件":"w1487.png","純縞瑪瑙零件":"w1488.png","盜賊硬幣":"w1455.png","腐化面具":"w1484.png","祕術面具":"w1493.png","獸人面具":"w2318.png","腐化裂隙面具":"w1475.png","蛛網面具":"w1547.png","月龍面具":"w1406.png","盜賊面具":"w1554.png","死靈法師面具":"w1405.png","野太刀":"w90143.png","史萊姆核心":"w2180.png","哥布林之眼":"w2331.png","獸人之眼":"w2317.png","棕蜘蛛之眼":"w2298.png","紅蜘蛛之眼":"w2292.png","紫蜘蛛之眼":"w2303.png","哥布林寶珠":"w1544.png","貪婪寶珠":"w2718.png","哥布林之耳":"w2329.png","森林大盾":"w2540.png","紫水晶大盾":"w2566.png","鋁土大盾":"w2552.png","廢鐵大盾":"w2550.png","銅大盾":"w2539.png","粒狀銅大盾":"w2562.png","訓練大盾":"w2534.png","鐵大盾":"w2544.png","鋼鐵大盾":"w2564.png","Ika大盾":"w2536.png","古木大盾":"w2568.png","不純縞瑪瑙大盾":"w2556.png","純縞瑪瑙大盾":"w2558.png","毒刺大盾":"w2554.png","魔術師大盾":"w2542.png","死靈法師大盾":"w2560.png","迷霧毛皮":"w2326.png","野獸毛皮":"w2315.png","狼毛皮":"w2175.png","森林毛皮":"w2323.png","金牛耳環":"w1499.png","鋁土礦耳環":"w1482.png","秘術耳環":"w1558.png","暗林耳環":"w1546.png","祕術卷軸":"w1490.png","轉換卷軸":"w1709.png","精通卷軸":"w1707.png","重新分配卷軸":"w1708.png","幽靈胸甲":"w1343.png","戰術胸甲":"w1337.png","Ika胸甲":"w1340.png","結晶蜂蜜胸甲":"w1394.png","警覺紫晶胸甲":"w1424.png","狩獵紫晶胸甲":"w1416.png","隱匿紫晶胸甲":"x_plastron_amethyste_assassin_p3.png","神秘紫晶胸甲":"w1420.png","堅韌紫晶胸甲":"w1408.png","蜂巢胸甲":"w1382.png","死神胸甲":"w1368.png","守護者胸甲":"w1372.png","泰坦胸甲":"w1352.png","死靈鎬":"w2694.png","強化鎬":"w2695.png","草原鎬":"w2693.png","森林鎬":"w2696.png","符文石":"w2254.png","黑骨石":"w2284.png","寒冰硬皮":"w2189.png","厚獸皮":"w2238.png","山鹿皮":"w2182.png","野豬皮":"w2174.png","熊皮":"w2240.png","金屬之魂碎片":"w2218.png","附魔金屬幣":"w2220.png","黃鐵礦":"w2395.png","金黃鐵礦":"w2406.png","蔚藍羽毛":"w1479.png","天藍羽毛":"w2349.png","緋紅羽毛":"w1478.png","幽靈羽毛":"w1551.png","烈焰羽毛":"w1480.png","火焰羽毛":"w2243.png","漣漪羽毛":"w2244.png","大地羽毛":"w2245.png","魔力藥水 I":"w90114.png","魔力藥水 III":"w2470.png","耐力藥水 I":"w2471.png","耐力藥水 II":"w2472.png","生命藥水 I":"w2457.png","生命藥水 II":"w2458.png","生命藥水 III":"w2459.png","優質生命藥水 I":"w2463.png","優質生命藥水 II":"w2464.png","優質生命藥水 III":"w2465.png","優質生命藥水 IV":"w2466.png","優質生命藥水 V":"w2467.png","優質生命藥水 VI":"w2468.png","白蜘蛛粉末":"w2306.png","白樺木屑":"w2127.png","冷杉木屑":"w2139.png","相思木木屑":"w2133.png","冰霜之塵":"w2187.png","骨粉":"w2194.png","骨髓粉末":"w2257.png","死靈法師粉末":"w2285.png","橡木木屑":"w2121.png","黑色粉末":"w2283.png","破爛衣物":"w2256.png","祕術短劍":"w1492.png","肆虐樹枝":"w2337.png","暗影樹枝":"w2333.png","附魔細枝":"w2198.png","祖先之根":"w2202.png","愛情禮物":"w1472.png","祕術沙漏":"w1494.png","蜂蜜殘渣":"w2242.png","莉塔":"w90149.png","紫水晶圓盾":"w2565.png","鋁土圓盾":"w2551.png","廢鐵圓盾":"w2549.png","銅圓盾":"w2538.png","粒狀銅圓盾":"w2561.png","鐵圓盾":"w2543.png","鋼鐵圓盾":"w2563.png","刺木圓盾":"w2535.png","訓練圓盾":"w2533.png","古木圓盾":"w2567.png","不純縞瑪瑙圓盾":"w2555.png","純縞瑪瑙圓盾":"w2557.png","毒刺圓盾":"w2553.png","魔術師圓盾":"w2541.png","死靈法師圓盾":"w2559.png","迷霧符文":"w2025.png","幽靈符文":"w2027.png","兇猛符文":"w2033.png","哥布林符文":"w2020.png","發光符文":"w2026.png","神秘符文":"w2036.png","獸人符文":"w2019.png","Sylnovar 符文":"w2023.png","Sylvaer 符文":"w2024.png","赤眼符文":"w2032.png","蛛網符文":"w2022.png","森林符文":"w2021.png","巨像符文":"w2015.png","守護者符文":"w2014.png","迷宮符文":"w2030.png","巫師涼鞋":"w1366.png","魔術師涼鞋":"w1363.png","腐化獸血":"w2382.png","哥布林之血":"w2328.png","獸人之血":"w2316.png","幼嫩種子":"w2335.png","琥珀種子":"w1844.png","金牛帽":"w1495.png","琥珀萼片":"w1842.png","白樺木板":"w2126.png","冷杉木板":"w2138.png","相思木木板":"w2132.png","橡木木板":"w2120.png","兇猛護身符":"w1483.png","祕術護身符":"w1491.png","金牛護身符":"w1496.png","Kazor 護身符":"w1464.png","蛛網護身符":"w1548.png","Oracile 荊棘莖":"w1847.png","幽魂之布":"w2208.png","詛咒之布":"w2166.png","Sylnovar 布料":"w2340.png","Sylvaer 布料":"w2344.png","小麥":"w1834.png","白樺原木":"w2125.png","冷杉原木":"w2137.png","相思木原木":"w2131.png","橡木原木":"w2119.png","廢鐵碎片":"w2246.png","幽魂鬃毛碎片":"w2206.png","綠松石":"w2402.png","幽靈外衣":"w1350.png","祕術長袍":"w1462.png","戰術外衣":"w1346.png","Ika外衣":"w1347.png","獵人外衣":"w1358.png","巫師長袍":"w1364.png","先驅者外衣":"w1376.png","魔術師長袍":"w1361.png","忍者外衣":"w1355.png","發光蜘蛛毒液":"w2309.png","棕蜘蛛毒液":"w2299.png","黑蜘蛛毒液":"w2293.png","透明蜘蛛毒液":"w2307.png","蜘蛛毒液":"w2185.png","森林之絆":"w1448.png","墮落士兵頭盔":"w1466.png","藍寶石":"w2419.png","蜜琥珀":"w2404.png","—蜂蜜殘渣":"w2242.png","—熊爪":"w2239.png","—熊皮":"w2240.png","—熊脂":"w2241.png","白樺木板 ×5":"w2126.png","橡木木板 ×5":"w2120.png","訓練弩":"w1727.png","基礎之弩":"w1728.png","銅弩":"w1729.png","鐵製雙刃斧":"w2612.png","Galiath 之斧":"w90144.png","訓練太刀":"w1762.png","訓練法杖":"w2569.png","解縛魔導書":"w1626.png","訓練提燈":"w90064.png","狂野魔導書":"w1628.png","訓練箭袋":"w90053.png","漆黑提燈":"w1503.png","新手之靴":"w1336.png","新手護腿":"w1335.png","新手外衣":"w1334.png","鐵幣":"w1457.png","凝膠斗篷":"w1453.png","失竊斗篷":"w1454.png","強盜頭罩":"w1456.png","猩紅羽毛":"w1478.png","熾焰羽毛":"w1480.png","銅戒指":"w2477.png","鐵戒指":"w2482.png","墮落戒指":"w2484.png","銅手環":"w1591.png","鐵手環":"w1593.png"};
+const ATLAS = {"C":40,"R":27,"k":{"aile-d-araignee-volante.png":0,"ame-de-l-heraut.png":1,"ame-de-la-faucheuse.png":2,"ame-des-ruines.png":3,"ame-du-gardien.png":4,"anneau-de-pumba.png":5,"anneau-du-fallen.png":6,"arc-sylvestre.png":7,"armature-d-orc.png":8,"armature-gobline.png":9,"bague-de-narax.png":10,"baton-magique-des-revenants.png":11,"baton-magique-des-ruines.png":12,"bottes-noires.png":13,"bouclier-noir.png":14,"bouclier-oublie.png":15,"bourse-moyenne.png":16,"branche-ravageuse.png":17,"branche-sombre.png":18,"brindille-enchantees.png":19,"c-ur-d-orc.png":20,"c-ur-de-nymbrea.png":21,"c-ur-putrefiee.png":22,"c-ur-ravageur.png":23,"carapace-d-ika.png":24,"carapace-de-requin.png":25,"carcasse-brune-d-araignee.png":26,"carcasse-jaune-d-araignee.png":27,"carcasse-noire.png":28,"carcasse-violette-d-araignee.png":29,"chaine-spectral.png":30,"cocon-d-oeuf.png":31,"coeur-de-bois.png":32,"corde-d-arc-sylvestre.png":33,"corne-de-taureau.png":34,"corne-du-rugiboeuf.png":35,"crane-d-un-loup.png":36,"cristal-corrompu.png":37,"crocs-de-albal.png":38,"crocs-de-loup.png":39,"cuir-use.png":40,"eclat-amethyste.png":41,"eclat-de-bois-magique.png":42,"eclat-magique-glacial.png":43,"ecorce-de-titan.png":44,"ecorce-juvenile.png":45,"ecorce-ravageuse.png":46,"ecorce-sylvestre.png":47,"epee-squelettique.png":48,"essence-d-orc.png":49,"essence-de-gorbel.png":50,"essence-de-la-tribue.png":51,"essence-de-sylnovar.png":52,"essence-de-sylvaer.png":53,"essence-gobline.png":54,"essence-majestueuse.png":55,"feuilles-sylnovariennes.png":56,"feuilles-sylvaeriennes.png":57,"fil-brun-d-araignee.png":58,"fil-d-araignee.png":59,"fil-jaune-d-araignee.png":60,"fil-noir.png":61,"fil-violet-d-araignee.png":62,"fleur-d-une-nephente.png":63,"fourrure-brumeuse.png":64,"fourrure-de-bete.png":65,"fourrure-de-loup.png":66,"fourrure-des-bois.png":67,"fragment-de-l-ame-de-l-ours.png":68,"fragments-de-feuilles.png":69,"gelee-de-slime.png":70,"graine-juvenile.png":71,"graisse-d-ours.png":72,"griffe-brumeuse.png":73,"griffe-d-ours.png":74,"griffe-des-bois.png":75,"hallebard-du-gardien.png":76,"il-d-orc.png":77,"joyau-sylnovarien.png":78,"joyau-sylvaerien.png":79,"lame-cachee.png":80,"masque-d-orc.png":81,"mendibule-brune-d-araignee.png":82,"mendibule-noire.png":83,"morceau-de-ferraille.png":84,"mycelium-magique.png":85,"noyau-de-slime.png":86,"oeil-gobline.png":87,"oeuf-d-harpy-d-eau.png":88,"oreille-gobline.png":89,"os-de-squelette-renforce.png":90,"os-de-squelette.png":91,"os-sombre.png":92,"parchemin-de-l-archer.png":93,"parchemin-de-l-epeiste.png":94,"parchemin-du-mage.png":95,"patte-d-une-araignee.png":96,"peau-d-ours.png":97,"peau-de-cerf-des-montagnes.png":98,"peau-de-sanglier.png":99,"peau-dur-glacial.png":100,"peau-epaisse.png":101,"petite-bourse.png":102,"piece-d-ame-de-metal.png":103,"piece-d-or-de-bandit.png":104,"piece-de-metal-enchante.png":105,"pierre-osseuse-noire.png":106,"pierre-runique.png":107,"plume-bleciel.png":108,"plume-ondoyante.png":109,"poudre-de-moelle.png":110,"poudre-de-necromancien.png":111,"poudre-noir.png":112,"pousse-de-sylve.png":113,"poussiere-d-os.png":114,"poussiere-de-givre.png":115,"queue-brumeuse.png":116,"queue-des-bois.png":117,"racine-ancestrale.png":118,"residu-de-miel.png":119,"rune-aux-yeux-rouges.png":120,"rune-du-colosse.png":121,"rune-du-labyrinthe.png":122,"rune-feroce.png":123,"sang-d-orc.png":124,"sang-de-goblin.png":125,"spore-corrompu.png":126,"tissu-d-araignee.png":127,"tissu-maudit.png":128,"tissu-spectral.png":129,"tissu-sylnovarien.png":130,"tissu-sylvaerien.png":131,"v_amethyst_shard":132,"v_apple":133,"v_blaze_rod":134,"v_bone":135,"v_book":136,"v_bow":137,"v_emerald":138,"v_feather":139,"v_glass_bottle":140,"v_gold_nugget":141,"v_honeycomb":142,"v_iron_axe":143,"v_iron_boots":144,"v_iron_chestplate":145,"v_iron_helmet":146,"v_iron_hoe":147,"v_iron_ingot":148,"v_iron_leggings":149,"v_iron_nugget":150,"v_iron_sword":151,"v_lead":152,"v_leather":153,"v_leather_chestplate":154,"v_mace":155,"v_paper":156,"v_potion":157,"v_raw_iron":158,"v_stick":159,"v_string":160,"v_trial_key":161,"v_trident":162,"v_wheat":163,"venin-brun-d-araignee.png":164,"venin-luminescent-d-araignee.png":165,"venin-noir-d-araignee.png":166,"vetement-dechiree.png":167,"viande-de-sanglier.png":168,"w1288.png":169,"w1289.png":170,"w1290.png":171,"w1291.png":172,"w1292.png":173,"w1296.png":174,"w1297.png":175,"w1299.png":176,"w1300.png":177,"w1301.png":178,"w1302.png":179,"w1303.png":180,"w1304.png":181,"w1305.png":182,"w1306.png":183,"w1307.png":184,"w1308.png":185,"w1309.png":186,"w1310.png":187,"w1311.png":188,"w1312.png":189,"w1313.png":190,"w1315.png":191,"w1316.png":192,"w1317.png":193,"w1318.png":194,"w1319.png":195,"w1320.png":196,"w1321.png":197,"w1322.png":198,"w1323.png":199,"w1324.png":200,"w1325.png":201,"w1326.png":202,"w1327.png":203,"w1328.png":204,"w1329.png":205,"w1330.png":206,"w1331.png":207,"w1332.png":208,"w1333.png":209,"w1334.png":210,"w1335.png":211,"w1336.png":212,"w1337.png":213,"w1338.png":214,"w1339.png":215,"w1340.png":216,"w1343.png":217,"w1344.png":218,"w1346.png":219,"w1347.png":220,"w1348.png":221,"w1349.png":222,"w1350.png":223,"w1351.png":224,"w1352.png":225,"w1353.png":226,"w1354.png":227,"w1355.png":228,"w1356.png":229,"w1357.png":230,"w1358.png":231,"w1359.png":232,"w1360.png":233,"w1361.png":234,"w1362.png":235,"w1363.png":236,"w1364.png":237,"w1365.png":238,"w1366.png":239,"w1367.png":240,"w1368.png":241,"w1369.png":242,"w1370.png":243,"w1371.png":244,"w1372.png":245,"w1373.png":246,"w1374.png":247,"w1375.png":248,"w1376.png":249,"w1377.png":250,"w1378.png":251,"w1379.png":252,"w1380.png":253,"w1381.png":254,"w1382.png":255,"w1383.png":256,"w1384.png":257,"w1393.png":258,"w1394.png":259,"w1395.png":260,"w1396.png":261,"w1405.png":262,"w1406.png":263,"w1407.png":264,"w1408.png":265,"w1409.png":266,"w1410.png":267,"w1415.png":268,"w1416.png":269,"w1417.png":270,"w1418.png":271,"w1419.png":272,"w1420.png":273,"w1421.png":274,"w1422.png":275,"w1423.png":276,"w1424.png":277,"w1425.png":278,"w1426.png":279,"w1447.png":280,"w1448.png":281,"w1449.png":282,"w1450.png":283,"w1451.png":284,"w1452.png":285,"w1453.png":286,"w1454.png":287,"w1455.png":288,"w1456.png":289,"w1457.png":290,"w1458.png":291,"w1459.png":292,"w1460.png":293,"w1461.png":294,"w1462.png":295,"w1463.png":296,"w1464.png":297,"w1465.png":298,"w1466.png":299,"w1467.png":300,"w1468.png":301,"w1470.png":302,"w1471.png":303,"w1472.png":304,"w1473.png":305,"w1474.png":306,"w1475.png":307,"w1476.png":308,"w1477.png":309,"w1478.png":310,"w1479.png":311,"w1480.png":312,"w1482.png":313,"w1483.png":314,"w1484.png":315,"w1485.png":316,"w1486.png":317,"w1487.png":318,"w1488.png":319,"w1489.png":320,"w1490.png":321,"w1491.png":322,"w1492.png":323,"w1493.png":324,"w1494.png":325,"w1495.png":326,"w1496.png":327,"w1497.png":328,"w1498.png":329,"w1499.png":330,"w1500.png":331,"w1501.png":332,"w1502.png":333,"w1503.png":334,"w1508.png":335,"w1509.png":336,"w1510.png":337,"w1511.png":338,"w1512.png":339,"w1513.png":340,"w1514.png":341,"w1515.png":342,"w1516.png":343,"w1517.png":344,"w1518.png":345,"w1519.png":346,"w1520.png":347,"w1521.png":348,"w1522.png":349,"w1523.png":350,"w1524.png":351,"w1525.png":352,"w1526.png":353,"w1527.png":354,"w1528.png":355,"w1529.png":356,"w1530.png":357,"w1531.png":358,"w1532.png":359,"w1533.png":360,"w1534.png":361,"w1535.png":362,"w1536.png":363,"w1537.png":364,"w1538.png":365,"w1539.png":366,"w1540.png":367,"w1541.png":368,"w1542.png":369,"w1543.png":370,"w1544.png":371,"w1545.png":372,"w1546.png":373,"w1547.png":374,"w1548.png":375,"w1549.png":376,"w1550.png":377,"w1551.png":378,"w1552.png":379,"w1553.png":380,"w1554.png":381,"w1555.png":382,"w1556.png":383,"w1557.png":384,"w1558.png":385,"w1559.png":386,"w1560.png":387,"w1561.png":388,"w1562.png":389,"w1563.png":390,"w1564.png":391,"w1565.png":392,"w1567.png":393,"w1569.png":394,"w1575.png":395,"w1589.png":396,"w1590.png":397,"w1591.png":398,"w1592.png":399,"w1593.png":400,"w1594.png":401,"w1595.png":402,"w1598.png":403,"w1599.png":404,"w1600.png":405,"w1601.png":406,"w1602.png":407,"w1603.png":408,"w1604.png":409,"w1605.png":410,"w1606.png":411,"w1607.png":412,"w1608.png":413,"w1609.png":414,"w1610.png":415,"w1611.png":416,"w1612.png":417,"w1613.png":418,"w1614.png":419,"w1615.png":420,"w1616.png":421,"w1617.png":422,"w1618.png":423,"w1619.png":424,"w1620.png":425,"w1621.png":426,"w1622.png":427,"w1623.png":428,"w1625.png":429,"w1626.png":430,"w1628.png":431,"w1629.png":432,"w1630.png":433,"w1631.png":434,"w1632.png":435,"w1634.png":436,"w1635.png":437,"w1637.png":438,"w1638.png":439,"w1640.png":440,"w1643.png":441,"w1644.png":442,"w1645.png":443,"w1647.png":444,"w1648.png":445,"w1649.png":446,"w1650.png":447,"w1652.png":448,"w1653.png":449,"w1657.png":450,"w1658.png":451,"w1659.png":452,"w1660.png":453,"w1661.png":454,"w1663.png":455,"w1707.png":456,"w1708.png":457,"w1709.png":458,"w1727.png":459,"w1728.png":460,"w1729.png":461,"w1730.png":462,"w1731.png":463,"w1732.png":464,"w1733.png":465,"w1734.png":466,"w1735.png":467,"w1736.png":468,"w1737.png":469,"w1738.png":470,"w1739.png":471,"w1740.png":472,"w1741.png":473,"w1742.png":474,"w1743.png":475,"w1744.png":476,"w1745.png":477,"w1746.png":478,"w1760.png":479,"w1762.png":480,"w1763.png":481,"w1764.png":482,"w1765.png":483,"w1766.png":484,"w1767.png":485,"w1768.png":486,"w1769.png":487,"w1770.png":488,"w1771.png":489,"w1772.png":490,"w1773.png":491,"w1774.png":492,"w1775.png":493,"w1776.png":494,"w1777.png":495,"w1778.png":496,"w1779.png":497,"w1780.png":498,"w1781.png":499,"w1782.png":500,"w1783.png":501,"w1784.png":502,"w1785.png":503,"w1786.png":504,"w1788.png":505,"w1789.png":506,"w1790.png":507,"w1791.png":508,"w1792.png":509,"w1793.png":510,"w1794.png":511,"w1795.png":512,"w1796.png":513,"w1797.png":514,"w1798.png":515,"w1800.png":516,"w1801.png":517,"w1802.png":518,"w1803.png":519,"w1804.png":520,"w1805.png":521,"w1806.png":522,"w1807.png":523,"w1809.png":524,"w1810.png":525,"w1811.png":526,"w1812.png":527,"w1813.png":528,"w1814.png":529,"w1815.png":530,"w1816.png":531,"w1817.png":532,"w1818.png":533,"w1821.png":534,"w1823.png":535,"w1824.png":536,"w1830.png":537,"w1831.png":538,"w1834.png":539,"w1835.png":540,"w1836.png":541,"w1838.png":542,"w1839.png":543,"w1840.png":544,"w1842.png":545,"w1844.png":546,"w1846.png":547,"w1847.png":548,"w1850.png":549,"w1957.png":550,"w1981.png":551,"w1982.png":552,"w1983.png":553,"w1984.png":554,"w1985.png":555,"w1986.png":556,"w1996.png":557,"w1997.png":558,"w1998.png":559,"w1999.png":560,"w2000.png":561,"w2001.png":562,"w2014.png":563,"w2015.png":564,"w2019.png":565,"w2020.png":566,"w2021.png":567,"w2022.png":568,"w2023.png":569,"w2024.png":570,"w2025.png":571,"w2026.png":572,"w2027.png":573,"w2030.png":574,"w2032.png":575,"w2033.png":576,"w2036.png":577,"w2037.png":578,"w2038.png":579,"w2039.png":580,"w2040.png":581,"w2041.png":582,"w2042.png":583,"w2043.png":584,"w2044.png":585,"w2045.png":586,"w2046.png":587,"w2047.png":588,"w2048.png":589,"w2049.png":590,"w2050.png":591,"w2051.png":592,"w2052.png":593,"w2053.png":594,"w2054.png":595,"w2055.png":596,"w2056.png":597,"w2057.png":598,"w2058.png":599,"w2059.png":600,"w2060.png":601,"w2061.png":602,"w2062.png":603,"w2063.png":604,"w2064.png":605,"w2065.png":606,"w2066.png":607,"w2067.png":608,"w2068.png":609,"w2069.png":610,"w2070.png":611,"w2071.png":612,"w2072.png":613,"w2073.png":614,"w2074.png":615,"w2076.png":616,"w2098.png":617,"w2119.png":618,"w2120.png":619,"w2121.png":620,"w2125.png":621,"w2126.png":622,"w2127.png":623,"w2131.png":624,"w2132.png":625,"w2133.png":626,"w2137.png":627,"w2138.png":628,"w2139.png":629,"w2156.png":630,"w2157.png":631,"w2158.png":632,"w2159.png":633,"w2166.png":634,"w2170.png":635,"w2172.png":636,"w2173.png":637,"w2174.png":638,"w2175.png":639,"w2176.png":640,"w2177.png":641,"w2179.png":642,"w2180.png":643,"w2181.png":644,"w2182.png":645,"w2183.png":646,"w2185.png":647,"w2186.png":648,"w2187.png":649,"w2188.png":650,"w2189.png":651,"w2190.png":652,"w2191.png":653,"w2192.png":654,"w2194.png":655,"w2195.png":656,"w2196.png":657,"w2197.png":658,"w2198.png":659,"w2199.png":660,"w2200.png":661,"w2201.png":662,"w2202.png":663,"w2203.png":664,"w2204.png":665,"w2206.png":666,"w2208.png":667,"w2209.png":668,"w2210.png":669,"w2212.png":670,"w2213.png":671,"w2215.png":672,"w2218.png":673,"w2220.png":674,"w2224.png":675,"w2237.png":676,"w2238.png":677,"w2239.png":678,"w2240.png":679,"w2241.png":680,"w2242.png":681,"w2243.png":682,"w2244.png":683,"w2245.png":684,"w2246.png":685,"w2248.png":686,"w2250.png":687,"w2251.png":688,"w2254.png":689,"w2255.png":690,"w2256.png":691,"w2257.png":692,"w2268.png":693,"w2283.png":694,"w2284.png":695,"w2285.png":696,"w2286.png":697,"w2287.png":698,"w2288.png":699,"w2289.png":700,"w2290.png":701,"w2291.png":702,"w2292.png":703,"w2293.png":704,"w2294.png":705,"w2295.png":706,"w2296.png":707,"w2297.png":708,"w2298.png":709,"w2299.png":710,"w2300.png":711,"w2301.png":712,"w2302.png":713,"w2303.png":714,"w2304.png":715,"w2305.png":716,"w2306.png":717,"w2307.png":718,"w2308.png":719,"w2309.png":720,"w2310.png":721,"w2311.png":722,"w2312.png":723,"w2313.png":724,"w2314.png":725,"w2315.png":726,"w2316.png":727,"w2317.png":728,"w2318.png":729,"w2319.png":730,"w2320.png":731,"w2321.png":732,"w2322.png":733,"w2323.png":734,"w2324.png":735,"w2325.png":736,"w2326.png":737,"w2327.png":738,"w2328.png":739,"w2329.png":740,"w2330.png":741,"w2331.png":742,"w2332.png":743,"w2333.png":744,"w2334.png":745,"w2335.png":746,"w2336.png":747,"w2337.png":748,"w2338.png":749,"w2339.png":750,"w2340.png":751,"w2341.png":752,"w2342.png":753,"w2343.png":754,"w2344.png":755,"w2345.png":756,"w2346.png":757,"w2347.png":758,"w2348.png":759,"w2349.png":760,"w2350.png":761,"w2366.png":762,"w2367.png":763,"w2369.png":764,"w2370.png":765,"w2374.png":766,"w2375.png":767,"w2376.png":768,"w2377.png":769,"w2378.png":770,"w2379.png":771,"w2380.png":772,"w2381.png":773,"w2382.png":774,"w2386.png":775,"w2387.png":776,"w2388.png":777,"w2389.png":778,"w2392.png":779,"w2393.png":780,"w2394.png":781,"w2395.png":782,"w2396.png":783,"w2398.png":784,"w2399.png":785,"w2400.png":786,"w2401.png":787,"w2402.png":788,"w2404.png":789,"w2405.png":790,"w2406.png":791,"w2407.png":792,"w2408.png":793,"w2409.png":794,"w2410.png":795,"w2415.png":796,"w2416.png":797,"w2418.png":798,"w2419.png":799,"w2422.png":800,"w2457.png":801,"w2458.png":802,"w2459.png":803,"w2463.png":804,"w2464.png":805,"w2465.png":806,"w2466.png":807,"w2467.png":808,"w2468.png":809,"w2470.png":810,"w2471.png":811,"w2472.png":812,"w2473.png":813,"w2474.png":814,"w2475.png":815,"w2476.png":816,"w2477.png":817,"w2478.png":818,"w2480.png":819,"w2481.png":820,"w2482.png":821,"w2483.png":822,"w2484.png":823,"w2485.png":824,"w2487.png":825,"w2488.png":826,"w2489.png":827,"w2490.png":828,"w2491.png":829,"w2492.png":830,"w2493.png":831,"w2494.png":832,"w2495.png":833,"w2496.png":834,"w2497.png":835,"w2498.png":836,"w2499.png":837,"w2500.png":838,"w2501.png":839,"w2502.png":840,"w2503.png":841,"w2504.png":842,"w2505.png":843,"w2506.png":844,"w2507.png":845,"w2508.png":846,"w2509.png":847,"w2510.png":848,"w2511.png":849,"w2512.png":850,"w2513.png":851,"w2514.png":852,"w2515.png":853,"w2516.png":854,"w2517.png":855,"w2518.png":856,"w2519.png":857,"w2520.png":858,"w2521.png":859,"w2522.png":860,"w2533.png":861,"w2534.png":862,"w2535.png":863,"w2536.png":864,"w2537.png":865,"w2538.png":866,"w2539.png":867,"w2540.png":868,"w2541.png":869,"w2542.png":870,"w2543.png":871,"w2544.png":872,"w2545.png":873,"w2546.png":874,"w2547.png":875,"w2548.png":876,"w2549.png":877,"w2550.png":878,"w2551.png":879,"w2552.png":880,"w2553.png":881,"w2554.png":882,"w2555.png":883,"w2556.png":884,"w2557.png":885,"w2558.png":886,"w2559.png":887,"w2560.png":888,"w2561.png":889,"w2562.png":890,"w2563.png":891,"w2564.png":892,"w2565.png":893,"w2566.png":894,"w2567.png":895,"w2568.png":896,"w2569.png":897,"w2570.png":898,"w2571.png":899,"w2572.png":900,"w2575.png":901,"w2576.png":902,"w2577.png":903,"w2579.png":904,"w2582.png":905,"w2583.png":906,"w2585.png":907,"w2587.png":908,"w2588.png":909,"w2589.png":910,"w2591.png":911,"w2593.png":912,"w2594.png":913,"w2595.png":914,"w2596.png":915,"w2597.png":916,"w2599.png":917,"w2600.png":918,"w2601.png":919,"w2602.png":920,"w2603.png":921,"w2605.png":922,"w2607.png":923,"w2608.png":924,"w2611.png":925,"w2612.png":926,"w2613.png":927,"w2614.png":928,"w2615.png":929,"w2617.png":930,"w2623.png":931,"w2628.png":932,"w2629.png":933,"w2631.png":934,"w2632.png":935,"w2636.png":936,"w2637.png":937,"w2641.png":938,"w2642.png":939,"w2647.png":940,"w2648.png":941,"w2652.png":942,"w2653.png":943,"w2657.png":944,"w2658.png":945,"w2663.png":946,"w2664.png":947,"w2668.png":948,"w2669.png":949,"w2673.png":950,"w2674.png":951,"w2678.png":952,"w2679.png":953,"w2693.png":954,"w2694.png":955,"w2695.png":956,"w2696.png":957,"w2699.png":958,"w2700.png":959,"w2701.png":960,"w2702.png":961,"w2705.png":962,"w2706.png":963,"w2707.png":964,"w2708.png":965,"w2714.png":966,"w2715.png":967,"w2717.png":968,"w2718.png":969,"w90002.png":970,"w90003.png":971,"w90005.png":972,"w90026.png":973,"w90053.png":974,"w90059.png":975,"w90060.png":976,"w90061.png":977,"w90063.png":978,"w90064.png":979,"w90065.png":980,"w90066.png":981,"w90067.png":982,"w90072.png":983,"w90078.png":984,"w90079.png":985,"w90093.png":986,"w90113.png":987,"w90114.png":988,"w90115.png":989,"w90116.png":990,"w90117.png":991,"w90118.png":992,"w90119.png":993,"w90120.png":994,"w90121.png":995,"w90131.png":996,"w90134.png":997,"w90135.png":998,"w90136.png":999,"w90137.png":1000,"w90138.png":1001,"w90139.png":1002,"w90143.png":1003,"w90144.png":1004,"w90145.png":1005,"w90149.png":1006,"w90150.png":1007,"w90151.png":1008,"w90154.png":1009,"w90155.png":1010,"w90156.png":1011,"w90157.png":1012,"w90158.png":1013,"w90159.png":1014,"w90160.png":1015,"x_1314.png":1016,"x_1596.png":1017,"x_amulette_nephente.png":1018,"x_amulette_requin.png":1019,"x_amulette_slime.png":1020,"x_amulette_treant_elite.png":1021,"x_anneau_nephente.png":1022,"x_anneau_tissu_araignee.png":1023,"x_bottes_amethyste_assassin_p3.png":1024,"x_bracelet_loup1.png":1025,"x_bracelet_nephente.png":1026,"x_bracelet_slime.png":1027,"x_bracelet_treant_elite.png":1028,"x_carapace_treant_elite.png":1029,"x_casque_amethyste_assassin_p3.png":1030,"x_ceinture_cuivre.png":1031,"x_ceinture_fer.png":1032,"x_collier_golem_glace.png":1033,"x_couteau_loup.png":1034,"x_gants_skeleton.png":1035,"x_gants_tissu_araignee.png":1036,"x_gants_treant_elite.png":1037,"x_jambieres_amethyste_assassin_p3.png":1038,"x_manteau_slime.png":1039,"x_manteau_tissu_araignee.png":1040,"x_plastron_amethyste_assassin_p3.png":1041,"yeux-bruns-d-araignee.png":1042,"yeux-rouges-d-araignee.png":1043,"yeux-violets-d-araignee.png":1044,"v_crossbow":1045}};
+let _icon = null;
+function iconOf(n) { if (!_icon) { _icon = {}; MOBS.forEach(m => m.d.forEach(d => { if (d.o) _icon[d.i] = d.o; })); } return _icon[n]; }
+const VAN = n => /戒指/.test(n) ? 'gold_nugget' : /項鍊|護符/.test(n) ? 'lead' : /手環/.test(n) ? 'iron_nugget' : /手套|拳套/.test(n) ? 'leather' : /弩/.test(n) ? 'crossbow' : /弓/.test(n) ? 'bow' : /斧/.test(n) ? 'iron_axe' : /錘|錘/.test(n) ? 'mace' : /戟|槍|矛/.test(n) ? 'trident' : /劍|刀|匕首/.test(n) ? 'iron_sword' : /杖/.test(n) ? 'blaze_rod' : /魔導書|書|卷軸/.test(n) ? 'book' : /頭盔/.test(n) ? 'iron_helmet' : /胸甲|護甲/.test(n) ? 'iron_chestplate' : /護腿/.test(n) ? 'iron_leggings' : /靴/.test(n) ? 'iron_boots' : /斗篷|披風/.test(n) ? 'leather_chestplate' : /藥水/.test(n) ? 'potion' : /鑰匙/.test(n) ? 'trial_key' : /錠/.test(n) ? 'iron_ingot' : /礦/.test(n) ? 'raw_iron' : /水晶|寶石|寶玉|瑪瑙|鱗片/.test(n) ? 'amethyst_shard' : /皮|毛|軀殼|甲殼|殼/.test(n) ? 'leather' : /牙|爪|骨|角/.test(n) ? 'bone' : /絲|線|布|繩/.test(n) ? 'string' : /羽/.test(n) ? 'feather' : /蜂蜜|蜜/.test(n) ? 'honeycomb' : /木板|原木|樹皮|枝/.test(n) ? 'stick' : /精華|之心/.test(n) ? 'emerald' : /麥/.test(n) ? 'wheat' : 'paper';
+const ICON_HTML = n => { const o = iconOf(n), b = n.replace(/\s*×\s*\d+$/, '').replace(/^—/, ''); let f = o ? o + '.png' : ICON_MAP[n] || ICON_MAP[b]; let i = f !== undefined ? ATLAS.k[f] : undefined; if (i === undefined) i = ATLAS.k['v_' + VAN(b)]; const x = i % ATLAS.C, y = Math.floor(i / ATLAS.C); return `<i class="sp" style="background-position:${x / (ATLAS.C - 1) * 100}% ${y / (ATLAS.R - 1) * 100}%"></i>`; };
+const ITEM_ICON = n => ICON_HTML(n);
+const ITEM_EMOJI = n => /戒指/.test(n) ? '💍' : /護符|項鍊/.test(n) ? '📿' : /手環/.test(n) ? '⭕' : /手套|拳套/.test(n) ? '🧤' : /劍|刀/.test(n) ? '🗡️' : /弓/.test(n) ? '🏹' : /杖|魔導書/.test(n) ? '🪄' : /盾/.test(n) ? '🛡️' : /頭盔|胸甲|護腿|靴|護甲|斗篷|披風/.test(n) ? '🥋' : /藥水/.test(n) ? '🧪' : /鑰匙/.test(n) ? '🗝️' : /錠|礦|水晶|寶石|紫水晶|瑪瑙/.test(n) ? '🪨' : /皮|毛/.test(n) ? '🟫' : /牙|爪|骨|角/.test(n) ? '🦴' : /符文/.test(n) ? '🔣' : '📦';
+function renderItems() {
+  const q = norm(state.q);
+  const names = allItemNames().filter(n => !q || match(q, n, itemInfo(n).en));
+  return `<div class="filters"><span class="count">${names.length} 個道具</span></div><div class="items-grid">${names.slice(0, 300).map(n => { const i = itemInfo(n);
+    const tags = [i.drops.length ? `${i.drops.length} 隻怪掉` : '', i.rec ? '可製作' : '', i.usedIn.length ? `用於 ${i.usedIn.length} 個配方` : ''].filter(Boolean).join(' · ');
+    return `<button class="it-card" data-iv="${esc(n)}"><span class="it-ic">${ITEM_ICON(n)}</span><span><b>${esc(n)}</b><small>${esc(tags || i.en || '')}</small></span></button>`; }).join('')}</div>${names.length > 300 ? '<p class="foot">只顯示前 300 個，用上面的篩選框縮小範圍。</p>' : ''}`;
+}
+function renderItem1() {
+  const n = state.curItem; if (!n) return `<div class="empty"><h3>沒有選擇道具</h3><p><a href="#items">回道具列表</a></p></div>`;
+  const i = itemInfo(n);
+  return `<p><a href="#items" class="addr" style="text-decoration:none;display:inline-block">← 道具列表</a></p>
+    <article class="card"><div class="idetail"><span class="it-ic">${ITEM_ICON(n)}</span><div><h2 style="margin:0">${esc(n)}</h2>${i.en ? `<div class="en">${esc(i.en)}</div>` : ''}
+      <div class="meta" style="margin-top:8px">${list[n] ? '<span class="mini">已在清單</span>' : `<button class="add" data-add="${esc(n)}">＋ 加入清單</button>`}</div></div></div>
+      ${i.eq ? `<div class="eq-list" style="box-shadow:none;margin-top:16px">${eqRow(i.eq, '')}</div>` : ''}</article>
+    ${i.drops.length ? `<div class="section-title">哪裡掉 · ${i.drops.length}</div>` + itemCard(ITEMS[n], '') : ''}
+    ${i.rec ? `<div class="section-title">怎麼做</div><div class="eq-list">${recipeHtml(n, i.rec, true)}</div>` : ''}
+    ${i.usedIn.length ? `<div class="section-title">用在哪些配方 · ${i.usedIn.length}</div><div class="items-grid">${i.usedIn.map(k => `<button class="it-card" data-iv="${esc(k)}"><span class="it-ic">${ITEM_ICON(k)}</span><span><b>${esc(k)}</b><small>需要 ${RECIPES[k].mats.find(([m]) => m === n)[1]} 個</small></span></button>`).join('')}</div>` : ''}
+    ${i.buyers.length ? `<div class="section-title">誰會收購</div>` + i.buyers.map(b => `<div class="pl"><div class="pl-h"><b>${esc(b.p.n)}</b><span class="mini">第 ${b.p.f} 層</span><span class="xyz">${esc(b.price)}</span></div><div class="eq-stat">座標 ${esc(b.p.xyz)}</div></div>`).join('') : ''}
+    ${!i.drops.length && !i.rec && !i.usedIn.length && !i.buyers.length ? '<div class="empty"><p>目前沒有這個道具的來源資料。</p></div>' : ''}`;
+}
+function renderGuild() {
+  return `<section class="guild-hero"><div class="guild-emblem">🛡️</div><h2 style="margin:0">公會名稱（準備中）</h2><p class="todo">公會成立後，這裡會放公會徽章、名稱和一句話介紹。</p></section>
+    <div class="gl-grid">
+      <div class="note-card"><h3>📢 公告</h3><p class="todo">還沒有公告。</p></div>
+      <div class="note-card"><h3>🎯 公會目標</h3><p class="todo">例如：一起打到第 3 層、集齊某套裝備。</p></div>
+      <div class="note-card"><h3>👥 成員</h3><p class="todo">成員名單、職業、等級。</p></div>
+      <div class="note-card"><h3>📝 守則與招募</h3><p class="todo">入會條件、活動時間、Discord 連結。</p></div>
+    </div>`;
+}
+function renderCraft() {
+  const q = norm(state.q);
+  const names = Object.keys(RECIPES).filter(n => !q || match(q, n, RECIPES[n].en, ...RECIPES[n].mats.map(m => m[0]), RECIPES[n].at && RECIPES[n].at.n));
+  names.sort((a, b) => (RECIPES[a].at.f - RECIPES[b].at.f) || ((+RECIPES[a].lv || 0) - (+RECIPES[b].lv || 0)));
+  let h = `<div class="filters"><span class="count">${names.length} 個配方（依樓層、等級排序）</span></div>`;
+  [1, 2, 3].forEach(f => { const ns = names.filter(n => RECIPES[n].at.f === f); if (ns.length) h += `<div class="floor-h">第 ${f} 層 · ${ns.length} 個</div><div class="eq-list">` + ns.slice(0, 150).map(n => recipeHtml(n, RECIPES[n], true)).join('') + '</div>'; });
+  return names.length ? h : `<div class="empty"><h3>沒有符合「${esc(state.q)}」的配方</h3><p><button class="addr" data-clearq="1">清除篩選</button></p></div>`;
+}
+let lastRoute = null;
+function renderHead() {
+  const r = route(), R = ROUTES[r];
+  $('#phead').innerHTML = r === 'home' ? '' : `<header class="page-h"><h1>${R.t}</h1>${R.d ? `<p>${R.d}</p>` : ''}${R.ph ? `<div class="pfilter"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="pq" type="search" placeholder="${R.ph}" autocomplete="off" value="${esc(state.qs[r] || '')}"></div>` : ''}</header>`;
+  document.querySelectorAll('#navlinks a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + (r === 'search' ? 'home' : r === 'item' ? 'items' : r)));
+  const on = document.querySelector('#navlinks a.on'); if (on) on.scrollIntoView({block: 'nearest', inline: 'center'});
+}
+function render() {
+  const r = route();
+  if (r !== lastRoute) { lastRoute = r; renderHead(); window.scrollTo(0, 0); }
+  state.q = state.qs[r] || '';
+  $('#main').innerHTML = r === 'home' ? renderHome() : r === 'search' ? renderItem() : r === 'mobs' ? renderMob() : r === 'equip' ? renderEq()
+    : r === 'craft' ? renderCraft() : r === 'items' ? renderItems() : r === 'item' ? renderItem1() : r === 'guild' ? renderGuild() : r === 'dungeons' ? renderDungeons() : r === 'quests' ? renderQuest() : r === 'map' ? renderMap() : r === 'places' ? renderPlaces() : renderList();
+  const t3 = document.getElementById('t3d'); if (t3) mountTerrain(t3);
+  const n = Object.values(list).filter(e => !e.done).length;
+  $('#lc').textContent = n || '';
+}
+const go = (r, q) => { if (q !== undefined) { state.qs[r] = q; lastRoute = null; } if (location.hash === '#' + r) render(); else location.hash = r; };
+window.addEventListener('hashchange', render);
+let tt;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('on'), 2200); }
+
+document.addEventListener('click', e => {
+  const img = e.target.closest('#mapbox img');
+  if (img) { const r = img.getBoundingClientRect(); let x = (e.clientX - r.left) / r.width * 100, y = (e.clientY - r.top) / r.height * 100;
+    if (img.dataset.top && typeof e.offsetX === 'number') { x = e.offsetX / img.clientWidth * 100; y = e.offsetY / img.clientHeight * 100; }
+    if (img.dataset.top) { const m = TOP[+img.dataset.top]; state.mclick = {x, y, top: 1, X: Math.round(m.x0 + x / 100 * m.w), Z: Math.round(m.z0 + y / 100 * m.h)}; }
+    else { const [X, Z] = mapToWorld(x, y); state.mclick = {x, y, X, Z}; }
+    render(); return; }
+  const c = e.target.closest('[data-copy]');
+  if (c) { e.stopPropagation(); const v = c.dataset.copy; try { navigator.clipboard.writeText(v).then(() => toast('已複製：' + v), () => toast('座標：' + v)); } catch (err) { toast('座標：' + v); } }
+}, true);
+document.addEventListener('input', e => { if (e.target.id === 'pq') { state.qs[route()] = e.target.value; render(); } });
+document.addEventListener('submit', e => { if (e.target.id === 'homeform') { e.preventDefault(); go('search', $('#hq').value.trim()); } });
+document.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  const d = t.dataset;
+  if (d.q) { go('search', d.q); }
+  else if (d.m3d) { open3d(MOBS[+d.m3d]); }
+  else if (d.iv || d.item) { state.curItem = d.iv || d.item; lastRoute = null; go('item'); }
+  else if (d.recipe) {
+    let r = ALL_NPC().flatMap(n => (n.shop || []).flatMap(g => g.items)).find(i => i[0] === d.recipe);
+    if (!r && RECIPES[d.recipe]) r = [d.recipe, 0, '', '', RECIPES[d.recipe].mats];
+    if (r && r[4]) { r[4].forEach(([m, q]) => { if (list[m]) list[m].qty += q; else list[m] = {qty: q, done: false}; }); saveList(); render(); toast(`已加入清單：${r[4].map(([m, q]) => m + ' ×' + q).join('、')}`); }
+  }
+  else if (d.clearq) { state.qs[route()] = ''; const p = $('#pq'); if (p) p.value = ''; render(); }
+  else if (d.eqcat) { state.eqCat = d.eqcat; render(); }
+  else if (d.qtype) { state.qType = d.qtype; render(); }
+  else if (d.qfloor !== undefined) { state.qFloor = +d.qfloor; render(); }
+  else if (d.mobmap !== undefined && mobPoints(MOBS[+d.mobmap]).length) { const m = MOBS[+d.mobmap], pts = mobPoints(m); const f = EO[pts[0]].f; openPin3d(f, pts.filter(i => EO[i].f === f).map(i => ({...ptsTargets([i])[0], n: m.n})), m.n); }
+  else if (d.mobmap !== undefined) { const m = MOBS[+d.mobmap], pts = mobPoints(m); state.mobPins = pts; state.mobName = m.n; state.mapFloor = pts.length ? EO[pts[0]].f : m.f; state.plFloor = state.mapFloor; state.mapView = 'top'; state.mclick = null; state.eoSel = -1; go('map'); setTimeout(() => { const el = document.querySelector('.mobpin'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }, 150); }
+  else if (d.clearpins) { state.mobPins = []; state.mobName = ''; state.mclick = null; state.eoSel = -1; state.qs.map = ''; const p = $('#pq'); if (p && route() === 'map') p.value = ''; render(); }
+  else if (d.region) { state.region = state.region === +d.region ? -1 : +d.region; state.eoSel = -1; render(); }
+  else if (d.tilt !== undefined) { state.tilt = +d.tilt; state.terrain = false; render(); }
+  else if (d.rot !== undefined) { state.rot = +d.rot === 0 ? 0 : (state.rot || 0) + +d.rot; render(); }
+  else if (d.goto) { const [f, xyz] = d.goto.split('|'); const F = +f, [X, , Z] = xyz.split(',').map(s => parseInt(s));
+    const i = EO.findIndex(p => p.f === F && p.xyz.split(',').map(s => parseInt(s)).join() === xyz.split(',').map(s => parseInt(s)).join());
+    if (route() !== 'map') { openPin3d(F, i >= 0 ? ptsTargets([i]) : [{n: `X ${X}  Z ${Z}`, X, Z}], i >= 0 ? EO[i].n : '這個位置'); return; }
+    state.mapFloor = F; state.region = -1; state.eoSel = -1; state.qs.map = '';
+    if (i >= 0) { state.mobPins = [i]; state.mobName = EO[i].n; state.mclick = null; }
+    else { const m = TOP[F]; state.mobPins = []; state.mobName = ''; state.mclick = {top: 1, X, Z, x: (X - m.x0) / m.w * 100, y: (Z - m.z0) / m.h * 100}; }
+    lastRoute = null; go('map'); setTimeout(() => { const el = document.querySelector('.stage,.t3d'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }, 80); }
+  else if (d.terrain) { state.terrain = !state.terrain; render(); }
+  else if (d.mapview) { state.mapView = d.mapview; state.mclick = null; render(); }
+  else if (d.mapfloor) { state.mclick = null; state.mapFloor = +d.mapfloor; state.plFloor = +d.mapfloor; state.place = ''; render(); }
+  else if (d.plfloor !== undefined) { state.plFloor = +d.plfloor; render(); }
+  else if (d.plcat) { state.plCat = d.plcat; state.eoSel = -1; render(); }
+  else if (d.eo && t.classList.contains('pt')) { const i = +d.eo; state.eoSel = i; render(); openPin3d(EO[i].f, ptsTargets([i]), EO[i].n); }
+  else if (d.eo) { state.eoSel = +d.eo; if (route() === 'map') { state.mapFloor = EO[+d.eo].f; state.mobPins = [+d.eo]; state.mobName = EO[+d.eo].n; render(); const el = document.querySelector('.stage'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'}); return; } state.plFloor = state.mapFloor; render(); const el = document.getElementById('eo-' + d.eo); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }
+  else if (d.place) { state.place = state.place === d.place ? '' : d.place; render(); }
+  else if (d.floor !== undefined) { state.floor = +d.floor; render(); }
+  else if (d.type) { state.type = d.type; render(); }
+  else if (d.add) {
+    if (list[d.add]) { toast(`「${d.add}」已經在清單裡了`); return; }
+    list[d.add] = {qty: 1, done: false}; saveList(); render(); toast(`已加入清單：${d.add}`);
+  }
+  else if (d.inc) { list[d.inc].qty++; saveList(); render(); }
+  else if (d.dec) { list[d.dec].qty = Math.max(1, list[d.dec].qty - 1); saveList(); render(); }
+  else if (d.done) { list[d.done].done = !list[d.done].done; saveList(); render(); }
+  else if (d.del) { delete list[d.del]; saveList(); render(); toast(`已移除：${d.del}`); }
+  else if (t.id === 'clearList') { list = {}; saveList(); render(); toast('清單已清空'); }
+});
+document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.layer) { state.layers[e.target.dataset.layer] = e.target.checked ? 1 : 0; render(); return; } if (e.target.id === 'mylv') { state.myLv = Math.max(0, parseInt(e.target.value) || 0); render(); } });
+function report(kind, name, en) {
+  const text = `【圖鑑回報】\n類型：${kind}\n名稱：${name}${en && en !== name ? `（${en}）` : ''}\n網站寫的：\n遊戲裡實際是：\n（可以附上遊戲截圖）`;
+  const show = () => { const m = $('#modal'); m.querySelector('textarea').value = text; m.classList.add('on'); m.querySelector('textarea').select(); };
+  try { navigator.clipboard.writeText(text).then(() => toast('已複製回報範本，補上正確內容後貼給網站維護者'), show); } catch (e) { show(); }
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-rpt]'); if (b) { e.stopPropagation(); const [k, n, en] = b.dataset.rpt.split('|'); report(k, n, en); }
+  if (e.target.id === 'modal' || e.target.id === 'mclose') $('#modal').classList.remove('on');
+}, true);
+render();
+
+// ===== 掉落物提示框 =====
+const tipEl = document.createElement('div'); tipEl.className = 'tip'; document.body.appendChild(tipEl);
+document.addEventListener('mouseover', e => {
+  const b = e.target.closest && e.target.closest('[data-tip]'); if (!b) { tipEl.classList.remove('on'); return; }
+  const [n, p, en] = b.dataset.tip.split('|'); const i = itemInfo(n);
+  tipEl.innerHTML = `<div class="th"><span class="dic">${ICON_HTML(n)}</span><div><b>${esc(n)}</b>${en && en !== n ? esc(en) : ''}</div></div>
+    掉落機率 <b style="display:inline;font-size:13px">${esc(p)}</b><br>${i.drops.length} 種怪會掉${i.rec ? '・可以製作' : ''}${i.usedIn.length ? `・用在 ${i.usedIn.length} 個配方` : ''}${i.buyers.length ? '・有人收購' : ''}<div class="hint">點一下看物品簡介 →</div>`;
+  const r = b.getBoundingClientRect(); tipEl.classList.add('on');
+  const w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+  let x = Math.min(innerWidth - w - 8, Math.max(8, r.left)), y = r.top - h - 8; if (y < 8) y = r.bottom + 8;
+  tipEl.style.left = x + 'px'; tipEl.style.top = y + 'px';
+});
+addEventListener('scroll', () => tipEl.classList.remove('on'), {passive: true});
+// ===== 3D 模型（Three.js，需要時才載入） =====
+let THREEP = null, stop3d = null;
+function close3d() { if (stop3d) stop3d(); stop3d = null; const v = document.querySelector('.v3d'); if (v) v.remove(); }
+async function open3d(m) {
+  close3d(); tipEl.classList.remove('on');
+  const v = document.createElement('div'); v.className = 'v3d';
+  v.innerHTML = `<div class="box" role="dialog" aria-label="${esc(m.n)} 3D 模型"><div class="hd"><h3>${esc(m.n)}</h3><span class="en">${esc(m.ne)}</span><button aria-label="關閉" data-close3d="1">×</button></div><div class="cv"><p>模型載入中…</p></div><div class="ft">拖曳旋轉・滾輪或兩指縮放・會自動播放待機動作</div></div>`;
+  v.addEventListener('click', e => { if (e.target === v || e.target.dataset.close3d) close3d(); });
+  document.body.appendChild(v);
+  const cv = v.querySelector('.cv');
+  try {
+    THREEP = THREEP || Promise.all([import('three'), import('three/addons/OrbitControls.js')]);
+    const [T, {OrbitControls}] = await THREEP;
+    const data = await fetch(`m3d/${m.eid}.json`).then(r => r.ok ? r.json() : Promise.reject());
+    if (!document.body.contains(v)) return;
+    const R = Math.PI / 180, lo = new T.TextureLoader();
+    const mats = await Promise.all(data.textures.map(src => new Promise(ok => lo.load(src, tx => { tx.magFilter = tx.minFilter = T.NearestFilter; tx.colorSpace = T.SRGBColorSpace; ok(new T.MeshLambertMaterial({map: tx, transparent: true, alphaTest: .1, side: T.DoubleSide})); }, undefined, () => ok(new T.MeshLambertMaterial({color: 0x888888}))))));
+    const root = new T.Group();
+    const bones = data.bones.map(b => { const g = new T.Group(); g.userData.b = b;
+      if (b.g) { const inner = new T.Group(); b.g.forEach(p => { const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(p.v, 3)); geo.setAttribute('uv', new T.Float32BufferAttribute(p.uv, 2)); geo.computeVertexNormals(); inner.add(new T.Mesh(geo, mats[p.t])); }); inner.rotation.y = Math.PI; inner.scale.set(...b.s); g.add(inner); }
+      return g; });
+    data.bones.forEach((b, k) => (b.parent >= 0 ? bones[b.parent] : root).add(bones[k]));
+    const kf = (a, s) => { if (!a || !a.length) return null; if (a.length === 1 || s <= a[0][0]) return a[0][1];
+      for (let k = 0; k < a.length - 1; k++) { const [t0, v0] = a[k], [t1, v1] = a[k + 1]; if (s >= t0 && s <= t1) { let u = t1 === t0 ? 0 : (s - t0) / (t1 - t0); u = u * u * (3 - 2 * u); return v0.map((x, j) => x + (v1[j] - x) * u); } }
+      return a[a.length - 1][1]; };
+    let len = 0; data.bones.forEach(b => Object.values(b.a || {}).forEach(a => a.forEach(([s]) => len = Math.max(len, s))));
+    const pose = s => bones.forEach(g => { const b = g.userData.b, p = kf(b.a && b.a.pos, s) || [0, 0, 0], r = kf(b.a && b.a.rot, s) || [0, 0, 0];
+      g.position.set(b.p[0] + p[0], b.p[1] + p[1], b.p[2] + p[2]); g.rotation.set((b.r[0] + r[0]) * R, (b.r[1] + r[1]) * R, (b.r[2] + r[2]) * R, 'ZYX'); });
+    pose(0);
+    const ren = new T.WebGLRenderer({antialias: true, alpha: true}); ren.setPixelRatio(Math.min(devicePixelRatio, 2)); ren.setClearColor(0, 0);
+    cv.innerHTML = ''; cv.appendChild(ren.domElement);
+    const sc = new T.Scene(); sc.add(new T.AmbientLight(0xffffff, 1.4)); const d1 = new T.DirectionalLight(0xffffff, 1.6); d1.position.set(-3, 5, 4); sc.add(d1); const d2 = new T.DirectionalLight(0xbfefff, .6); d2.position.set(4, 2, -3); sc.add(d2);
+    const cam = new T.PerspectiveCamera(35, 1, .05, 200), ctl = new OrbitControls(cam, ren.domElement);
+    ctl.enableDamping = true; ctl.autoRotate = !matchMedia('(prefers-reduced-motion: reduce)').matches; ctl.autoRotateSpeed = 1.6; ctl.enablePan = false;
+    const size = () => { const w = cv.clientWidth || 1, h = cv.clientHeight || 1; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }; size();
+    const ro = new ResizeObserver(size); ro.observe(cv);
+    root.rotation.y = -35 * R; sc.add(root); root.updateMatrixWorld(true);
+    const box = new T.Box3().setFromObject(root), c = box.getCenter(new T.Vector3()), z = box.getSize(new T.Vector3()), L = z.length();
+    ctl.target.copy(c); cam.position.set(c.x, c.y + L * .22, c.z + Math.max(L * 1.45, z.y / 2 / Math.tan(cam.fov * R / 2) * 1.25)); ctl.minDistance = L * .4; ctl.maxDistance = L * 4; ctl.update();
+    ren.domElement.addEventListener('pointerdown', () => ctl.autoRotate = false);
+    const clk = new T.Clock(); let raf = 0;
+    const loop = () => { raf = requestAnimationFrame(loop); if (len > 0) pose(clk.getElapsedTime() % len); ctl.update(); ren.render(sc, cam); }; loop();
+    stop3d = () => { cancelAnimationFrame(raf); ro.disconnect(); ctl.dispose(); sc.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } }); ren.dispose(); ren.forceContextLoss(); };
+  } catch (err) { cv.innerHTML = '<p>這隻怪的 3D 模型載入失敗（預覽版沒有附模型，請到 GitHub 網站看）。</p>'; }
+}
+
+
+// ===== 3D 位置彈窗：立體地圖＋大頭針 =====
+let stopPin = null;
+function closePin() { if (stopPin) stopPin(); stopPin = null; const v = document.querySelector('.v3d.pinv'); if (v) v.remove(); }
+async function openPin3d(f, targets, title) {   // targets: [{n, X, Z, c}]
+  closePin(); close3d(); tipEl.classList.remove('on');
+  const v = document.createElement('div'); v.className = 'v3d pinv';
+  v.innerHTML = `<div class="box" role="dialog" aria-label="${esc(title)} 的位置"><div class="hd"><h3>📍 ${esc(title)}</h3><span class="en">第 ${f} 層${targets.length > 1 ? ` · ${targets.length} 處` : ''}</span><button aria-label="關閉" data-closepin="1">×</button></div><div class="cv"><p>地圖載入中…</p></div><div class="ft">拖曳旋轉・兩指或右鍵平移・滾輪縮放${f !== 1 ? '・這層還沒有地形高度，是平面的' : ''}　<button class="addr" data-pinmap="1">在地圖頁看</button></div></div>`;
+  v.addEventListener('click', e => { if (e.target === v || e.target.dataset.closepin) closePin();
+    else if (e.target.dataset.pinmap) { closePin(); state.mapFloor = f; state.terrain = false; lastRoute = null; go('map'); } });
+  document.body.appendChild(v);
+  const cv = v.querySelector('.cv');
+  try {
+    const [T, {OrbitControls}] = await (THREEP = THREEP || Promise.all([import('three'), import('three/addons/OrbitControls.js')]));
+    const loadImg = src => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = src; });
+    const M = TOP[f], S = M.w / 5000;
+    const [mapImg, hm] = await Promise.all([loadImg(M.img), f === 1 ? loadImg('height-1.png') : Promise.resolve(null)]);
+    if (!document.body.contains(v)) return;
+    const N = 256; let hAt = () => 0;
+    if (hm) { const c2 = document.createElement('canvas'); c2.width = c2.height = N; const x2 = c2.getContext('2d'); x2.drawImage(hm, 0, 0, N, N); const px = x2.getImageData(0, 0, N, N).data;
+      hAt = (u, w) => { const i = (Math.min(N - 1, Math.max(0, Math.round(w * (N - 1)))) * N + Math.min(N - 1, Math.max(0, Math.round(u * (N - 1))))) * 4; return (40 + px[i] / 255 * 290 - 90) * 1.6; }; }
+    const tc = document.createElement('canvas'); tc.width = mapImg.naturalWidth; tc.height = mapImg.naturalHeight; const tx = tc.getContext('2d');
+    tx.beginPath(); tx.ellipse(tc.width / 2, tc.height / 2, tc.width / 2 - 2, tc.height / 2 - 2, 0, 0, Math.PI * 2); tx.clip(); tx.drawImage(mapImg, 0, 0);
+    const tex = new T.CanvasTexture(tc); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 8;
+    const geo = new T.PlaneGeometry(M.w, M.h, N - 1, N - 1); geo.rotateX(-Math.PI / 2);
+    const pos = geo.attributes.position;
+    for (let k = 0; k < pos.count; k++) pos.setY(k, hAt((pos.getX(k) + M.w / 2) / M.w, (pos.getZ(k) + M.h / 2) / M.h));
+    geo.computeVertexNormals();
+    const sc = new T.Scene(); sc.add(new T.Mesh(geo, new T.MeshLambertMaterial({map: tex, transparent: true, alphaTest: .5})));
+    // 島的厚度（側面），看起來像浮在空中的樓層
+    const rim = new T.Mesh(new T.CylinderGeometry(M.w / 2 - 4, M.w / 2 * 0.92, 140 * S + 60, 96, 1, true), new T.MeshLambertMaterial({color: 0x6b7a8a, side: T.DoubleSide}));
+    rim.scale.z = M.h / M.w; rim.position.y = -(140 * S + 60) / 2 - 40; sc.add(rim);
+    sc.add(new T.HemisphereLight(0xffffff, 0x88aa88, 1.6)); const sun = new T.DirectionalLight(0xffffff, 1.4); sun.position.set(-1, 1.4, -0.6); sc.add(sun);
+    const ren = new T.WebGLRenderer({antialias: true, alpha: true}); ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+    cv.innerHTML = ''; cv.appendChild(ren.domElement);
+    const labs = document.createElement('div'); labs.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden'; cv.appendChild(labs);
+    const cam = new T.PerspectiveCamera(45, 1, 5, 40000), ctl = new OrbitControls(cam, ren.domElement);
+    ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * 0.47; ctl.screenSpacePanning = false; ctl.minDistance = 120 * S + 60; ctl.maxDistance = M.w * 2;
+    // 大頭針
+    const PH = 240 * S + 80, R = 24 * S + 10;
+    const pins = targets.map(p => { const u = (p.X - M.x0) / M.w, w = (p.Z - M.z0) / M.h, base = new T.Vector3(u * M.w - M.w / 2, hAt(u, w), w * M.h - M.h / 2);
+      const g = new T.Group(); const col = new T.Color(0xe8433a);
+      const needle = new T.Mesh(new T.CylinderGeometry(R * .12, R * .04, PH, 12), new T.MeshLambertMaterial({color: 0xdddddd})); needle.position.y = PH / 2; g.add(needle);
+      const head = new T.Mesh(new T.SphereGeometry(R, 24, 16), new T.MeshPhongMaterial({color: col, shininess: 80})); head.position.y = PH; g.add(head);
+      const ring = new T.Mesh(new T.RingGeometry(R * .6, R * 1.1, 32), new T.MeshBasicMaterial({color: col, transparent: true, opacity: .8, side: T.DoubleSide})); ring.rotation.x = -Math.PI / 2; ring.position.y = 3; g.add(ring);
+      g.position.copy(base); sc.add(g);
+      const el = document.createElement('div'); el.className = 't3pin'; el.textContent = p.n; labs.appendChild(el);
+      return {g, base, el, ring}; });
+    // 鏡頭對準標記
+    const box = new T.Box3(); pins.forEach(p => box.expandByPoint(p.base)); const c = targets.length ? box.getCenter(new T.Vector3()) : new T.Vector3();
+    const spread = targets.length ? box.getSize(new T.Vector3()).length() : M.w;
+    const dist = Math.max(spread * 1.3, 900 * S + 300);
+    ctl.target.copy(c); cam.position.set(c.x + dist * .35, c.y + dist * .75, c.z + dist * .8);
+    const size = () => { const w = cv.clientWidth || 1, h = cv.clientHeight || 1; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
+    size(); const ro = new ResizeObserver(size); ro.observe(cv);
+    const clk = new T.Clock(), tv = new T.Vector3(), still = matchMedia('(prefers-reduced-motion: reduce)').matches; let raf = 0;
+    const loop = () => { raf = requestAnimationFrame(loop); const t = clk.getElapsedTime();
+      pins.forEach((p, k) => { const a = still ? 1 : Math.min(1, Math.max(0, (t - k * .08) / .6)), e = 1 - Math.pow(1 - a, 3);   // 從地面拉上來
+        p.g.scale.set(1, Math.max(.001, e), 1); p.ring.scale.setScalar(1 + (still ? 0 : (t * 0.8 % 1) * 1.5)); p.ring.material.opacity = still ? .8 : .8 * (1 - t * 0.8 % 1); });
+      ctl.update(); ren.render(sc, cam);
+      const W = cv.clientWidth, H = cv.clientHeight;
+      pins.forEach(p => { tv.copy(p.base); tv.y += PH * p.g.scale.y + R * 1.3; tv.project(cam); const vis = tv.z < 1; p.el.style.display = vis ? '' : 'none'; if (vis) { p.el.style.left = (tv.x + 1) / 2 * W + 'px'; p.el.style.top = (1 - tv.y) / 2 * H + 'px'; } }); };
+    loop();
+    stopPin = () => { cancelAnimationFrame(raf); ro.disconnect(); ctl.dispose(); sc.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } }); ren.dispose(); ren.forceContextLoss(); };
+  } catch (err) { cv.innerHTML = '<p>3D 地圖載入失敗，可以按下面的「在地圖頁看」。</p>'; }
+}
+const ptsTargets = idx => idx.map(i => { const [X, , Z] = EO[i].xyz.split(',').map(Number); return {n: EO[i].n, X, Z, c: CAT_COLOR[EO[i].c]}; });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePin(); });
+
+// ===== 第 1 層 3D 地形（Distant Horizons 高度 + 俯視圖材質） =====
+let T3 = null;
+async function mountTerrain(host) {
+  if (T3 && T3.wrap) { host.innerHTML = ''; host.appendChild(T3.wrap); T3.setPins(); T3.size(); T3.wake(); return; }
+  if (T3 && T3.loading) return; T3 = {loading: true};
+  try {
+    const [T, {OrbitControls}] = await (THREEP = THREEP || Promise.all([import('three'), import('three/addons/OrbitControls.js')]));
+    const loadImg = src => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = src; });
+    const [hm, mapImg] = await Promise.all([loadImg('height-1.png'), loadImg(TOP[1].img)]);
+    const tc = document.createElement('canvas'); tc.width = mapImg.naturalWidth; tc.height = mapImg.naturalHeight; const tx2 = tc.getContext('2d');
+    tx2.beginPath(); tx2.ellipse(tc.width / 2, tc.height / 2, tc.width / 2 - 2, tc.height / 2 - 2, 0, 0, Math.PI * 2); tx2.clip(); tx2.drawImage(mapImg, 0, 0);
+    const tex = new T.CanvasTexture(tc);
+    const N = 384, cv = document.createElement('canvas'); cv.width = cv.height = N; const cx = cv.getContext('2d'); cx.drawImage(hm, 0, 0, N, N);
+    const px = cx.getImageData(0, 0, N, N).data, M = TOP[1], EX = 1.6, LO = 40, HI = 330;
+    const hAt = (u, v) => { const i = (Math.min(N - 1, Math.max(0, Math.round(v * (N - 1)))) * N + Math.min(N - 1, Math.max(0, Math.round(u * (N - 1))))) * 4; return (LO + px[i] / 255 * (HI - LO) - 90) * EX; };
+    const geo = new T.PlaneGeometry(M.w, M.h, N - 1, N - 1); geo.rotateX(-Math.PI / 2);
+    const pos = geo.attributes.position;
+    for (let k = 0; k < pos.count; k++) { const u = (pos.getX(k) + M.w / 2) / M.w, v = (pos.getZ(k) + M.h / 2) / M.h; pos.setY(k, hAt(u, v)); }
+    geo.computeVertexNormals();
+    tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 8;
+    const sc = new T.Scene(); sc.add(new T.Mesh(geo, new T.MeshLambertMaterial({map: tex, transparent: true, alphaTest: 0.5})));
+    sc.add(new T.HemisphereLight(0xffffff, 0x88aa88, 1.6)); const sun = new T.DirectionalLight(0xffffff, 1.4); sun.position.set(-1, 1.4, -0.6); sc.add(sun);
+    sc.fog = new T.Fog(0xcfe6f7, 6000, 14000);
+    const ren = new T.WebGLRenderer({antialias: true, alpha: true}); ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+    const cam = new T.PerspectiveCamera(45, 1, 10, 30000); cam.position.set(0, 2600, 3600);
+    const ctl = new OrbitControls(cam, ren.domElement); ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * 0.47; ctl.minDistance = 300; ctl.maxDistance = 9000; ctl.target.set(0, 0, 0); ctl.screenSpacePanning = false;
+    const wrap = document.createElement('div'); wrap.style.cssText = 'position:absolute;inset:0'; wrap.appendChild(ren.domElement);
+    const labs = document.createElement('div'); labs.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden'; wrap.appendChild(labs);
+    const w2v = (X, Z) => { const u = (X - M.x0) / M.w, v = (Z - M.z0) / M.h; return new T.Vector3(u * M.w - M.w / 2, hAt(u, v) + 6, v * M.h - M.h / 2); };
+    let marks = [];
+    const setPins = () => {
+      labs.innerHTML = ''; marks = [];
+      EO.forEach((p, i) => { if (p.f !== 1 || p.c !== '地區') return; const [X, , Z] = p.xyz.split(',').map(Number); const el = document.createElement('div'); el.className = 't3lab'; el.textContent = p.n; labs.appendChild(el); marks.push([w2v(X, Z), el]); });
+      (state.t3pins || []).forEach(i => { const [X, , Z] = EO[i].xyz.split(',').map(Number); const el = document.createElement('div'); el.className = 't3pin'; el.textContent = EO[i].n; labs.appendChild(el); marks.push([w2v(X, Z), el]); });
+      const pp = (state.t3pins || [])[0]; if (pp !== undefined) { const [X, , Z] = EO[pp].xyz.split(',').map(Number); ctl.target.copy(w2v(X, Z)); }
+    };
+    const size = () => { const w = wrap.clientWidth || 1, h = wrap.clientHeight || 1; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
+    new ResizeObserver(size).observe(wrap);
+    let raf = 0; const v = new T.Vector3();
+    const loop = () => {
+      if (!document.body.contains(wrap)) { raf = 0; return; }
+      raf = requestAnimationFrame(loop); ctl.update(); ren.render(sc, cam);
+      const W = wrap.clientWidth, H = wrap.clientHeight;
+      marks.forEach(([p, el]) => { v.copy(p).project(cam); const vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05; el.style.display = vis ? '' : 'none'; if (vis) { el.style.left = (v.x + 1) / 2 * W + 'px'; el.style.top = (1 - v.y) / 2 * H + 'px'; } });
+    };
+    const wake = () => { if (!raf) loop(); };
+    T3 = {wrap, setPins, size, wake};
+    host.innerHTML = ''; host.appendChild(wrap); setPins(); size(); wake();
+  } catch (e) { T3 = null; host.innerHTML = '<div class="t3msg">3D 地形載入失敗（預覽版沒有附地形檔，請到 GitHub 網站看）。</div>'; }
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') close3d(); });
+</script>
+</body>
+</html>
