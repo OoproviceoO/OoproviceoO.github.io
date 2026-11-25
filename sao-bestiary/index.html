@@ -479,11 +479,12 @@ function sqCard(x, q) {
 }
 function renderQuest() {
   const q = norm(state.q);
-  const seg = `<div class="filters"><div class="seg"><button data-qtype="main" class="${state.qType === 'main' ? 'on' : ''}">主線</button><button data-qtype="side" class="${state.qType === 'side' ? 'on' : ''}">支線</button></div>
+  const hint = q ? `<p class="foot" style="margin:0 0 8px">目前只顯示含「${esc(state.q)}」的任務　<button class="addr" data-clearq="1">清除搜尋</button></p>` : '';
+  const seg = hint + `<div class="filters"><div class="seg"><button data-qtype="main" class="${state.qType === 'main' ? 'on' : ''}">主線</button><button data-qtype="side" class="${state.qType === 'side' ? 'on' : ''}">支線</button></div>
     ${state.qType === 'main' ? `<span class="seg-label">樓層</span><div class="seg">${[-1, 0, 1, 2, 3].map(f => `<button data-qfloor="${f}" class="${state.qFloor === f ? 'on' : ''}">${f < 0 ? '全部' : f === 0 ? '教學' : f}</button>`).join('')}</div>` : ''}</div>`;
   if (state.qType === 'side') {
     const rows = SQ.filter(x => !q || match(q, x.npc, x.town, x.task));
-    return seg + `<p class="foot" style="margin-top:4px">支線目前只有第 1 層的資料。座標是遊戲裡的 X, Y, Z。</p>` + (rows.length ? rows.map(x => sqCard(x, q)).join('') : `<div class="empty"><h3>沒有符合的支線</h3></div>`);
+    return seg + `<p class="foot" style="margin-top:4px">支線目前只有第 1 層的資料。座標是遊戲裡的 X, Y, Z。</p>` + (rows.length ? rows.map(x => sqCard(x, q)).join('') : `<div class="empty"><h3>沒有符合「${esc(state.q)}」的支線</h3><p><button class="addr" data-clearq="1">清除搜尋，顯示全部支線</button></p></div>`);
   }
   let h = seg + `<div class="note-card"><h3>官方公告重點（2026/11）</h3><ul>
       <li>等級上限：一開始 Lv. 13，打完狗頭人地城升到 16，打完牛頭人之王升到 20。</li>
@@ -492,10 +493,13 @@ function renderQuest() {
       <li>考古學家賣的鑰匙：狗頭人 5,000 col、Melliona（蜂巢）1,750 col、死靈法師 2,000 col、牛頭人之王 10,000 col（進場就消耗）。</li>
       <li>第 3 層的神秘商人賣 14 種飾品，每個 65,000 col，每天最多買 1 個、每週最多 2 個。</li>
     </ul></div><p class="foot" style="margin-top:4px">主線依順序排列。說明是從 wiki 英文版翻譯的，NPC 名字保留原文。</p>`;
+  let n = 0;
   [0, 1, 2, 3].filter(f => state.qFloor < 0 || f === state.qFloor).forEach(f => {
     const rows = MQ.filter(x => +x[0] === f && (!q || match(q, x[2], x[3], x[8])));
+    n += rows.length;
     if (rows.length) h += `<div class="floor-h">${FLOOR_NAME[f]}</div>` + rows.map(x => mqCard(x, q)).join('');
   });
+  if (!n) h += `<div class="empty"><h3>沒有符合「${esc(state.q)}」的主線任務</h3><p><button class="addr" data-clearq="1">清除搜尋，顯示全部任務</button></p></div>`;
   return h;
 }
 
@@ -560,6 +564,7 @@ document.addEventListener('click', e => {
     if (!r && RECIPES[d.recipe]) r = [d.recipe, 0, '', '', RECIPES[d.recipe].mats];
     if (r && r[4]) { r[4].forEach(([m, q]) => { if (list[m]) list[m].qty += q; else list[m] = {qty: q, done: false}; }); saveList(); render(); toast(`已加入清單：${r[4].map(([m, q]) => m + ' ×' + q).join('、')}`); }
   }
+  else if (d.clearq) { state.q = ''; $('#q').value = ''; render(); }
   else if (d.eqcat) { state.eqCat = d.eqcat; render(); }
   else if (d.qtype) { state.qType = d.qtype; render(); }
   else if (d.qfloor !== undefined) { state.qFloor = +d.qfloor; render(); }
