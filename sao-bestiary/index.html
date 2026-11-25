@@ -214,6 +214,10 @@ header p{margin:6px 0 0;color:var(--n600);font-size:15px}
 .buy{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .buy span{font-size:13px;background:var(--y50);color:var(--y700);border-radius:8px;padding:2px 8px}
 .src-note{font-size:13px;color:var(--n500);margin:8px 0 16px}
+.eo-dot{position:absolute;transform:translate(-50%,-50%);width:28px;height:28px;border:0;padding:0;background:transparent;cursor:pointer;display:grid;place-items:center}
+.eo-dot i{width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px hsl(150 40% 10% / .6);background:var(--c,var(--g600))}
+.eo-dot.on i{width:18px;height:18px;box-shadow:0 0 0 3px var(--y100),0 1px 3px hsl(150 40% 10% / .6)}
+.pl.on{box-shadow:0 0 0 3px var(--g300),var(--shadow)}
 @media (max-width:600px){
   .wrap{padding:24px 16px 88px}
   header h1{font-size:24px}
@@ -268,7 +272,7 @@ MOBS.forEach(m => m.d.forEach(d => {
 }));
 Object.values(ITEMS).forEach(it => it.src.sort((a, b) => (b.v ?? 50) - (a.v ?? 50)));
 
-let state = {tab: 'item', q: '', floor: 0, type: '全部', mapFloor: 1, place: '', plFloor: 1, plCat: '全部', eqCat: '全部', myLv: 0, qType: 'main', qFloor: -1};
+let state = {tab: 'item', q: '', floor: 0, type: '全部', mapFloor: 1, place: '', plFloor: 1, plCat: '全部', eoSel: -1, eqCat: '全部', myLv: 0, qType: 'main', qFloor: -1};
 let list = {};
 try { list = JSON.parse(localStorage.getItem('sao-list') || '{}'); } catch (e) {}
 const saveList = () => { try { localStorage.setItem('sao-list', JSON.stringify(list)); } catch (e) {} };
@@ -396,7 +400,7 @@ const MAPS = {
     {x: 80.2, y: 70.6, name: '蓋爾多拉克礦坑', kind: 'game', regions: ['蓋爾多拉克礦坑', '蓋爾多拉克礦坑地城'], note: '蓋爾多拉克礦坑（Geldorak Mine）和礦坑地城。'},
     {x: 87.2, y: 47.2, name: '商人公會', kind: 'game', regions: [], note: '圓形城牆城鎮。圖鑑裡還沒有對應的怪物。'},
     {x: 10.0, y: 42.6, name: '巨人花園', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
-    {x: 44.7, y: 60.9, name: '吆區', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
+    {x: 44.7, y: 60.9, name: 'OG 區', kind: 'game', regions: [], note: '遊戲地圖上的「OG 區」（OG Quarter）。圖鑑裡還沒有對應的怪物。'},
     {x: 32.7, y: 39.1, name: '維勒倫', kind: 'game', regions: ['維勒倫湖'], note: '湖邊的城鎮，旁邊的湖就是維勒倫湖（Virelune Lake）。'},
     {x: 40.9, y: 16.6, name: '坎德莉亞', kind: 'game', regions: [], note: '圖鑑裡還沒有對應的怪物。'},
     {x: 63.8, y: 29.2, name: '托爾巴納', kind: 'game', regions: ['托爾巴納山脈'], town: 'tolbana-town.jpg', townNote: '托爾巴納城鎮地圖，藍色圓圈是飾品鐵匠的鐵匠屋（城鎮左上方）。', npcs: [{n: '飾品鐵匠', role: '鐵匠屋', xyz: '3290, 196, 1485', sells: '冰之精靈、冰魔像、雄鹿系列飾品（製作）', shop: [
@@ -414,15 +418,20 @@ const MAPS = {
 const npcCard = p => `<div class="npc"><b>${esc(p.n)}</b>${p.role ? ` <span class="mini">${esc(p.role)}</span>` : ''}${p.xyz ? `<div class="eq-stat">座標 <span class="xyz">${esc(p.xyz)}</span>（X, Y, Z）</div>` : ''}<div class="eq-stat">${p.sells ? '販售：' + esc(p.sells) : '販售清單還沒有資料'}</div>${p.shop ? p.shop.map(shopGroup).join('') + '<p class="foot" style="margin:10px 0 0">價格是製作費用（col），另外要準備材料。稀有度以遊戲內顯示為準；點材料名稱可以查哪裡打。</p>' : ''}</div>`;
 const shopGroup = g => { const mob = MOBS.find(m => m.n === g.from); return `<div class="shop"><div class="shop-h"><b>${esc(g.g)}</b>${mob ? `<button class="chip" data-q="${esc(mob.n)}">材料怪：${esc(mob.n)}（${esc(mob.r)}）›</button>` : ''}</div>${g.items.map(([n, c, tm, rr, mats]) => { const e = EQ.find(x => x.n === n); return `<div class="shop-i"><span>${esc(n)} <span class="rar rar-${esc(rr || (e && e.r) || '')}">${esc(rr || (e && e.r) || '')}</span>${e ? ` <span class="mini">Lv. ${e.lv}</span>` : ''}${e && e.b ? `<br><small class="en">${esc(e.b)}</small>` : ''}${mats ? `<br><small class="mats">材料：${mats.map(([m, q]) => `<button class="mat" data-item="${esc(m)}">${esc(m)} ×${q}</button>`).join('、')}</small>` : ''}</span><span class="k">${c} col · ${esc(tm)}${mats ? `<br><button class="addr" data-recipe="${esc(n)}">＋ 材料加入清單</button>` : ''}</span></div>`; }).join('')}</div>`; };
 const ALL_NPC = () => Object.entries(MAPS).flatMap(([f, m]) => m.pins.flatMap(p => (p.npcs || []).map(n => ({...n, f: +f, place: p.name}))));
+const FIT = [[4.5964574493396775, 2.176873259731392], [17.17398007047495, 1.2167300858038805], [-0.11149870737944441, 17.65943998618244], [10.154208902337512, -26.677536498765487]];
+const CAT_COLOR = {'商店・製作': 'hsl(42 90% 48%)', '收購商': 'hsl(28 80% 45%)', 'NPC': 'hsl(275 45% 50%)', 'Boss': 'hsl(345 65% 48%)', '怪物': 'hsl(150 45% 32%)', '採集點': 'hsl(170 45% 35%)', '地區': 'hsl(150 8% 40%)', '地標': 'hsl(150 8% 55%)'};
+function eoPos(p) { const [X, Y, Z] = p.xyz.split(',').map(Number); const v = [1, X / 1000, Z / 1000, Y / 1000];
+  return [0, 1].map(k => v.reduce((s, a, i) => s + a * FIT[i][k], 0)); }
+
 function renderMap() {
   const seg = `<div class="filters"><span class="seg-label">樓層</span><div class="seg">${[1, 2, 3].map(f => `<button data-mapfloor="${f}" class="${state.mapFloor === f ? 'on' : ''}">第 ${f} 層</button>`).join('')}</div></div>`;
   const mp = MAPS[state.mapFloor];
   if (!mp) { state.plFloor = state.mapFloor; return seg + `<div class="empty" style="padding:24px"><h3>第 ${state.mapFloor} 層的地圖圖片還沒放上來</h3><p>下面是這層的地點清單和座標。</p></div>` + renderPlaces(); }
   const sel = mp.pins.find(p => p.name === state.place);
   const cls = p => p.kind === 'guess' ? 'guess' : p.kind === 'game' ? 'game' : '';
-  let h = seg + `<div class="mapbox"><img src="${mp.img}" alt="第 ${state.mapFloor} 層地圖">${mp.pins.map(p =>
+  let h = seg + `<div class="mapbox"><img src="${mp.img}" alt="第 ${state.mapFloor} 層地圖">${state.plCat !== '全部' ? EO.map((p, i) => [p, i]).filter(([p]) => p.f === state.mapFloor && p.c === state.plCat).map(([p, i]) => { const [x, y] = eoPos(p); return x > 0 && x < 100 && y > 0 && y < 100 ? `<button class="eo-dot ${state.eoSel === i ? 'on' : ''}" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c] || ''}" data-eo="${i}" aria-label="${esc(p.n)}" title="${esc(p.n)}"><i></i></button>` : ''; }).join('') : ''}${mp.pins.map(p =>
     `<button class="pin ${cls(p)} ${p.up ? 'up' : ''} ${sel === p ? 'on' : ''}" style="left:${p.x}%;top:${p.y}%" data-place="${esc(p.name)}" aria-label="${esc(p.name)}"><i>${p.kind === 'guess' ? '?' : ''}</i>${p.kind !== 'game' ? `<b>${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</b>` : ''}</button>`).join('')}</div>
-    <div class="legend"><span><i class="dot"></i>比較確定</span>${mp.pins.some(p => p.kind === 'guess') ? '<span><i class="dot q"></i>推測（依動畫和 wiki 描述）</span>' : ''}<span>遊戲原本的地名也可以點</span></div>
+    <div class="legend">${state.plCat !== '全部' ? `<span><i class="dot" style="background:${CAT_COLOR[state.plCat]}"></i>${esc(state.plCat)}（依座標換算的大概位置，點了看詳細）</span>` : '<span>在下方「地點清單」選一種類型，就會標到地圖上</span>'}<span><i class="dot"></i>比較確定</span>${mp.pins.some(p => p.kind === 'guess') ? '<span><i class="dot q"></i>推測（依動畫和 wiki 描述）</span>' : ''}<span>遊戲原本的地名也可以點</span></div>
     <div class="places">${mp.pins.map(p => `<button class="place ${p.kind === 'guess' ? 'guess' : ''} ${sel === p ? 'on' : ''}" data-place="${esc(p.name)}">${esc(p.name)}${p.kind === 'guess' ? '？' : ''}</button>`).join('')}</div>`;
   if (sel) {
     const mobs = MOBS.filter(m => m.f === state.mapFloor && sel.regions.includes(m.r));
@@ -502,7 +511,8 @@ function recipeHtml(n, r, showAt, key) {
     ${showAt && r.at ? `<div class="eq-stat">製作地點：第 ${r.at.f} 層 · ${esc(r.at.n)} · 座標 ${esc(r.at.xyz)}</div>` : ''}</div>`;
 }
 function placeCard(p) {
-  return `<div class="pl"><div class="pl-h"><b>${esc(p.n)}</b><span class="mini">${esc(p.c)}</span>${state.plFloor === 0 ? `<span class="mini">第 ${p.f} 層</span>` : ''}<span class="xyz">${esc(p.xyz)}</span></div>
+  const i = EO.indexOf(p);
+  return `<div class="pl ${state.eoSel === i ? 'on' : ''}" id="eo-${i}"><div class="pl-h"><b>${esc(p.n)}</b><span class="mini">${esc(p.c)}</span>${state.plFloor === 0 ? `<span class="mini">第 ${p.f} 層</span>` : ''}<span class="xyz">${esc(p.xyz)}</span></div>
     ${p.note ? `<div class="eq-stat">${esc(p.note)}</div>` : ''}
     ${(p.items || []).map(i => i.r ? recipeHtml(i.n, i.r, false) : `<div class="shop-i"><span>${esc(i.n)}</span><span class="k">${i.price ? esc(i.price) : ''}</span></div>`).join('')}
     ${p.buy ? `<div class="buy">${p.buy.map(b => `<span>${esc(b.n)} ${esc(b.price)}</span>`).join('')}</div>` : ''}</div>`;
@@ -555,7 +565,8 @@ document.addEventListener('click', e => {
   else if (d.qfloor !== undefined) { state.qFloor = +d.qfloor; render(); }
   else if (d.mapfloor) { state.mapFloor = +d.mapfloor; state.plFloor = +d.mapfloor; state.place = ''; render(); }
   else if (d.plfloor !== undefined) { state.plFloor = +d.plfloor; render(); }
-  else if (d.plcat) { state.plCat = d.plcat; render(); }
+  else if (d.plcat) { state.plCat = d.plcat; state.eoSel = -1; render(); }
+  else if (d.eo) { state.eoSel = +d.eo; state.plFloor = state.mapFloor; render(); const el = document.getElementById('eo-' + d.eo); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }
   else if (d.place) { state.place = state.place === d.place ? '' : d.place; render(); }
   else if (d.floor !== undefined) { state.floor = +d.floor; render(); }
   else if (d.type) { state.type = d.type; render(); }
