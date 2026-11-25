@@ -1161,12 +1161,20 @@ async function mountTerrain(host) {
     const wrap = document.createElement('div'); wrap.style.cssText = 'position:absolute;inset:0'; wrap.appendChild(ren.domElement);
     const labs = document.createElement('div'); labs.style.cssText = 'position:absolute;inset:0;pointer-events:none;overflow:hidden'; wrap.appendChild(labs);
     const w2v = (X, Z) => { const u = (X - M.x0) / M.w, v = (Z - M.z0) / M.h; return new T.Vector3(u * M.w - M.w / 2, hAt(u, v) + 6, v * M.h - M.h / 2); };
-    let marks = [];
+    let marks = [], pinT0 = 0; const pinG = new T.Group(); sc.add(pinG);
+    const PH = 330, PR = 34, red = new T.Color(0xe8433a);
     const setPins = () => {
-      labs.innerHTML = ''; marks = [];
+      labs.innerHTML = ''; marks = []; pinT0 = performance.now();
+      pinG.children.slice().forEach(o => { pinG.remove(o); o.traverse(m => { if (m.geometry) m.geometry.dispose(); if (m.material) m.material.dispose(); }); });
       EO.forEach((p, i) => { if (p.f !== 1 || p.c !== '地區') return; const [X, , Z] = p.xyz.split(',').map(Number); const el = document.createElement('div'); el.className = 't3lab'; el.textContent = p.n; labs.appendChild(el); marks.push([w2v(X, Z), el]); });
-      (state.t3pins || []).forEach(i => { const [X, , Z] = EO[i].xyz.split(',').map(Number); const el = document.createElement('div'); el.className = 't3pin'; el.textContent = EO[i].n; labs.appendChild(el); marks.push([w2v(X, Z), el]); });
-      const pp = (state.t3pins || [])[0]; if (pp !== undefined) { const [X, , Z] = EO[pp].xyz.split(',').map(Number); ctl.target.copy(w2v(X, Z)); }
+      (state.t3pins || []).forEach(i => { const [X, , Z] = EO[i].xyz.split(',').map(Number); const base = w2v(X, Z); base.y -= 6;
+        const g = new T.Group(); g.position.copy(base);
+        const nd = new T.Mesh(new T.CylinderGeometry(PR * .12, PR * .04, PH, 12), new T.MeshLambertMaterial({color: 0xdddddd})); nd.position.y = PH / 2; g.add(nd);
+        const hd = new T.Mesh(new T.SphereGeometry(PR, 24, 16), new T.MeshPhongMaterial({color: red, shininess: 80})); hd.position.y = PH; g.add(hd);
+        const rg = new T.Mesh(new T.RingGeometry(PR * .6, PR * 1.1, 32), new T.MeshBasicMaterial({color: red, transparent: true, opacity: .8, side: T.DoubleSide})); rg.rotation.x = -Math.PI / 2; rg.position.y = 3; g.add(rg);
+        pinG.add(g);
+        const el = document.createElement('div'); el.className = 't3pin'; el.textContent = EO[i].n; labs.appendChild(el); marks.push([base, el, g, rg]); });
+      const pp = (state.t3pins || [])[0]; if (pp !== undefined) { const [X, , Z] = EO[pp].xyz.split(',').map(Number); const c = w2v(X, Z); ctl.target.copy(c); cam.position.set(c.x + 500, c.y + 1300, c.z + 1300); }
     };
     const size = () => { const w = wrap.clientWidth || 1, h = wrap.clientHeight || 1; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
     new ResizeObserver(size).observe(wrap);
@@ -1175,7 +1183,10 @@ async function mountTerrain(host) {
       if (!document.body.contains(wrap)) { raf = 0; return; }
       raf = requestAnimationFrame(loop); ctl.update(); ren.render(sc, cam);
       const W = wrap.clientWidth, H = wrap.clientHeight;
-      marks.forEach(([p, el]) => { v.copy(p).project(cam); const vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05; el.style.display = vis ? '' : 'none'; if (vis) { el.style.left = (v.x + 1) / 2 * W + 'px'; el.style.top = (1 - v.y) / 2 * H + 'px'; } });
+      const tt = (performance.now() - pinT0) / 1000, still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      marks.forEach(([p, el, g, rg]) => { v.copy(p);
+        if (g) { const a = still ? 1 : Math.min(1, tt / .6), e = 1 - Math.pow(1 - a, 3); g.scale.set(1, Math.max(.001, e), 1); rg.scale.setScalar(1 + (still ? 0 : (tt * .8 % 1) * 1.5)); rg.material.opacity = still ? .8 : .8 * (1 - tt * .8 % 1); v.y += PH * g.scale.y + PR * 1.3; }
+        v.project(cam); const vis = v.z < 1 && Math.abs(v.x) < 1.05 && Math.abs(v.y) < 1.05; el.style.display = vis ? '' : 'none'; if (vis) { el.style.left = (v.x + 1) / 2 * W + 'px'; el.style.top = (1 - v.y) / 2 * H + 'px'; } });
     };
     const wake = () => { if (!raf) loop(); };
     T3 = {wrap, setPins, size, wake};
