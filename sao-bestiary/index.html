@@ -358,6 +358,35 @@ input:focus,.pfilter input:focus,.hero input:focus{box-shadow:0 0 0 2px var(--sa
 .gl-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
 .todo{color:var(--n500);font-style:italic}
 @media (max-width:700px){.ring-menu{gap:14px 10px}.ring{width:68px}.ring .c{width:54px;height:54px;font-size:22px}.gl-grid{grid-template-columns:1fr}}
+
+/* ===== 地圖 2.0 ===== */
+.stage{perspective:1600px;margin-top:12px;border-radius:6px;overflow:hidden;background:radial-gradient(circle at 50% 30%,hsl(205 80% 86%),hsl(208 60% 72%));border:1px solid var(--sao-line);box-shadow:var(--shadow)}
+.plane{position:relative;transform-origin:50% 55%;transition:transform .45s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+.plane img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+.stage.tilt .plane{transform:scale(.86) rotateX(var(--tx,48deg)) rotateZ(var(--rz,0deg));margin:-25% 0 -10%}
+.plane img{-webkit-mask-image:radial-gradient(closest-side,#000 98%,transparent 100%);mask-image:radial-gradient(closest-side,#000 98%,transparent 100%)}
+.stage.flat .plane{transform:rotateZ(var(--rz,0deg))}
+.pt{position:absolute;width:20px;height:20px;transform:translate(-50%,-50%);border:0;padding:0;background:transparent;cursor:pointer;display:grid;place-items:center;z-index:1}
+.pt i{width:7px;height:7px;border-radius:50%;background:var(--c);border:1.5px solid #fff;box-shadow:0 0 2px #000a;transition:transform .15s}
+.pt span{position:absolute;bottom:16px;left:50%;transform:translateX(-50%) scale(.9);opacity:0;pointer-events:none;background:hsl(0 0% 100% / .95);border:1px solid var(--sao-line);border-radius:4px;padding:2px 7px;font-size:12px;font-weight:700;color:var(--g800);white-space:nowrap;transition:opacity .12s,transform .12s;box-shadow:var(--shadow-sm)}
+.pt:hover{z-index:5}.pt:hover i{transform:scale(2)}.pt:hover span,.pt.sel span{opacity:1;transform:translateX(-50%) scale(1)}
+.pt.sel i{transform:scale(2.2);box-shadow:0 0 0 3px var(--sao-o)}
+.rg{position:absolute;transform:translate(-50%,-50%);border:0;background:hsl(0 0% 100% / .0);color:#fff;font-size:11px;font-weight:800;letter-spacing:.03em;text-shadow:0 1px 2px #000,0 0 5px #000;white-space:nowrap;cursor:pointer;padding:3px 6px;border-radius:4px;z-index:2}
+.rg:hover{background:hsl(0 0% 100% / .9);color:var(--g800);text-shadow:none}
+.rg.sel{background:var(--sao-o);color:#fff;text-shadow:none}
+.stage.tilt .pt span,.stage.tilt .rg{transform-origin:50% 100%}
+.mctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.mctl .seg button{border:1px solid var(--sao-line);background:#fff}
+.legend2{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px;font-size:13px;color:var(--n600)}
+.legend2 label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.legend2 i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.rpanel{margin-top:16px}
+.rgroup{margin-top:10px}
+.rgroup h4{margin:0 0 6px;font-size:14px;color:var(--n600);letter-spacing:.06em}
+.rchips{display:flex;flex-wrap:wrap;gap:6px}
+.rchip{border:1px solid var(--sao-line);background:#fff;border-radius:4px;padding:5px 10px;font:inherit;font-size:14px;cursor:pointer;color:var(--g800)}
+.rchip:hover,.rchip.on{border-color:var(--sao-o);color:var(--sao-o)}
+.rchip small{color:var(--n500);margin-left:4px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700;800&display=swap">
 <meta name="robots" content="noindex,nofollow">
@@ -394,7 +423,7 @@ MOBS.forEach(m => m.d.forEach(d => {
 }));
 Object.values(ITEMS).forEach(it => it.src.sort((a, b) => (b.v ?? 50) - (a.v ?? 50)));
 
-let state = {tab: 'item', q: '', floor: 0, type: '全部', mapFloor: 1, place: '', plFloor: 1, plCat: '全部', eoSel: -1, mapView: 'art', eqCat: '全部', myLv: 0, qType: 'main', qFloor: -1};
+let state = {tab: 'item', q: '', floor: 0, type: '全部', mapFloor: 1, place: '', plFloor: 1, plCat: '全部', eoSel: -1, mapView: 'top', region: -1, tilt: 0, rot: 0, eqCat: '全部', myLv: 0, qType: 'main', qFloor: -1};
 let list = {};
 try { list = JSON.parse(localStorage.getItem('sao-list') || '{}'); } catch (e) {}
 const saveList = () => { try { localStorage.setItem('sao-list', JSON.stringify(list)); } catch (e) {} };
@@ -565,20 +594,61 @@ function mobPoints(m) {
   EO.forEach((p, i) => { if ((p.c === '怪物' || p.c === 'Boss') && p.f === m.f && (p.n === m.n || (base && base.c !== '地區' && p.n === base.n))) s.add(i); });
   return [...s];
 }
+const LAYERS = ['Boss', '怪物', 'NPC', '商店・製作', '收購商', '採集點', '地標'];
+let _regionOf = null;
+function regionOf(i) {   // 每個地點歸到最近的地區
+  if (!_regionOf) { _regionOf = {}; const regs = EO.map((p, k) => [p, k]).filter(([p]) => p.c === '地區');
+    EO.forEach((p, k) => { if (p.c === '地區') return; const [X, , Z] = p.xyz.split(',').map(Number); let best = -1, bd = 1e9;
+      regs.forEach(([r, j]) => { if (r.f !== p.f) return; const [x, , z] = r.xyz.split(',').map(Number); const d = (x - X) ** 2 + (z - Z) ** 2; if (d < bd) { bd = d; best = j; } });
+      _regionOf[k] = best; }); }
+  return _regionOf[i];
+}
+function mapSearch(q) {   // 地圖搜尋：地點名稱、賣的、收的，以及會掉這個道具的怪
+  if (!q) return [];
+  const s = new Set();
+  EO.forEach((p, i) => { if (match(q, p.n, p.o, ...(p.items || []).map(x => x.n), ...(p.buy || []).map(x => x.n))) s.add(i); });
+  MOBS.forEach(m => { if (match(q, m.n, m.ne, ...m.d.map(d => d.i))) mobPoints(m).forEach(i => s.add(i)); });
+  return [...s];
+}
 function renderTopMap() {
-  const f = state.mapFloor, m = TOP[f];
-  const seg = `<div class="filters"><span class="seg-label">樓層</span><div class="seg">${[1, 2, 3].map(x => `<button data-mapfloor="${x}" class="${f === x ? 'on' : ''}">第 ${x} 層</button>`).join('')}</div>
-    ${MAPS[f] ? `<div class="seg vtog"><button data-mapview="art">插圖（有地名）</button><button data-mapview="top" class="on">俯視圖（精確座標）</button></div>` : ''}</div>`;
-  const cat = state.plCat === '全部' ? '地區' : state.plCat;
-  const pts = EO.map((p, i) => [p, i]).filter(([p]) => p.f === f && p.c === cat);
-  const dots = pts.map(([p, i]) => { const [X, , Z] = p.xyz.split(',').map(Number); const [x, y] = topPos(f, X, Z);
-    return `<button class="eo-dot ${state.eoSel === i ? 'on' : ''}" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c] || ''}" data-eo="${i}" title="${esc(p.n)}" aria-label="${esc(p.n)}"><i></i></button>${cat === '地區' ? `<span class="rlabel" style="left:${x}%;top:${y}%">${esc(p.n)}</span>` : ''}`; }).join('');
-  const mc = state.mclick && state.mclick.top ? `<span class="mapmark" style="left:${state.mclick.x}%;top:${state.mclick.y}%"></span><div class="mapclick" style="left:${Math.min(80, Math.max(20, state.mclick.x))}%;top:${state.mclick.y}%">座標 <b>X ${state.mclick.X}　Z ${state.mclick.Z}</b>${copyBtn(state.mclick.X + ' ~ ' + state.mclick.Z)}${o3d(f, state.mclick.X + ',80,' + state.mclick.Z)}<br><small class="en">俯視圖換算，誤差只有幾格</small></div>` : '';
-  const mp = (state.mobPins || []).map(i => EO[i]).filter(p => p.f === f);
-  const pins = mp.map(p => { const [X, , Z] = p.xyz.split(',').map(Number); const [x, y] = topPos(f, X, Z); return `<span class="mobpin" style="left:${x}%;top:${y}%"></span><span class="mobpin-l" style="left:${x}%;top:${y}%">${esc(p.n)}</span>`; }).join('');
-  const bar = state.mobName ? `<div class="mobbar">📍 ${esc(state.mobName)}：${mp.length ? `標出 ${mp.length} 處` : '這層沒有座標'}${mp.map(p => ` <span class="xyz">${esc(p.xyz)}</span>${copyBtn(p.xyz.replace(/,/g, ''), '複製')}`).join('')}<button class="addr" data-clearpins="1" style="margin-left:auto">清除標示</button></div>` : '';
-  return seg + bar + `<div class="mapbox top" id="mapbox"><img src="${m.img}" data-top="${f}" alt="第 ${f} 層俯視圖">${dots}${pins}${mc}</div>
-    <div class="legend"><span><i class="dot" style="background:${CAT_COLOR[cat]}"></i>${esc(cat)}${state.plCat === '全部' ? '（在下方地點清單選類型可以換）' : ''}</span><span>點地圖任何地方會顯示座標</span></div>` + renderPlaces();
+  const f = state.mapFloor, m = TOP[f], q = norm(state.q);
+  state.layers = state.layers || {'Boss': 1, '怪物': 1, 'NPC': 1, '商店・製作': 1, '收購商': 0, '採集點': 0, '地標': 0};
+  const found = mapSearch(q), foundSet = new Set(found);
+  const pins = new Set([...(state.mobPins || []), ...found]);
+  const pos = p => { const [X, , Z] = p.xyz.split(',').map(Number); return topPos(f, X, Z); };
+  const pts = EO.map((p, i) => [p, i]).filter(([p]) => p.f === f && p.c !== '地區' && (state.layers[p.c] || pins.has(EO.indexOf(p))));
+  const regs = EO.map((p, i) => [p, i]).filter(([p]) => p.f === f && p.c === '地區');
+  const unrot = 'rotateZ(calc(-1 * var(--rz,0deg)))';
+  const ptHtml = pts.map(([p, i]) => { const [x, y] = pos(p); const hit = pins.has(i);
+    return hit ? `<span class="mobpin" style="left:${x}%;top:${y}%"></span><button class="pt sel" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c]};transform:translate(-50%,-50%) ${unrot}" data-eo="${i}"><i></i><span>${esc(p.n)}</span></button>`
+      : `<button class="pt ${state.eoSel === i ? 'sel' : ''}" style="left:${x}%;top:${y}%;--c:${CAT_COLOR[p.c]};transform:translate(-50%,-50%) ${unrot}" data-eo="${i}" aria-label="${esc(p.n)}"><i></i><span>${esc(p.n)}</span></button>`; }).join('');
+  const rgHtml = regs.map(([p, i]) => { const [x, y] = pos(p); return `<button class="rg ${state.region === i ? 'sel' : ''}" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%) ${unrot}" data-region="${i}">${esc(p.n)}</button>`; }).join('');
+  const mc = state.mclick && state.mclick.top ? `<span class="mapmark" style="left:${state.mclick.x}%;top:${state.mclick.y}%"></span>` : '';
+  const ctl = `<div class="mctl"><div class="seg">${[1, 2, 3].map(x => `<button data-mapfloor="${x}" class="${f === x ? 'on' : ''}">第 ${x} 層</button>`).join('')}</div>
+    <div class="seg"><button data-tilt="0" class="${state.tilt ? '' : 'on'}">平面</button><button data-tilt="1" class="${state.tilt ? 'on' : ''}">立體</button></div>
+    <div class="seg"><button data-rot="-45" title="向左轉">⟲</button><button data-rot="0" title="轉正">北</button><button data-rot="45" title="向右轉">⟳</button></div>
+    ${MAPS[f] ? `<div class="seg"><button data-mapview="art">插圖</button></div>` : ''}</div>`;
+  const legend = `<div class="legend2">${LAYERS.map(c => `<label><input type="checkbox" data-layer="${esc(c)}" ${state.layers[c] ? 'checked' : ''}><i style="background:${CAT_COLOR[c]}"></i>${esc(c)}</label>`).join('')}<span>　滑鼠移到點上看名稱，點地區名稱看那裡有什麼</span></div>`;
+  const coord = state.mclick && state.mclick.top ? `<div class="mobbar" style="background:var(--g100);color:var(--g800)">📍 座標 <b class="xyz">X ${state.mclick.X}　Z ${state.mclick.Z}</b>${copyBtn(state.mclick.X + ' ~ ' + state.mclick.Z)}${o3d(f, state.mclick.X + ',80,' + state.mclick.Z)}<button class="addr" data-clearpins="1" style="margin-left:auto">清除</button></div>` : '';
+  const bar = state.mobName || found.length ? `<div class="mobbar">📍 ${state.mobName ? esc(state.mobName) : `搜尋「${esc(state.q)}」`}：這層標出 ${[...pins].filter(i => EO[i].f === f).length} 處${found.length && [...pins].filter(i => EO[i].f === f).length === 0 ? `（在第 ${[...new Set(found.map(i => EO[i].f))].join('、')} 層）` : ''}<button class="addr" data-clearpins="1" style="margin-left:auto">清除標示</button></div>` : '';
+  // 下方：選到的地區或地點
+  let below = '';
+  if (state.region >= 0 && EO[state.region] && EO[state.region].f === f) {
+    const R = EO[state.region]; const inR = EO.map((p, i) => [p, i]).filter(([p, i]) => p.c !== '地區' && regionOf(i) === state.region);
+    const mobsHere = MOBS.filter(mm => mm.f === f && (mobPoints(mm).some(i => regionOf(i) === state.region) || mm.mapa === R.id));
+    const grp = (title, arr, fn) => arr.length ? `<div class="rgroup"><h4>${title} · ${arr.length}</h4><div class="rchips">${arr.map(fn).join('')}</div></div>` : '';
+    below = `<div class="card rpanel"><div class="pl-h"><h3 style="margin:0">${esc(R.n)}</h3><span class="mini">第 ${f} 層 · 地區</span><span class="xyz">${esc(R.xyz)} ${copyBtn(R.xyz.replace(/,/g, ''), '複製')}${o3d(f, R.xyz)}</span></div>
+      ${R.note ? `<div class="eq-stat">${esc(R.note)}</div>` : ''}
+      ${grp('怪物', mobsHere, mm => `<button class="rchip" data-mobmap="${MOBS.indexOf(mm)}">${esc(mm.n)}<small>${mm.t}</small></button>`)}
+      ${grp('NPC', inR.filter(([p]) => p.c === 'NPC'), ([p, i]) => `<button class="rchip" data-eo="${i}">${esc(p.n)}</button>`)}
+      ${grp('商店・製作', inR.filter(([p]) => p.c === '商店・製作'), ([p, i]) => `<button class="rchip" data-eo="${i}">${esc(p.n)}</button>`)}
+      ${grp('收購商', inR.filter(([p]) => p.c === '收購商'), ([p, i]) => `<button class="rchip" data-eo="${i}">${esc(p.n)}</button>`)}
+      ${grp('採集點・地標', inR.filter(([p]) => p.c === '採集點' || p.c === '地標'), ([p, i]) => `<button class="rchip" data-eo="${i}">${esc(p.n)}</button>`)}
+      ${!mobsHere.length && !inR.length ? '<p class="todo">這個地區還沒有怪物或 NPC 資料。</p>' : ''}</div>`;
+  }
+  if (state.eoSel >= 0 && EO[state.eoSel]) below = `<div class="rpanel">${placeCard(EO[state.eoSel])}</div>` + below;
+  if (found.length) below += `<div class="section-title">搜尋結果 · ${found.length}</div><div class="rchips">${found.map(i => `<button class="rchip" data-eo="${i}">${esc(EO[i].n)}<small>第 ${EO[i].f} 層 · ${esc(EO[i].c)} · ${esc(EO[i].xyz.split(',').filter((_, k) => k !== 1).join(' / '))}</small></button>`).join('')}</div>`;
+  return ctl + bar + coord + `<div class="stage ${state.tilt ? 'tilt' : 'flat'}" style="--rz:${state.rot || 0}deg"><div class="plane" id="mapbox"><img src="${m.img}" data-top="${f}" alt="第 ${f} 層地圖">${rgHtml}${ptHtml}${mc}</div></div>` + legend + below;
 }
 
 function renderMap() {
@@ -696,7 +766,7 @@ const ROUTES = {
   craft: {t: '配方', d: '每件可製作物品需要的材料、費用、時間和製作地點。', ph: '篩選物品或材料，例如：哥布林、寒冰硬皮'},
   dungeons: {t: '地城', d: '樓層地城的人數、等級、鑰匙和掉落。', ph: '篩選地城、Boss 或掉落物'},
   quests: {t: '任務', d: '主線依順序排列，支線附座標。', ph: '篩選任務、NPC 或內容'},
-  map: {t: '地圖', d: '點地圖任何地方會顯示座標；在怪物卡按「📍 地圖」會直接標出位置。', ph: '篩選下方的地點清單'},
+  map: {t: '地圖', d: '點地區名稱看那裡有什麼；點地圖任何地方顯示座標；搜尋怪物或道具會直接標在地圖上。', ph: '搜尋怪物、道具、NPC，例如：阿爾巴爾之牙、Emy'},
   places: {t: '商店・NPC', d: '商店、收購商、NPC、Boss、採集點，全部附座標。', ph: '篩選名稱、賣的東西或收的東西'},
   list: {t: '我的清單', d: '想刷的材料和數量，會幫你排好刷怪路線。只存在這台裝置的瀏覽器。'}
 };
@@ -815,7 +885,8 @@ function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.ad
 
 document.addEventListener('click', e => {
   const img = e.target.closest('#mapbox img');
-  if (img) { const r = img.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 100, y = (e.clientY - r.top) / r.height * 100;
+  if (img) { const r = img.getBoundingClientRect(); let x = (e.clientX - r.left) / r.width * 100, y = (e.clientY - r.top) / r.height * 100;
+    if (img.dataset.top && typeof e.offsetX === 'number') { x = e.offsetX / img.clientWidth * 100; y = e.offsetY / img.clientHeight * 100; }
     if (img.dataset.top) { const m = TOP[+img.dataset.top]; state.mclick = {x, y, top: 1, X: Math.round(m.x0 + x / 100 * m.w), Z: Math.round(m.z0 + y / 100 * m.h)}; }
     else { const [X, Z] = mapToWorld(x, y); state.mclick = {x, y, X, Z}; }
     render(); return; }
@@ -839,12 +910,15 @@ document.addEventListener('click', e => {
   else if (d.qtype) { state.qType = d.qtype; render(); }
   else if (d.qfloor !== undefined) { state.qFloor = +d.qfloor; render(); }
   else if (d.mobmap !== undefined) { const m = MOBS[+d.mobmap], pts = mobPoints(m); state.mobPins = pts; state.mobName = m.n; state.mapFloor = pts.length ? EO[pts[0]].f : m.f; state.plFloor = state.mapFloor; state.mapView = 'top'; state.mclick = null; state.eoSel = -1; go('map'); setTimeout(() => { const el = document.querySelector('.mobpin'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }, 150); }
-  else if (d.clearpins) { state.mobPins = []; state.mobName = ''; render(); }
+  else if (d.clearpins) { state.mobPins = []; state.mobName = ''; state.mclick = null; state.eoSel = -1; state.qs.map = ''; const p = $('#pq'); if (p && route() === 'map') p.value = ''; render(); }
+  else if (d.region) { state.region = state.region === +d.region ? -1 : +d.region; state.eoSel = -1; render(); }
+  else if (d.tilt !== undefined) { state.tilt = +d.tilt; render(); }
+  else if (d.rot !== undefined) { state.rot = +d.rot === 0 ? 0 : (state.rot || 0) + +d.rot; render(); }
   else if (d.mapview) { state.mapView = d.mapview; state.mclick = null; render(); }
   else if (d.mapfloor) { state.mclick = null; state.mapFloor = +d.mapfloor; state.plFloor = +d.mapfloor; state.place = ''; render(); }
   else if (d.plfloor !== undefined) { state.plFloor = +d.plfloor; render(); }
   else if (d.plcat) { state.plCat = d.plcat; state.eoSel = -1; render(); }
-  else if (d.eo) { state.eoSel = +d.eo; state.plFloor = state.mapFloor; render(); const el = document.getElementById('eo-' + d.eo); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }
+  else if (d.eo) { state.eoSel = +d.eo; if (route() === 'map') { state.mapFloor = EO[+d.eo].f; state.mobPins = [+d.eo]; state.mobName = EO[+d.eo].n; render(); const el = document.querySelector('.stage'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'}); return; } state.plFloor = state.mapFloor; render(); const el = document.getElementById('eo-' + d.eo); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }
   else if (d.place) { state.place = state.place === d.place ? '' : d.place; render(); }
   else if (d.floor !== undefined) { state.floor = +d.floor; render(); }
   else if (d.type) { state.type = d.type; render(); }
@@ -858,7 +932,7 @@ document.addEventListener('click', e => {
   else if (d.del) { delete list[d.del]; saveList(); render(); toast(`已移除：${d.del}`); }
   else if (t.id === 'clearList') { list = {}; saveList(); render(); toast('清單已清空'); }
 });
-document.addEventListener('change', e => { if (e.target.id === 'mylv') { state.myLv = Math.max(0, parseInt(e.target.value) || 0); render(); } });
+document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.layer) { state.layers[e.target.dataset.layer] = e.target.checked ? 1 : 0; render(); return; } if (e.target.id === 'mylv') { state.myLv = Math.max(0, parseInt(e.target.value) || 0); render(); } });
 function report(kind, name, en) {
   const text = `【圖鑑回報】\n類型：${kind}\n名稱：${name}${en && en !== name ? `（${en}）` : ''}\n網站寫的：\n遊戲裡實際是：\n（可以附上遊戲截圖）`;
   const show = () => { const m = $('#modal'); m.querySelector('textarea').value = text; m.classList.add('on'); m.querySelector('textarea').select(); };
