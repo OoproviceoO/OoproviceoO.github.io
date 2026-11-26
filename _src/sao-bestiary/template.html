@@ -424,6 +424,28 @@ input:focus,.pfilter input:focus,.hero input:focus{box-shadow:0 0 0 2px var(--sa
 .t3pin::after{content:'';position:absolute;left:50%;bottom:-6px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--sao-o)}
 .sp{display:block;width:100%;height:100%;max-width:34px;max-height:34px;margin:auto;background:url(atlas.png) 0 0/4000% 2700%;image-rendering:pixelated}
 .it-ic .sp{width:30px;height:30px}.dic .sp{width:22px;height:22px}.tip .dic .sp{width:34px;height:34px}.eq-ic .sp{width:28px;height:28px}.mic .sp{width:18px;height:18px}
+
+.bs{background:var(--sao-panel);border:1px solid var(--sao-line);border-radius:6px;box-shadow:var(--shadow);padding:20px;margin-top:16px}
+.bs h3{margin:0;font-size:22px}.bs .en{color:var(--n500);font-size:14px}
+.bs-meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.bs-meta span{background:#fff;border:1px solid var(--sao-line);border-radius:4px;padding:4px 10px;font-size:14px;color:var(--n600)}
+.bs-meta b{color:var(--g800)}
+.bs h4{margin:16px 0 8px;font-size:14px;letter-spacing:.06em;color:var(--n600)}
+.sched{display:grid;gap:6px}
+.sched div{display:flex;gap:10px;align-items:center;background:#fff;border-radius:4px;padding:8px 12px;border-left:3px solid var(--sao-o)}
+.sched .next{background:hsl(34 95% 94%)}
+.odds{display:grid;gap:6px}
+.odds div{display:grid;grid-template-columns:1fr 52px;gap:8px;align-items:center;font-size:14px}
+.odds .bar{grid-column:1/-1;height:6px;border-radius:3px;background:hsl(210 30% 92%);overflow:hidden;margin-top:-2px}
+.odds .bar i{display:block;height:100%;background:var(--sao-o)}
+.odds em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--g800)}
+.atk{display:flex;flex-wrap:wrap;gap:6px}.atk span{background:hsl(350 80% 96%);color:hsl(350 55% 35%);border-radius:4px;padding:4px 10px;font-size:14px}
+.cls{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:16px}
+.cls .bs{margin:0}
+.stars{display:grid;grid-template-columns:48px 1fr;gap:4px 10px;font-size:13px;color:var(--n600);align-items:center}
+.stars i{display:flex;gap:3px}.stars i b{width:14px;height:8px;border-radius:2px;background:hsl(210 30% 90%)}.stars i b.on{background:var(--sao-o)}
+.sk{display:grid;gap:4px;font-size:14px}.sk div{display:flex;gap:8px;align-items:baseline}.sk small{color:var(--n500);flex:none;width:76px;white-space:nowrap}
+.diff{color:var(--sao-o);letter-spacing:2px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700;800&display=swap">
 <meta name="robots" content="noindex,nofollow">
@@ -433,13 +455,13 @@ input:focus,.pfilter input:focus,.hero input:focus{box-shadow:0 0 0 2px var(--sa
 <nav class="topnav"><div class="topnav-in">
   <a href="#home" class="brand">AINCRAD · 圖鑑</a>
   <div class="navlinks" id="navlinks">
-    <a href="#home">主頁</a><a href="#mobs">怪物</a><a href="#items">道具</a><a href="#equip">裝備</a><a href="#craft">配方</a><a href="#dungeons">地城</a><a href="#quests">任務</a><a href="#map">地圖</a><a href="#places">商店・NPC</a><a href="#guild">公會</a><a href="#list">清單<span class="badge" id="lc"></span></a>
+    <a href="#home">主頁</a><a href="#mobs">怪物</a><a href="#items">道具</a><a href="#equip">裝備</a><a href="#craft">配方</a><a href="#dungeons">地城</a><a href="#quests">任務</a><a href="#map">地圖</a><a href="#places">商店・NPC</a><a href="#bosses">世界王</a><a href="#classes">職業</a><a href="#guild">公會</a><a href="#list">清單<span class="badge" id="lc"></span></a>
   </div>
 </div></nav>
 <div class="wrap">
   <div id="phead"></div>
   <main id="main"></main>
-  <p class="foot">資料來源：<a href="https://saominecraft.wiki.gg/" target="_blank" rel="noopener">SAO Minecraft Wiki</a> 的怪物圖鑑、裝備與任務頁（2026/11/24 擷取），主線任務說明由英文版翻譯；第 2、3 層怪物的等級與生命值、地城與鑰匙資訊取自 <a href="https://saominecraft.com/news" target="_blank" rel="noopener">官方公告</a>；配方、商店、NPC 與地點座標、怪物掉落率、地城資料與俯視地圖取自 <a href="https://exiled-order.pages.dev/" target="_blank" rel="noopener">EXILED ORDER × NULL</a>（感謝 Tatanjbr、SebasG4mer 等玩家整理，名稱由我們翻成中文）；怪物 3D 模型與道具圖示也取自 EXILED ORDER（模型貼圖用伺服器資源包，缺的圖示用 Minecraft 原版物品圖代替）；第 1 層 3D 地形的高度來自 Distant Horizons 紀錄。「平均約幾隻」是用掉落機率算出的期望值，實際會依運氣上下浮動。</p>
+  <p class="foot">資料來源：<a href="https://saominecraft.wiki.gg/" target="_blank" rel="noopener">SAO Minecraft Wiki</a> 的怪物圖鑑、裝備與任務頁（2026/11/24 擷取），主線任務說明由英文版翻譯；第 2、3 層怪物的等級與生命值、地城與鑰匙資訊取自 <a href="https://saominecraft.com/news" target="_blank" rel="noopener">官方公告</a>；配方、商店、NPC 與地點座標、怪物掉落率、地城資料與俯視地圖取自 <a href="https://exiled-order.pages.dev/" target="_blank" rel="noopener">EXILED ORDER × NULL</a>（感謝 Tatanjbr、SebasG4mer 等玩家整理，名稱由我們翻成中文）；怪物 3D 模型與道具圖示也取自 EXILED ORDER（模型貼圖用伺服器資源包，缺的圖示用 Minecraft 原版物品圖代替）；第 1 層 3D 地形的高度來自 Distant Horizons 紀錄。遊戲內官方中文名稱、收購價、世界王與職業資料取自台灣玩家的 <a href="https://cheng-1001.github.io/ArgoStrategyGuide/" target="_blank" rel="noopener">阿爾戈的攻略本</a>。「平均約幾隻」是用掉落機率算出的期望值，實際會依運氣上下浮動。</p>
 </div>
 <div class="toast" id="toast"></div>
 <div class="modal" id="modal"><div><h3 style="margin:0 0 8px">回報範本</h3><p class="foot" style="margin:0 0 8px">自動複製失敗，請手動複製下面的文字。</p><textarea readonly></textarea><button id="mclose">關閉</button></div></div>
@@ -467,7 +489,9 @@ try { list = JSON.parse(localStorage.getItem('sao-list') || '{}'); } catch (e) {
 const saveList = () => { try { localStorage.setItem('sao-list', JSON.stringify(list)); } catch (e) {} };
 
 const norm = s => String(s || '').toLowerCase().replace(/[\s'’，,]/g, '');
-const match = (q, ...xs) => xs.some(x => norm(x).includes(q));
+const ARGO = __ARGO__;
+const ALIAS = ARGO.alias;
+const match = (q, ...xs) => xs.some(x => norm(x).includes(q) || (ALIAS[x] || []).some(a => norm(a).includes(q)));
 const hl = (s, q) => {
   const raw = state.q.trim();
   if (!q || !raw) return esc(s);
@@ -802,6 +826,8 @@ const ROUTES = {
   items: {t: '道具', d: '所有掉落物、材料和可製作物品。點一下看哪裡掉、怎麼做、誰收購。', ph: '篩選道具名稱'},
   item: {t: '物品簡介'},
   guild: {t: '公會', d: '我們的公會（準備中）。'},
+  bosses: {t: '世界王', d: '世界王和 UNIT 首領：開放時間（已換成台灣時間）、門票、獎勵機率和招式。'},
+  classes: {t: '職業', d: '五種職業的定位、難度、能力和技能解鎖等級。'},
   mobs: {t: '怪物圖鑑', d: '第 1～3 層的怪物、出沒地點、難度和掉落物。點掉落物可以查哪裡打。', ph: '篩選怪物、地點或掉落物'},
   equip: {t: '裝備', d: '武器、護甲、飾品的等級與數值；能做的會附上配方。', ph: '篩選裝備名稱或加成'},
   craft: {t: '配方', d: '每件可製作物品需要的材料、費用、時間和製作地點。', ph: '篩選物品或材料，例如：哥布林、寒冰硬皮'},
@@ -816,7 +842,7 @@ state.qs = {};
 const ICON = (bg, s) => `<span class="ic" style="background:${bg}">${s}</span>`;
 function renderHome() {
   const menu = [['mobs', '怪物', '🐺', `${MOBS.length}`], ['items', '道具', '💎', `${allItemNames().length}`], ['equip', '裝備', '🗡️', `${EQ.length}`], ['craft', '配方', '⚒️', `${Object.keys(RECIPES).length}`],
-    ['dungeons', '地城', '🏰', `${DG.length}`], ['quests', '任務', '📜', `${MQ.length + SQ.length}`], ['map', '地圖', '🗺️', '1–3 層'], ['places', '商店・NPC', '🏪', `${EO.length}`], ['guild', '公會', '🛡️', '準備中'], ['list', '清單', '✅', `${Object.keys(list).length}`]];
+    ['dungeons', '地城', '🏰', `${DG.length}`], ['quests', '任務', '📜', `${MQ.length + SQ.length}`], ['map', '地圖', '🗺️', '1–3 層'], ['places', '商店・NPC', '🏪', `${EO.length}`], ['bosses', '世界王', '👑', `${ARGO.bosses.length}`], ['classes', '職業', '⚔️', `${ARGO.classes.length}`], ['guild', '公會', '🛡️', '準備中'], ['list', '清單', '✅', `${Object.keys(list).length}`]];
   return `<section class="hero"><div class="sub">SWORD ART ONLINE · AINCRAD</div><h1>艾恩葛朗特圖鑑</h1>
     <nav class="ring-menu">${menu.map(([r, n, ic, c]) => `<a class="ring" href="#${r}"><span class="c">${ic}</span><b>${n}</b><small class="num">${c}</small></a>`).join('')}</nav>
     <form id="homeform"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
@@ -884,13 +910,13 @@ function renderItem1() {
   const n = state.curItem; if (!n) return `<div class="empty"><h3>沒有選擇道具</h3><p><a href="#items">回道具列表</a></p></div>`;
   const i = itemInfo(n);
   return `<p><a href="#items" class="addr" style="text-decoration:none;display:inline-block">← 道具列表</a></p>
-    <article class="card"><div class="idetail"><span class="it-ic">${ITEM_ICON(n)}</span><div><h2 style="margin:0">${esc(n)}</h2>${i.en ? `<div class="en">${esc(i.en)}</div>` : ''}
+    <article class="card"><div class="idetail"><span class="it-ic">${ITEM_ICON(n)}</span><div><h2 style="margin:0">${esc(n)}</h2>${i.en ? `<div class="en">${esc(i.en)}</div>` : ''}${ALIAS[n] ? `<div class="en">以前寫作：${ALIAS[n].map(esc).join('、')}</div>` : ''}
       <div class="meta" style="margin-top:8px">${list[n] ? '<span class="mini">已在清單</span>' : `<button class="add" data-add="${esc(n)}">＋ 加入清單</button>`}</div></div></div>
       ${i.eq ? `<div class="eq-list" style="box-shadow:none;margin-top:16px">${eqRow(i.eq, '')}</div>` : ''}</article>
     ${i.drops.length ? `<div class="section-title">哪裡掉 · ${i.drops.length}</div>` + itemCard(ITEMS[n], '') : ''}
     ${i.rec ? `<div class="section-title">怎麼做</div><div class="eq-list">${recipeHtml(n, i.rec, true)}</div>` : ''}
     ${i.usedIn.length ? `<div class="section-title">用在哪些配方 · ${i.usedIn.length}</div><div class="items-grid">${i.usedIn.map(k => `<button class="it-card" data-iv="${esc(k)}"><span class="it-ic">${ITEM_ICON(k)}</span><span><b>${esc(k)}</b><small>需要 ${RECIPES[k].mats.find(([m]) => m === n)[1]} 個</small></span></button>`).join('')}</div>` : ''}
-    ${i.buyers.length ? `<div class="section-title">誰會收購</div>` + i.buyers.map(b => `<div class="pl"><div class="pl-h"><b>${esc(b.p.n)}</b><span class="mini">第 ${b.p.f} 層</span><span class="xyz">${esc(b.price)}</span></div><div class="eq-stat">座標 ${esc(b.p.xyz)}</div></div>`).join('') : ''}
+    ${i.buyers.length ? `<div class="section-title">誰會收購</div>` + i.buyers.map(b => `<div class="pl"><div class="pl-h"><b>${esc(b.p.n)}</b><span class="mini">第 ${b.p.f} 層</span><span class="xyz">${esc(b.price)}${o3d(b.p.f, b.p.xyz)}</span></div><div class="eq-stat">座標 ${esc(b.p.xyz)}</div></div>`).join('') : ''}
     ${!i.drops.length && !i.rec && !i.usedIn.length && !i.buyers.length ? '<div class="empty"><p>目前沒有這個道具的來源資料。</p></div>' : ''}`;
 }
 function renderGuild() {
@@ -922,7 +948,7 @@ function render() {
   if (r !== lastRoute) { lastRoute = r; renderHead(); window.scrollTo(0, 0); }
   state.q = state.qs[r] || '';
   $('#main').innerHTML = r === 'home' ? renderHome() : r === 'search' ? renderItem() : r === 'mobs' ? renderMob() : r === 'equip' ? renderEq()
-    : r === 'craft' ? renderCraft() : r === 'items' ? renderItems() : r === 'item' ? renderItem1() : r === 'guild' ? renderGuild() : r === 'dungeons' ? renderDungeons() : r === 'quests' ? renderQuest() : r === 'map' ? renderMap() : r === 'places' ? renderPlaces() : renderList();
+    : r === 'craft' ? renderCraft() : r === 'items' ? renderItems() : r === 'item' ? renderItem1() : r === 'guild' ? renderGuild() : r === 'bosses' ? renderBosses() : r === 'classes' ? renderClasses() : r === 'dungeons' ? renderDungeons() : r === 'quests' ? renderQuest() : r === 'map' ? renderMap() : r === 'places' ? renderPlaces() : renderList();
   const t3 = document.getElementById('t3d'); if (t3) mountTerrain(t3);
   const n = Object.values(list).filter(e => !e.done).length;
   $('#lc').textContent = n || '';
@@ -1003,6 +1029,45 @@ document.addEventListener('click', e => {
   if (e.target.id === 'modal' || e.target.id === 'mclose') $('#modal').classList.remove('on');
 }, true);
 render();
+
+
+// ===== 世界王・職業（資料：阿爾戈的攻略本） =====
+const RW_ZH = {'Colossus Fragments ×3': '巨像碎片 ×3', '1,000 Cols purse': '1,000 珂爾錢袋', "Galiath's Core": '加利亞斯核心', 'Colossus Helmet': '巨像頭盔', '500 Triggiums': '500 Triggium', 'Colossus Left Blade': '巨像左刃', 'Colossus Right Blade': '巨像右刃', 'Four-Armed Halberd': '四臂長戟'};
+const WD = ['日', '一', '二', '三', '四', '五', '六'];
+function twTime(s) {   // 把伺服器公告的當地時間換成台灣時間
+  const [h, m] = s.time.split(':').map(Number), now = new Date();
+  for (let k = 0; k < 8; k++) {
+    const d = new Date(now.getTime() + k * 864e5);
+    const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {timeZone: s.zone, year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short'}).formatToParts(d).map(p => [p.type, p.value]));
+    if (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(parts.weekday) !== s.day) continue;
+    const guess = Date.UTC(+parts.year, +parts.month - 1, +parts.day, h, m);
+    const off = new Date(guess).toLocaleString('en-US', {timeZone: s.zone, hourCycle: 'h23'}); const back = Date.parse(off + ' UTC') - guess;
+    let t = guess - back; if (t + s.minutes * 6e4 < now.getTime()) t += 7 * 864e5;
+    return t;
+  }
+  return 0;
+}
+function renderBosses() {
+  const fmt = t => { const d = new Date(t), l = new Date(d.toLocaleString('en-US', {timeZone: 'Asia/Taipei'})); return `週${WD[l.getDay()]} ${String(l.getHours()).padStart(2, '0')}:${String(l.getMinutes()).padStart(2, '0')}`; };
+  const card = b => {
+    const times = b.sch.map(s => ({s, t: twTime(s)})).sort((a, c) => a.t - c.t);
+    const md = d => `${new Date(d).toLocaleDateString('zh-TW', {timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric'})}`;
+    return `<article class="bs"><h3>${esc(b.n)}</h3><div class="en">${esc(b.en)}${b.unit ? ' · ' + esc(b.unit) : ''}</div>
+    <div class="bs-meta">${b.lv ? `<span>等級 <b>${b.lv}</b></span>` : ''}${b.f ? `<span>第 <b>${b.f}</b> 層</span>` : ''}${b.price ? `<span>門票 <b>${b.price.toLocaleString()} 珂爾</b></span>` : ''}${b.g ? `<span>保底 <b>${esc(b.g)}</b></span>` : ''}${b.rolls ? `<span>抽獎 <b>${b.rolls} 次</b></span>` : ''}</div>
+    ${times.length ? `<h4>開放時間（台灣時間，每次 ${times[0].s.minutes} 分鐘）</h4><div class="sched">${times.map((x, k) => `<div class="${k === 0 ? 'next' : ''}"><b>${md(x.t)}（${fmt(x.t)}）</b>${k === 0 ? '<span class="tag">下一場</span>' : ''}</div>`).join('')}</div>` : ''}
+    ${b.rw.length ? `<h4>獎勵抽獎機率</h4><div class="odds">${b.rw.map(([zh, en, p]) => `<div><span>${esc(RW_ZH[en] || zh)}</span><em>${p}%</em><span class="bar"><i style="width:${p * 2}%"></i></span></div>`).join('')}</div>` : ''}
+    ${b.atk.length ? `<h4>招式</h4><div class="atk">${b.atk.map(a => `<span>${esc(a.replace(/^.*（(.*)）$/, '$1'))}</span>`).join('')}</div>` : ''}</article>`;
+  };
+  return ARGO.bosses.map(card).join('') + `<article class="bs"><h3>之後的世界王</h3><div class="en">wiki 列出、還沒開放</div><div class="bs-meta" style="margin-bottom:0">${ARGO.wikiWorld.map(([n, lv, d]) => `<span><b>${esc(n)}</b> · 等級 ${esc(lv)} · ${({Medium: '普通', Hard: '困難', Extreme: '極難'})[d] || esc(d)}</span>`).join('')}</div></article>`;
+}
+const SK_T = {'主動': '主動', '被動': '被動'};
+function renderClasses() {
+  return `<div class="cls">${ARGO.classes.map(c => `<article class="bs"><h3>${esc(c.ic)} ${esc(c.n)}</h3><div class="en">${esc(c.en)} · ${esc(c.role)} · 難度 <span class="diff">${'★'.repeat(c.diff)}${'☆'.repeat(Math.max(0, 3 - c.diff))}</span></div>
+    <h4>能力</h4><div class="stars">${c.stars.map(([k, v]) => `<span>${esc(k)}</span><i>${[1, 2, 3, 4, 5].map(x => `<b class="${x <= v ? 'on' : ''}"></b>`).join('')}</i>`).join('')}</div>
+    ${c.subs.length ? `<h4>專精</h4><div class="bs-meta" style="margin:0">${c.subs.map(s => `<span><b>${esc(s)}</b></span>`).join('')}</div>` : ''}
+    <h4>技能${c.sure ? '' : '（wiki 的清單，可能和遊戲不同）'}</h4><div class="sk">${c.sk.map(([n, ty, lv]) => `<div><small>Lv ${lv} · ${esc(ty)}</small><span>${esc(n)}</span></div>`).join('')}</div></article>`).join('')}</div>
+    <p class="foot">技能的詳細說明可以看 <a href="https://cheng-1001.github.io/ArgoStrategyGuide/" target="_blank" rel="noopener">阿爾戈的攻略本</a> 的「職業／技能」。</p>`;
+}
 
 // ===== 掉落物提示框 =====
 const tipEl = document.createElement('div'); tipEl.className = 'tip'; document.body.appendChild(tipEl);

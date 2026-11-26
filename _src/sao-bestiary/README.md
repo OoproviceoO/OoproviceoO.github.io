@@ -10,3 +10,9 @@
 - `dh/dec.py` `dh/colors.py`：讀 Distant Horizons 的 DistantHorizons.sqlite 做第 1 層地形高度（height-1.png）
 
 以後要改：改 template.html 或資料 → `python3 build.py` → 把 index.html 複製到 sao-bestiary/。
+
+## 阿爾戈的攻略本（2026/11/27 加入）
+- `argo/`：從 cheng-1001.github.io/ArgoStrategyGuide 下載的資料檔（官方中文名 zhnames.js、收購價 buyback.js、世界王 bosses.js、職業 classes.js）
+- `rename.py` → `rename.json`：舊翻譯 → 遊戲官方中文；舊名在網頁上當搜尋別名
+- `argo_merge.py`：在 build_eo.py 之後執行，補收購價、產生 argo_data.json（世界王、職業、別名）
+- 順序：build_eo.py → argo_merge.py → build.py
