@@ -489,6 +489,7 @@ input:focus,.pfilter input:focus,.hero input:focus{box-shadow:0 0 0 2px var(--sa
   .inv-x{display:block;position:sticky;top:0;margin-left:auto;z-index:2;width:44px;height:44px;border:0;background:hsl(0 0% 100% / .9);border-radius:50%;font-size:26px;cursor:pointer}}
 @media (max-width:700px){.inv{grid-template-columns:1fr}.inv-side{position:static}.inv-f:not([open]){padding:4px 0}.inv-grid{grid-template-columns:repeat(3,1fr)}.inv-tiles{grid-template-columns:repeat(2,1fr)}}
 @keyframes sheet{from{transform:translateY(40px);opacity:0}}
+.dgmaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:10px}.dgmaps figure{margin:0}.dgmaps img{width:100%;height:auto;border-radius:6px;display:block;image-rendering:pixelated;box-shadow:var(--shadow-sm)}.dgmaps figcaption{margin-bottom:6px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700;800&display=swap">
 <meta name="robots" content="noindex,nofollow">
@@ -931,6 +932,7 @@ function renderDungeons() {
     ${d.key ? `<p style="margin:12px 0 0">鑰匙：<button class="mat" data-item="${esc(d.key.n)}">${esc(d.key.n)}</button> ×${d.key.q}${d.key.used ? '（進場會消耗）' : '（不會消耗）'}${RECIPES[d.key.n] ? ' <span class="mini">可以製作</span>' : ''}</p>` : ''}
     <div class="loot"><div style="border:0"><b>掉落</b><small>機率</small></div>${d.loot.map(l => `<div><span>${esc(l.n)}${l.r ? ` <span class="rar rar-${esc(l.r)}">${esc(l.r)}</span>` : ''}${l.de ? `<br><small>${esc(l.de)} 掉落</small>` : ''}</span><span class="k">${l.p != null ? (l.p * 100 >= 100 ? '必掉' : (Math.round(l.p * 1000) / 10) + '%') : ''}</span></div>`).join('')}</div>
     ${d.guide ? dgGuide(d) : ''}
+    ${d.maps ? `<details class="guide" open><summary>🗺️ 迷宮地圖（${d.maps.length} 層）</summary><div class="dgmaps">${d.maps.map(m => `<figure><figcaption><b>${esc(m.t)}</b></figcaption><a href="${esc(m.img)}" target="_blank" rel="noopener"><img src="${esc(m.img)}" alt="${esc(d.n)} ${esc(m.t)} 地圖" loading="lazy"></a>${m.note ? `<p class="foot">${esc(m.note)}點圖可以放大。</p>` : ''}</figure>`).join('')}</div></details>` : ''}
     ${d.rec && d.rec.ms ? `<p class="foot" style="margin:10px 0 0">最快通關紀錄：${Math.floor(d.rec.ms / 60000)} 分 ${Math.round(d.rec.ms % 60000 / 1000)} 秒（${(d.rec.equipo || []).map(esc).join('、')}）</p>` : ''}</article>`).join('');
 }
 let _items = null;
