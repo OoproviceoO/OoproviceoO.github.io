@@ -1068,7 +1068,7 @@ function invDetail(x) {
   const loc = p => `${o3d(p.f, p.xyz)}`;
   const src = [
     ...x.buy.map(b => `<div class="src"><span class="tag t-buy">購買</span><b>${esc(b.p.n)}</b><span class="k">${esc(b.price)}</span><div class="eq-stat">第 ${b.p.f} 層 · ${esc(b.p.xyz)} ${loc(b.p)}</div></div>`),
-    ...x.craft.map(c => `<div class="src"><span class="tag t-craft">製作</span><b>${esc(c.p.n)}</b><span class="k">${esc(c.r.cost || '')}${c.r.time ? ' · ' + esc(c.r.time) : ''}</span>
+    ...x.craft.map(c => `<div class="src"><span class="tag t-craft">製作</span><b>${esc(c.p.n)}</b><span class="k">${esc(c.r.cost || '')}${c.r.time ? ' · ' + esc(c.r.time) : ''}${c.r.qty ? ` · 一次做 ×${c.r.qty}` : ''}</span>
       <div class="mats">${c.r.mats.map(([m, q]) => `<button class="mat" data-invsel="${esc(m)}"><span class="mic">${ICON_HTML(m)}</span>${esc(m)} ×${q}</button>`).join('')}</div>
       <div class="eq-stat">第 ${c.p.f} 層 · ${esc(c.p.xyz)} ${loc(c.p)} <button class="addr" data-recipe="${esc(x.n)}">＋ 材料加入清單</button></div></div>`),
     ...x.drops.map(d => `<div class="src"><span class="tag t-drop">掉落</span><b>${esc(d.m.n)}</b><span class="k">${esc(d.p)}</span><div class="eq-stat">第 ${d.m.f} 層 · ${esc(d.m.zona || '')} ${mobPoints(d.m).length ? `<button class="o3d" data-mobmap="${MOBS.indexOf(d.m)}">📍 地圖</button>` : ''}</div></div>`)];

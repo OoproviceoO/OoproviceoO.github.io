@@ -50,6 +50,11 @@ def walk(o):
     if isinstance(o, dict): return {k: walk(v) for k, v in o.items()}
     return o
 eo = walk(eo)
+# 遊戲截圖確認（2026/11/27）：第 2 層鍊金術師的「品質」藥水一次做 3 瓶
+for p in eo:
+    if p['n'] == '鍊金術師' and p['f'] == 2: p['n'] = '第 2 層鍊金術師'
+    for it in p.get('items') or []:
+        if p['f'] == 2 and re.match(r'品質 (生命|魔力|耐力)藥水', it['n']) and it.get('r'): it['r']['qty'] = 3
 json.dump(eo, open('/home/claude/eo_points.json', 'w', encoding='utf-8'), ensure_ascii=False)
 
 # 世界王、UNIT 首領
