@@ -490,6 +490,15 @@ input:focus,.pfilter input:focus,.hero input:focus{box-shadow:0 0 0 2px var(--sa
 @media (max-width:700px){.inv{grid-template-columns:1fr}.inv-side{position:static}.inv-f:not([open]){padding:4px 0}.inv-grid{grid-template-columns:repeat(3,1fr)}.inv-tiles{grid-template-columns:repeat(2,1fr)}}
 @keyframes sheet{from{transform:translateY(40px);opacity:0}}
 .dgmaps{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:10px}.dgmaps figure{margin:0}.dgmaps img{width:100%;height:auto;border-radius:6px;display:block;image-rendering:pixelated;box-shadow:var(--shadow-sm)}.dgmaps figcaption{margin-bottom:6px}
+.dgtabs{margin:8px 0;flex-wrap:wrap}.dgf{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;margin-top:10px;align-items:start}
+.dgimg{position:relative;border-radius:8px;overflow:hidden;background:#0d1320;box-shadow:var(--shadow-sm)}.dgimg img{display:block;width:100%;height:auto;image-rendering:pixelated}
+.dgimg svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.dgp{position:absolute;transform:translate(-50%,-50%);min-width:22px;height:22px;padding:0 4px;border-radius:11px;border:2px solid #fff;background:hsl(205 80% 45%);color:#fff;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 1px 4px #0008;display:grid;place-items:center;line-height:1}
+.dgp.k-jefes,.dgp.k-mobs{background:hsl(0 70% 50%);font-size:12px}.dgp.on{background:var(--sao-o);transform:translate(-50%,-50%) scale(1.25);z-index:2}
+.dgleg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;margin-bottom:10px}.dgleg i{display:inline-block;width:18px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.dgnote{background:hsl(34 95% 95%);border-left:3px solid var(--sao-o);border-radius:6px;padding:10px 12px;margin-bottom:12px}.dgnote p{margin:4px 0 0;color:var(--n600);font-size:15px}
+.dgpl{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.dgpl .on{border-color:var(--sao-o);color:var(--sao-o)}
+@media (max-width:760px){.dgf{grid-template-columns:1fr}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700;800&display=swap">
 <meta name="robots" content="noindex,nofollow">
@@ -922,6 +931,23 @@ function dgGuide(d) {
     <h4>首領</h4><div class="bs-meta">${G.bosses.map(([n, k, lv, hp]) => `<span><b>${esc(n)}</b> · ${esc(k)}${lv ? ` · Lv ${lv}` : ''} · ${hp.toLocaleString()} 血</span>`).join('')}</div>
     <h4>怪物</h4><div class="bs-meta">${G.mobs.map(([n, lv, hp]) => `<span><b>${esc(n)}</b>${lv ? ` · Lv ${lv}` : ''} · ${hp} 血</span>`).join('')}</div></div></div></details>`;
 }
+
+function dgFloors(d) {
+  state.dgF ||= {}; state.dgP ||= {};
+  const k = state.dgF[d.id] || 0, F = d.floors[k], sel = state.dgP[d.id];
+  const tabs = d.floors.length > 1 ? `<div class="seg dgtabs">${d.floors.map((f, i) => `<button data-dgf="${d.id}|${i}" class="${i === k ? 'on' : ''}">${esc(f.t)}</button>`).join('')}</div>` : '';
+  const lines = F.routes.filter(r => !r.hl && r.p.length > 1).map(r => `<polyline points="${r.p.map(p => p.join(',')).join(' ')}" fill="none" stroke="${r.c}" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="stroke-width:4px"/>`).join('');
+  const hls = F.routes.filter(r => r.hl).map(r => r.p.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="1.6" fill="none" stroke="${r.c}" stroke-width="0.7"/>`).join('')).join('');
+  const ICO = {jefes: '👑', mobs: '💀', poi: ''};
+  const pois = F.pois.map((p, i) => `<button class="dgp k-${p.k} ${sel === i ? 'on' : ''}" style="left:${p.x}%;top:${p.y}%" data-dgp="${d.id}|${i}" aria-label="${esc(p.n)}">${ICO[p.k] || i + 1}</button>`).join('');
+  const sp = sel !== undefined && F.pois[sel];
+  const legend = F.routes.filter(r => r.n).map(r => `<span><i style="background:${r.c}"></i>${esc(r.n)}</span>`).join('');
+  return `<details class="guide" open><summary>🗺️ 每層路線（${d.floors.length} ${esc(F.lab.replace(/[:：]/, '')) || '層'}）</summary>${tabs}
+    <div class="dgf"><div class="dgimg"><img src="${esc(F.img)}" alt="${esc(d.n)} ${esc(F.t)}" loading="lazy"><svg viewBox="0 0 100 100" preserveAspectRatio="none">${lines}${hls}</svg>${pois}</div>
+      <div>${legend ? `<div class="dgleg">${legend}</div>` : ''}${sp ? `<div class="dgnote"><b>${esc(sp.n)}</b><p>${esc(sp.note || '')}</p></div>` : '<p class="foot">點地圖上的標記看說明。</p>'}
+      ${F.steps.length ? `<ol class="steps">${F.steps.map(s => `<li><span>${esc(s)}</span></li>`).join('')}</ol>` : ''}
+      <div class="dgpl">${F.pois.map((p, i) => `<button class="rchip ${sel === i ? "on" : ""}" data-dgp="${d.id}|${i}">${ICO[p.k] || (i + 1) + '.'} ${esc(p.n)}</button>`).join('')}</div></div></div></details>`;
+}
 function renderDungeons() {
   const q = norm(state.q);
   const rows = DG.filter(d => !q || match(q, d.n, d.boss, d.desc, d.key && d.key.n, ...d.loot.map(l => l.n)));
@@ -932,7 +958,7 @@ function renderDungeons() {
     ${d.key ? `<p style="margin:12px 0 0">鑰匙：<button class="mat" data-item="${esc(d.key.n)}">${esc(d.key.n)}</button> ×${d.key.q}${d.key.used ? '（進場會消耗）' : '（不會消耗）'}${RECIPES[d.key.n] ? ' <span class="mini">可以製作</span>' : ''}</p>` : ''}
     <div class="loot"><div style="border:0"><b>掉落</b><small>機率</small></div>${d.loot.map(l => `<div><span>${esc(l.n)}${l.r ? ` <span class="rar rar-${esc(l.r)}">${esc(l.r)}</span>` : ''}${l.de ? `<br><small>${esc(l.de)} 掉落</small>` : ''}</span><span class="k">${l.p != null ? (l.p * 100 >= 100 ? '必掉' : (Math.round(l.p * 1000) / 10) + '%') : ''}</span></div>`).join('')}</div>
     ${d.guide ? dgGuide(d) : ''}
-    ${d.maps ? `<details class="guide" open><summary>🗺️ 迷宮地圖（${d.maps.length} 層）</summary><div class="dgmaps">${d.maps.map(m => `<figure><figcaption><b>${esc(m.t)}</b></figcaption><a href="${esc(m.img)}" target="_blank" rel="noopener"><img src="${esc(m.img)}" alt="${esc(d.n)} ${esc(m.t)} 地圖" loading="lazy"></a>${m.note ? `<p class="foot">${esc(m.note)}點圖可以放大。</p>` : ''}</figure>`).join('')}</div></details>` : ''}
+    ${d.floors ? dgFloors(d) : ''}
     ${d.rec && d.rec.ms ? `<p class="foot" style="margin:10px 0 0">最快通關紀錄：${Math.floor(d.rec.ms / 60000)} 分 ${Math.round(d.rec.ms % 60000 / 1000)} 秒（${(d.rec.equipo || []).map(esc).join('、')}）</p>` : ''}</article>`).join('');
 }
 let _items = null;
@@ -1163,6 +1189,8 @@ document.addEventListener('click', e => {
     if (i >= 0) { state.mobPins = [i]; state.mobName = EO[i].n; state.mclick = null; }
     else { const m = TOP[F]; state.mobPins = []; state.mobName = ''; state.mclick = {top: 1, X, Z, x: (X - m.x0) / m.w * 100, y: (Z - m.z0) / m.h * 100}; }
     lastRoute = null; go('map'); setTimeout(() => { const el = document.querySelector('.stage,.t3d'); if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'}); }, 80); }
+  else if (d.dgf) { const [id, i] = d.dgf.split('|'); state.dgF[id] = +i; delete state.dgP[id]; render(); }
+  else if (d.dgp) { const [id, i] = d.dgp.split('|'); state.dgP[id] = state.dgP[id] === +i ? undefined : +i; render(); }
   else if (d.terrain) { state.terrain = !state.terrain; render(); }
   else if (d.mapview) { state.mapView = d.mapview; state.mclick = null; render(); }
   else if (d.mapfloor) { state.mclick = null; state.mapFloor = +d.mapfloor; state.plFloor = +d.mapfloor; state.place = ''; render(); }
